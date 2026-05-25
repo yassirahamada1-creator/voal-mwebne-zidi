@@ -99,6 +99,7 @@ const CategoryScreen = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-30 bg-background">
       <ScreenHeader
         icon={Video}
         labelFr="Galerie"
@@ -107,7 +108,7 @@ const CategoryScreen = () => {
         titleShi={module?.name_shk}
       />
 
-      <div className="px-4 -mt-3">
+      <div className="px-4 -mt-3 pb-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -145,6 +146,7 @@ const CategoryScreen = () => {
             }))}
           />
         </div>
+      </div>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2 px-4">

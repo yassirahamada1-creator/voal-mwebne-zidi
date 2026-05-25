@@ -201,10 +201,9 @@ const HomeScreen = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
+      {/* Header (sticky) */}
 <header
-  // APRÈS
-className="gradient-hero relative z-20 px-4 pt-4 pb-6 border-b border-primary-foreground/15 bg-transparent">
+className="gradient-hero sticky top-0 z-30 px-4 pt-4 pb-6 border-b border-primary-foreground/15">
   {/* Motif zellij comorien en filigrane */}
   <DecorativePattern variant="zellij" intensity="subtle" colorVar="var(--gold)" />
   {/* Decorative glows (clipped to header) */}

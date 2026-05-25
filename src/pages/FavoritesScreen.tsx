@@ -46,7 +46,8 @@ const FavoritesScreen = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="sticky top-0 z-10 border-b border-border/60 bg-background/85 px-4 pb-3 pt-5 backdrop-blur">
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border/60">
+      <header className="px-4 pb-3 pt-5">
         <div className="flex items-center gap-2">
           <div className="flex min-w-0 flex-1 items-baseline gap-2">
             <h1 className="font-display text-xl font-bold leading-tight text-foreground sm:text-2xl">
@@ -59,7 +60,7 @@ const FavoritesScreen = () => {
         </div>
       </header>
 
-      <div className="px-4 pt-4 space-y-3">
+      <div className="px-4 pb-3 space-y-3">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -102,9 +103,10 @@ const FavoritesScreen = () => {
             })}
           />
         </div>
+      </div>
+      </div>
 
-
-
+      <div className="px-4 pt-4 space-y-3">
         {favorites.length === 0 ? (
           <EmptyState
             icon={<Heart className="h-10 w-10" />}
