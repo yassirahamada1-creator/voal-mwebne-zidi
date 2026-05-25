@@ -1,0 +1,40 @@
+import { Link } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
+import { bi, biStr } from "@/lib/bilingual";
+import { termsOfUse } from "@/config/legal";
+
+const TermsScreen = () => {
+  const fr = termsOfUse.fr;
+  const shi = termsOfUse.shi;
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      <header className="px-4 pt-6 pb-2 flex items-center gap-3">
+        <Link
+          to="/settings"
+          aria-label={biStr("Retour", "Rudi")}
+          className="p-1 -ml-1 rounded-md hover:bg-accent/40"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Link>
+        {bi(fr.title, shi.title, "title")}
+      </header>
+
+      <div className="px-4 mt-2 space-y-4">
+        <p className="text-[11px] text-muted-foreground">
+          {fr.updatedAt} · {shi.updatedAt}
+        </p>
+
+        {fr.sections.map((section, i) => (
+          <section key={i} className="card-cultural p-4 space-y-2">
+            <h2 className="text-base font-semibold">{section.heading}</h2>
+            <p className="text-sm leading-relaxed">{section.body}</p>
+            <h3 className="text-sm font-semibold pt-2 opacity-80">{shi.sections[i]?.heading}</h3>
+            <p className="text-sm leading-relaxed opacity-80">{shi.sections[i]?.body}</p>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default TermsScreen;
