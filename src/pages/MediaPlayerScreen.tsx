@@ -175,7 +175,6 @@ const MediaPlayerScreen = () => {
             <NativeVideo
               src={playableUrl}
               poster={posterUrl ?? undefined}
-              subtitles={subtitles}
               ariaLabel={titleStr}
               className="w-full"
             />
