@@ -1,4 +1,5 @@
 import { useOfflineSync } from "@/hooks/useOfflineSync";
+import { useOfflineAvailability } from "@/hooks/useOfflineAvailability";
 import { useI18n } from "@/contexts/I18nContext";
 
 interface Props { className?: string; }
@@ -9,7 +10,8 @@ interface Props { className?: string; }
  */
 const NetworkBadge = ({ className = "shadow-md" }: Props) => {
   const { lang } = useI18n();
-  const { online, status, progress } = useOfflineSync();
+  const { status, progress } = useOfflineSync();
+  const { online } = useOfflineAvailability();
   const syncing = status === "syncing";
 
   const label = online

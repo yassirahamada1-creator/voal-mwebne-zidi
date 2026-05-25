@@ -1,6 +1,6 @@
 import { Download } from "lucide-react";
 import { ReactNode } from "react";
-import { useOfflineLock } from "@/hooks/useOfflineAvailability";
+import { useOfflineAvailability } from "@/hooks/useOfflineAvailability";
 import { useI18n } from "@/contexts/I18nContext";
 
 interface Props {
@@ -11,17 +11,25 @@ interface Props {
   className?: string;
   /** Affiche l'icône 📥 par-dessus si verrouillé. Default true. */
   showBadge?: boolean;
+  /**
+   * Si true, le contenu est flouté tant qu'il n'est PAS en cache local,
+   * même si l'utilisateur est en ligne (cas des vidéos non téléchargées).
+   * Si false (défaut), seul l'état hors-ligne verrouille.
+   */
+  requireCached?: boolean;
 }
 
 /**
  * Wrapper visuel : applique flou + désactive les interactions sur les contenus
- * NON disponibles hors ligne (mode offline + URL absente du cache).
- * Affiche une petite pastille 📥 en haut à droite pour indiquer qu'il faut
- * télécharger ce contenu (depuis sa fiche, lorsque la connexion sera revenue).
+ * NON disponibles hors ligne (mode offline + URL absente du cache), ou — si
+ * `requireCached` est activé — tant que le contenu n'a pas été téléchargé.
  */
-const OfflineLock = ({ urls, children, className = "", showBadge = true }: Props) => {
+const OfflineLock = ({ urls, children, className = "", showBadge = true, requireCached = false }: Props) => {
   const { lang } = useI18n();
-  const { locked } = useOfflineLock(urls);
+  const { online, isAvailable } = useOfflineAvailability();
+  const list = urls.filter(Boolean) as string[];
+  const allCached = list.length === 0 ? true : list.every((u) => isAvailable(u));
+  const locked = list.length > 0 && !allCached && (requireCached || !online);
 
   if (!locked) return <>{children}</>;
 

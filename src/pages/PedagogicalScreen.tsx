@@ -22,7 +22,7 @@ const PedagogicalScreen = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="relative overflow-hidden gradient-hero pattern-stars px-4 pt-5 pb-6 text-primary-foreground border-b border-primary-foreground/15">
+      <header className="sticky top-0 z-30 relative overflow-hidden gradient-hero pattern-stars px-4 pt-5 pb-6 text-primary-foreground border-b border-primary-foreground/15">
         <div className="relative z-10">
           {bi("Espace Pédagogique", "Nafasi ya Kufundisha", "title")}
         </div>

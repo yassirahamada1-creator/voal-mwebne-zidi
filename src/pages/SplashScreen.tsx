@@ -111,12 +111,8 @@ const SplashScreen = () => {
       navTimer = setTimeout(() => navigate("/home", { replace: true }), 600);
     };
 
-    // Cas 1 : déjà synchronisé une fois OU hors ligne → navigation immédiate.
-    if (!offline.firstRun || !offline.online) { go(); return () => {}; }
-    // Cas 2 : 1ère synchro en cours → on attend "ready" ou "error".
-    if (offline.status === "ready" || offline.status === "error") { go(); return () => {}; }
-    // Plafond de sécurité pour ne jamais bloquer indéfiniment.
-    hardTimer = setTimeout(go, FIRST_SYNC_HARD_TIMEOUT_MS);
+    // Sync se fait en arrière-plan : on n'attend plus la fin de la 1ère synchro.
+    go();
 
     return () => {
       cancelled = true;
@@ -124,7 +120,7 @@ const SplashScreen = () => {
       if (navTimer) clearTimeout(navTimer);
       if (hardTimer) clearTimeout(hardTimer);
     };
-  }, [ready, offline.firstRun, offline.online, offline.status, navigate]);
+  }, [ready, navigate]);
 
   return (
     <div className="fixed inset-0 flex h-[100dvh] max-h-[100dvh] w-screen flex-col items-center justify-between gradient-hero overflow-hidden overscroll-none touch-none px-4 pt-[max(env(safe-area-inset-top),0.75rem)] pb-[max(env(safe-area-inset-bottom),0.75rem)] sm:px-8 sm:pt-10 sm:pb-8">
@@ -197,32 +193,8 @@ const SplashScreen = () => {
       >
         <span aria-hidden="true" className="mb-1 inline-block h-px w-20 bg-primary-foreground/20" />
 
-        {/* Progression de la 1ère synchro hors-ligne (modules, contenus, miniatures, audio, images) */}
-        {offline.firstRun && offline.online && offline.status === "syncing" && (
-          <div className="w-full max-w-[340px] sm:max-w-[440px] px-4 mb-1" aria-live="polite">
-            <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-primary-foreground/85">
-              <span>{lang === "fr" ? "Préparation hors-ligne" : "Maandalizi bila mtandao"}</span>
-              <span className="tabular-nums">{Math.round((offline.progress || 0) * 100)}%</span>
-            </div>
-            <div
-              className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-primary-foreground/20"
-              role="progressbar"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round((offline.progress || 0) * 100)}
-            >
-              <div
-                className="h-full bg-gold transition-all duration-300"
-                style={{ width: `${Math.max(2, Math.round((offline.progress || 0) * 100))}%` }}
-              />
-            </div>
-            <p className="mt-1 text-[10px] text-primary-foreground/70">
-              {lang === "fr"
-                ? `Téléchargement ${offline.done}/${offline.total || "…"} fichiers`
-                : `Inapakua faili ${offline.done}/${offline.total || "…"}`}
-            </p>
-          </div>
-        )}
+        {/* La 1ère synchro se fait silencieusement en arrière-plan */}
+
 
         {(() => {
           const wide = partnerLogos[1];
