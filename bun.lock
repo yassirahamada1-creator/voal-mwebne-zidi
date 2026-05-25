@@ -7,6 +7,7 @@
       "dependencies": {
         "@capacitor/app": "^8.1.0",
         "@capacitor/core": "^8.3.4",
+        "@capacitor/network": "^8.0.1",
         "@capacitor/screen-orientation": "^8.0.1",
         "@capacitor/status-bar": "^8.0.2",
         "@hookform/resolvers": "^3.10.0",
@@ -112,6 +113,8 @@
     "@capacitor/core": ["@capacitor/core@8.3.4", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/core/-/core-8.3.4.tgz", { "dependencies": { "tslib": "^2.1.0" } }, "sha512-CqRQCkb6HXxcx/N7s+hHTN6ef2CmamFiRMITwm4qB840ph56mS42bzUgn6tKCP+RZjdDweiRHj9ytDDeN6jFag=="],
 
     "@capacitor/ios": ["@capacitor/ios@8.3.4", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/ios/-/ios-8.3.4.tgz", { "peerDependencies": { "@capacitor/core": "^8.3.0" } }, "sha512-XvvnPFWWP/gwwO811ue7nEBKSZqDCIB8hxGgWV6iXA7DSVLqMOEmQdfHj94kkVxof2wL9XWHypu3ayDULo7U5w=="],
+
+    "@capacitor/network": ["@capacitor/network@8.0.1", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/network/-/network-8.0.1.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-9xK/FHFmzKGanB6BdoSZOzXk8vF0OFVQSQ4PAsIrzAzLuXHryO317qy8dcHVpgxYeuZq2noI0My9z1DvVDi/9w=="],
 
     "@capacitor/screen-orientation": ["@capacitor/screen-orientation@8.0.1", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/screen-orientation/-/screen-orientation-8.0.1.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-DPz/1YGmlAUDMg2ON+AGJp1eFn9IfVNP9VKI5zIU+jD5xAZ4JGxUDlY9MDCvEPQs7UCD53NduJpqvqhcnb32Kw=="],
 
