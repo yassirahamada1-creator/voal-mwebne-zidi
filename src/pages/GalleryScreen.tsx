@@ -55,6 +55,7 @@ const GalleryScreen = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-30 bg-background">
       <ScreenHeader
         icon={Images}
         labelFr="Galerie"
@@ -63,7 +64,7 @@ const GalleryScreen = () => {
         titleShi="Picha za hazina za CNDRS"
       />
 
-      <div className="px-4 mt-2 space-y-3">
+      <div className="px-4 mt-2 pb-3">
         {/* Search bar */}
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted-foreground" />
@@ -85,6 +86,10 @@ const GalleryScreen = () => {
             </button>
           )}
         </div>
+      </div>
+      </div>
+
+      <div className="px-4 mt-2 space-y-3">
 
         {/* Results */}
         {loading ? (
