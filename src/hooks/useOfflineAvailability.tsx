@@ -43,10 +43,30 @@ export const OfflineAvailabilityProvider = ({ children }: { children: ReactNode 
     window.addEventListener(CACHE_CHANGED_EVENT, onChange);
     window.addEventListener("online", onUp);
     window.addEventListener("offline", onDown);
+
+    // Capacitor Network : navigator.onLine n'est pas fiable dans la WebView Android.
+    let removeNetListener: (() => void) | undefined;
+    (async () => {
+      try {
+        const { Capacitor } = await import("@capacitor/core");
+        if (!Capacitor.isNativePlatform()) return;
+        const { Network } = await import("@capacitor/network");
+        const status = await Network.getStatus();
+        setOnline(status.connected);
+        const handle = await Network.addListener("networkStatusChange", (s) => {
+          setOnline(s.connected);
+        });
+        removeNetListener = () => { handle.remove(); };
+      } catch {
+        /* plugin non disponible (web) */
+      }
+    })();
+
     return () => {
       window.removeEventListener(CACHE_CHANGED_EVENT, onChange);
       window.removeEventListener("online", onUp);
       window.removeEventListener("offline", onDown);
+      if (removeNetListener) removeNetListener();
     };
   }, [refresh]);
 
