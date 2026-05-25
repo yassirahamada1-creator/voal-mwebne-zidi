@@ -103,9 +103,10 @@ const FavoritesScreen = () => {
             })}
           />
         </div>
+      </div>
+      </div>
 
-
-
+      <div className="px-4 pt-4 space-y-3">
         {favorites.length === 0 ? (
           <EmptyState
             icon={<Heart className="h-10 w-10" />}
