@@ -1,8 +1,20 @@
 import { Heart, Download, Trash2, Loader2, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 import { useFavorites, FavoriteItem } from "@/hooks/useFavorites";
 import { toast } from "sonner";
 import { useI18n } from "@/contexts/I18nContext";
 import { useContentDownload } from "@/hooks/useContentDownload";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 
 interface Props {
   item: Omit<FavoriteItem, "addedAt"> & { thumbnailUrl?: string };
