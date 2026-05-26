@@ -34,10 +34,19 @@ const ROOT_ROUTES = new Set([
   "/dashboard",
 ]);
 
-/** Ferme le dernier overlay Radix ouvert (Dialog / Sheet / Drawer / DropdownMenu / Popover / AlertDialog). */
+/** Ferme le dernier overlay ouvert (Radix Dialog/Sheet/Menu/Popover, YARL lightbox). */
 const closeTopRadixOverlay = (): boolean => {
   if (typeof document === "undefined") return false;
-  // Radix expose data-state="open" sur les containers d'overlay.
+  // 1) YARL (yet-another-react-lightbox) — détection prioritaire, plein écran photo.
+  const yarl = document.querySelector<HTMLElement>(".yarl__root, .yarl__portal");
+  if (yarl) {
+    // YARL écoute Escape au niveau document.
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    return true;
+  }
+  // 2) Radix overlays (Dialog / AlertDialog / Sheet / Drawer / DropdownMenu / Popover).
   const selectors = [
     '[role="dialog"][data-state="open"]',
     '[role="alertdialog"][data-state="open"]',
@@ -48,9 +57,7 @@ const closeTopRadixOverlay = (): boolean => {
     document.querySelectorAll<HTMLElement>(selectors.join(",")),
   );
   if (candidates.length === 0) return false;
-  // Le plus récent est généralement le dernier dans le DOM.
   const top = candidates[candidates.length - 1];
-  // Simule Escape : Radix écoute cette touche pour fermer.
   top.dispatchEvent(
     new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
   );
