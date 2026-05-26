@@ -149,9 +149,23 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js');
-      }
+      (function () {
+        var host = location.hostname;
+        var isPreview = host.endsWith('lovableproject.com') || host.endsWith('lovable.app') || host === 'localhost' || host === '127.0.0.1';
+        if ('serviceWorker' in navigator) {
+          if (isPreview) {
+            // En preview/dev : désactiver le SW pour éviter de servir des chunks Vite obsolètes
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+              regs.forEach(function (r) { r.unregister(); });
+            });
+            if (window.caches && caches.keys) {
+              caches.keys().then(function (keys) { keys.forEach(function (k) { caches.delete(k); }); });
+            }
+          } else {
+            navigator.serviceWorker.register('/sw.js');
+          }
+        }
+      })();
     </script>
   </body>
 </html>
