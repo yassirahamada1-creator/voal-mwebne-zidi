@@ -1,6 +1,4 @@
-import { Link } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
-import { bi, biStr } from "@/lib/bilingual";
+import { bi } from "@/lib/bilingual";
 import { privacyPolicy } from "@/config/legal";
 
 const PrivacyScreen = () => {
