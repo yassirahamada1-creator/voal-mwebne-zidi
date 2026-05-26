@@ -327,8 +327,8 @@ style={{ paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24p
             <div className="min-w-0 flex-1">
               <BilingualText
                 as="p"
-                fr="Découvrez l'héritage culturel des femmes comoriennes"
-                shi="Gunduani urithi wa kitamaduni wa wanawake wa Kikomori"
+                fr={useI18n().tFr.pages.home.banner}
+                shi={useI18n().tShi.pages.home.banner}
                 variant="body"
                 className="font-display text-[13px] leading-snug text-foreground hyphens-auto [text-wrap:balance] sm:text-[15px]"
               />

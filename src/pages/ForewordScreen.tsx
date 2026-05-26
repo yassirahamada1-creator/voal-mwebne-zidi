@@ -1,4 +1,5 @@
 import { biStr } from "@/lib/bilingual";
+import { useI18n } from "@/contexts/I18nContext";
 
 const HighlightedText = ({ text }: { text: string }) => {
   const parts = text.split(/(Voix de Lune)/g);
@@ -25,6 +26,7 @@ const paragraphs = [
 ];
 
 const ForewordScreen = () => {
+  const { tFr, tShi } = useI18n();
   return (
     <div
       className="min-h-screen pb-24"
@@ -37,8 +39,11 @@ const ForewordScreen = () => {
           className="text-center font-serif text-3xl sm:text-4xl"
           style={{ fontFamily: "'Playfair Display', serif", color: "#FAF7F0" }}
         >
-          Avant-propos
+          {tFr.pages.foreword.title}
         </h1>
+        <p className="text-center mt-1 text-sm italic" style={{ color: "#C9A84C" }}>
+          {tShi.pages.foreword.title}
+        </p>
 
         <div
           className="my-5 flex items-center justify-center gap-3"
