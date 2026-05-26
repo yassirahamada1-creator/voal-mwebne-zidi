@@ -136,51 +136,55 @@ const MediaPlayerScreen = () => {
     );
   }
 
+  const headerIcon =
+    content.type === "audio" ? Headphones :
+    content.type === "image" ? ImageIcon :
+    FileText;
+  const headerLabel = biStr(
+    content.type === "audio" ? "Témoignage" : content.type === "image" ? "Photo" : "Récit",
+    content.type === "audio" ? "Ushuhuda"  : content.type === "image" ? "Picha"  : "Hadithi",
+  );
+  const HeaderIconCmp = headerIcon;
+
   return (
     <div
       className="min-h-screen bg-background pb-20"
       style={
-        content?.type === "video"
+        content.type === "video"
           ? { paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }
           : undefined
       }
     >
+      {/* Header de page (sticky) — repris du bandeau existant : icône + label de type. */}
       {content.type !== "video" && (
         <div
-          className="sticky top-0 z-30 bg-background"
+          className="sticky top-0 z-30 w-full overflow-hidden bg-foreground/90"
           style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
         >
-          <ScreenHeader
-            icon={
-              content.type === "audio"
-                ? Mic
-                : content.type === "image"
-                  ? ImageIcon
-                  : BookOpen
-            }
-            labelFr={
-              content.type === "audio"
-                ? "Témoignage"
-                : content.type === "image"
-                  ? "Photo"
-                  : "Récit"
-            }
-            labelShi={
-              content.type === "audio"
-                ? "Ushuhuda"
-                : content.type === "image"
-                  ? "Picha"
-                  : "Hadithi"
-            }
-            posterUrl={posterUrl ?? undefined}
-
-          />
+          <div className="relative h-32 sm:h-36 w-full overflow-hidden">
+            {posterUrl && (
+              <img
+                src={posterUrl}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover scale-110 blur-md opacity-60"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-br from-foreground/80 via-foreground/60 to-secondary/40" />
+            <div className="relative h-full w-full flex items-center justify-center gap-3 px-6">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/95 shadow-lg ring-1 ring-secondary-foreground/10">
+                <HeaderIconCmp className="h-6 w-6 text-secondary-foreground" />
+              </div>
+              <span className="text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground/85">
+                {headerLabel}
+              </span>
+            </div>
+          </div>
         </div>
       )}
 
-
-      <div className="relative w-full bg-foreground/90">
-        {blockedOffline ? (
+      {/* Média principal : seul l'aperçu vidéo / image / état hors-ligne y reste. */}
+      {blockedOffline ? (
+        <div className="relative w-full bg-foreground/90">
           <div className="aspect-video w-full flex flex-col items-center justify-center gap-3 px-6 text-center bg-foreground/95 text-primary-foreground">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive/90 shadow-lg">
               <WifiOff className="h-6 w-6" aria-hidden="true" />
@@ -195,71 +199,28 @@ const MediaPlayerScreen = () => {
               )}
             </p>
           </div>
-        ) : content.type === "video" && youtubeId ? (
-          <iframe
-            src={`https://www.youtube.com/embed/${youtubeId}?rel=0`}
-            title={titleStr}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full aspect-video bg-media-letterbox"
+        </div>
+      ) : content.type === "video" && youtubeId ? (
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}?rel=0`}
+          title={titleStr}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full aspect-video bg-media-letterbox"
+        />
+      ) : content.type === "video" && playableUrl ? (
+        <div className="mx-auto w-full max-w-[min(100%,calc(70vh*16/9))] bg-media-letterbox">
+          <NativeVideo
+            src={playableUrl}
+            poster={posterUrl ?? undefined}
+            ariaLabel={titleStr}
+            className="w-full"
           />
-        ) : content.type === "video" && playableUrl ? (
-          <div className="mx-auto w-full max-w-[min(100%,calc(70vh*16/9))] bg-media-letterbox">
-            <NativeVideo
-              src={playableUrl}
-              poster={posterUrl ?? undefined}
-              ariaLabel={titleStr}
-              className="w-full"
-            />
-          </div>
-        ) : content.type === "image" && playableUrl ? (
-          <img src={playableUrl} alt={titleStr} className="w-full max-h-[60vh] object-contain bg-media-letterbox" />
-        ) : content.type === "audio" && playableUrl ? (
-          <div className="relative h-32 sm:h-36 w-full overflow-hidden">
-            {posterUrl && (
-              <img
-                src={posterUrl}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover scale-110 blur-md opacity-60"
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-br from-foreground/80 via-foreground/60 to-secondary/40" />
-            <div className="relative h-full w-full flex items-center justify-center gap-3 px-6">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/95 shadow-lg ring-1 ring-secondary-foreground/10">
-                <Headphones className="h-6 w-6 text-secondary-foreground" />
-              </div>
-              <span className="text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground/85">
-                {biStr("Témoignage", "Ushuhuda")}
-              </span>
-            </div>
-          </div>
-        ) : (
-          <div className="relative h-32 sm:h-36 w-full overflow-hidden">
-            {posterUrl && (
-              <img
-                src={posterUrl}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover scale-110 blur-md opacity-60"
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-br from-foreground/80 via-foreground/60 to-secondary/40" />
-            <div className="relative h-full w-full flex items-center justify-center gap-3 px-6">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/95 shadow-lg ring-1 ring-secondary-foreground/10">
-                {content.type === "text" ? (
-                  <FileText className="h-6 w-6 text-secondary-foreground" />
-                ) : (
-                  <ImageIcon className="h-6 w-6 text-secondary-foreground" />
-                )}
-              </div>
-              <span className="text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground/85">
-                {content.type === "text"
-                  ? biStr("Récit", "Hadithi")
-                  : biStr("Photo", "Picha")}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      ) : content.type === "image" && playableUrl ? (
+        <img src={playableUrl} alt={titleStr} className="w-full max-h-[60vh] object-contain bg-media-letterbox" />
+      ) : null}
+
 
       {!blockedOffline && content.type === "audio" && playableUrl && (
         <div className="px-4 pt-4">
