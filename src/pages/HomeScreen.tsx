@@ -203,7 +203,8 @@ const HomeScreen = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Header (sticky) */}
 <header
-className="gradient-hero sticky top-0 z-30 px-4 pt-4 pb-6 border-b border-primary-foreground/15">
+className="gradient-hero sticky top-0 z-30 px-4 pb-6 border-b border-primary-foreground/15"
+style={{ paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 1rem)" }}>
   {/* Motif zellij comorien en filigrane */}
   <DecorativePattern variant="zellij" intensity="subtle" colorVar="var(--gold)" />
   {/* Decorative glows (clipped to header) */}

@@ -25,12 +25,13 @@ const config: CapacitorConfig = {
   },
   plugins: {
     StatusBar: {
-      // Le WebView ne s'étend PAS sous la status bar :
-      // batterie, heure et notifications restent toujours visibles.
-      overlaysWebView: false,
-      // Fond vert de marque + icônes claires lisibles dessus.
-      backgroundColor: "#2d6a4f",
-      style: "DARK", // contenu sombre → icônes claires
+      // Le WebView s'étend SOUS la status bar : le dégradé du header
+      // se prolonge jusqu'en haut (pas de bande disgracieuse).
+      overlaysWebView: true,
+      // Transparent : la couleur visible est celle du header derrière.
+      backgroundColor: "#00000000",
+      // LIGHT = contenu clair → icônes/texte blancs lisibles sur vert.
+      style: "LIGHT",
     },
   },
 };
