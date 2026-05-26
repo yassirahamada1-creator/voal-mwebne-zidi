@@ -102,7 +102,8 @@ const AppShell = () => {
     <div
       className="mx-auto max-w-md min-h-screen bg-background shadow-2xl relative"
       style={{
-  paddingTop: "env(safe-area-inset-top, 0px)",  // ← ajouter cette ligne
+  // Pas de paddingTop : les headers gèrent eux-mêmes la safe-area
+  // pour que le dégradé se prolonge sous la status bar.
   paddingLeft: "env(safe-area-inset-left, 0px)",
   paddingRight: "env(safe-area-inset-right, 0px)",
   paddingBottom: hideBottomNav
