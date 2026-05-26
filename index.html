@@ -59,14 +59,21 @@
     (function () {
       try {
         var mql = window.matchMedia('(prefers-color-scheme: dark)');
-        var apply = function (isDark) {
-          document.documentElement.classList.toggle('dark', !!isDark);
+        var readPref = function () {
+          try { return localStorage.getItem('vdl_theme') || 'auto'; } catch (e) { return 'auto'; }
+        };
+        var apply = function () {
+          var pref = readPref();
+          var isDark = pref === 'dark' || (pref === 'auto' && mql.matches);
+          document.documentElement.classList.toggle('dark', isDark);
           var meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute('content', isDark ? '#0f1923' : '#2d6a4f');
         };
-        apply(mql.matches);
-        if (mql.addEventListener) mql.addEventListener('change', function (e) { apply(e.matches); });
-        else if (mql.addListener) mql.addListener(function (e) { apply(e.matches); });
+        window.__vdlApplyTheme = apply;
+        apply();
+        if (mql.addEventListener) mql.addEventListener('change', apply);
+        else if (mql.addListener) mql.addListener(apply);
+        window.addEventListener('storage', function (e) { if (e.key === 'vdl_theme') apply(); });
       } catch (e) {}
     })();
   </script>
