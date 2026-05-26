@@ -152,6 +152,7 @@ const App = () => (
             <OfflineSyncProvider>
               <OfflineAvailabilityProvider>
                 <AccessibilityApplier />
+                <AppLifecycle />
                 <MemoConnectionStatus />
                 <OfflineBanner />
                 {import.meta.env.DEV && <OfflineDevTool />}
