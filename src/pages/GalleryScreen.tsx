@@ -8,11 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { Images, ChevronRight, Search, X } from "lucide-react";
 import ScreenHeader from "@/components/ScreenHeader";
 import { useContents } from "@/hooks/useBackendData";
-import { BilingualText, biStr } from "@/lib/bilingual";
+import { BilingualText } from "@/lib/bilingual";
 import OfflineImage from "@/components/OfflineImage";
+import { useI18n } from "@/contexts/I18nContext";
 
 const GalleryScreen = () => {
   const navigate = useNavigate();
+  const { t, tFr, tShi } = useI18n();
   const { data: contents, loading } = useContents("galerie");
 
   const [query, setQuery] = useState("");
@@ -58,10 +60,10 @@ const GalleryScreen = () => {
       <div className="sticky top-0 z-30 bg-background" style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}>
       <ScreenHeader
         icon={Images}
-        labelFr="Galerie"
-        labelShi="Galeri"
-        titleFr="Photos d'archive du CNDRS"
-        titleShi="Picha za hazina za CNDRS"
+        labelFr={tFr.pages.gallery.label}
+        labelShi={tShi.pages.gallery.label}
+        titleFr={tFr.pages.gallery.title}
+        titleShi={tShi.pages.gallery.title}
       />
 
       <div className="px-4 mt-2 pb-3">
@@ -72,15 +74,15 @@ const GalleryScreen = () => {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={biStr("Rechercher un sujet…", "Tafuta mada…")}
-            aria-label={biStr("Rechercher dans la galerie", "Tafuta katika galeri")}
+            placeholder={t.pages.gallery.searchPlaceholder}
+            aria-label={t.pages.gallery.searchAria}
             className="h-12 w-full rounded-2xl border border-border bg-card pl-11 pr-11 text-sm text-foreground shadow-sm transition placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
               className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label={biStr("Effacer la recherche", "Futa utafutaji")}
+              aria-label={t.pages.gallery.clearSearch}
             >
               <X className="h-4 w-4" />
             </button>
@@ -101,8 +103,8 @@ const GalleryScreen = () => {
         ) : visibleSubjects.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground py-10">
             {query.trim()
-              ? biStr("Aucun résultat.", "Hakuna matokeo.")
-              : biStr("Aucun sujet pour le moment.", "Hakuna mada bado.")}
+              ? t.pages.gallery.noResults
+              : t.pages.gallery.noSubjects}
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-4">
@@ -110,7 +112,7 @@ const GalleryScreen = () => {
               <button
                 key={s.id}
                 onClick={() => navigate(`/gallery/${s.id}`)}
-                aria-label={biStr(`Ouvrir ${s.titleFr}`, `Fungua ${s.titleShk}`)}
+                aria-label={`${tFr.pages.gallery.title} — ${s.titleFr}`}
                 className="card-cultural card-cultural-interactive group flex flex-col text-left animate-fade-up overflow-hidden p-0"
                 style={{ animationDelay: `${i * 60}ms` }}
               >
@@ -136,7 +138,7 @@ const GalleryScreen = () => {
                     className="font-display text-foreground"
                   />
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {s.count} {biStr(s.count > 1 ? "photos" : "photo", "picha")}
+                    {s.count} {s.count > 1 ? t.pages.gallery.photoPlural : t.pages.gallery.photoSingular}
                   </p>
                 </div>
                 <ChevronRight className="absolute right-3 top-3 h-4 w-4 text-primary-foreground/80 drop-shadow" />

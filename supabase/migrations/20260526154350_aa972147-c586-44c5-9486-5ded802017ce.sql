@@ -1,0 +1,31 @@
+DELETE FROM public.translations WHERE key IN ('splash.french','splash.shikomori','splash.selectLanguage');
+
+INSERT INTO public.translations (key, value_fr, value_shk, screen) VALUES
+  ('pages.category.searchPlaceholder', 'Rechercher dans les contenus...', 'Tafuta...', 'category'),
+  ('pages.category.suggestionsEmpty', 'Aucune suggestion', 'Hakuna mapendekezo', 'category'),
+  ('pages.category.videoBadge', 'Vidéo', 'Video', 'category'),
+  ('pages.category.emptyVideos', 'Aucune vidéo pour cette catégorie.', 'Hakuna video.', 'category'),
+  ('pages.category.galleryLabel', 'Galerie', 'Picha', 'category'),
+  ('pages.gallery.label', 'Galerie', 'Galeri', 'gallery'),
+  ('pages.gallery.title', 'Photos d''archive du CNDRS', 'Picha za hazina za CNDRS', 'gallery'),
+  ('pages.gallery.searchPlaceholder', 'Rechercher un sujet…', 'Tafuta mada…', 'gallery'),
+  ('pages.gallery.searchAria', 'Rechercher dans la galerie', 'Tafuta katika galeri', 'gallery'),
+  ('pages.gallery.clearSearch', 'Effacer la recherche', 'Futa utafutaji', 'gallery'),
+  ('pages.gallery.noResults', 'Aucun résultat.', 'Hakuna matokeo.', 'gallery'),
+  ('pages.gallery.noSubjects', 'Aucun sujet pour le moment.', 'Hakuna mada bado.', 'gallery'),
+  ('pages.gallery.photoSingular', 'photo', 'picha', 'gallery'),
+  ('pages.gallery.photoPlural', 'photos', 'picha', 'gallery'),
+  ('pages.media.notFound', 'Contenu introuvable.', 'Maudhui hayapatikani.', 'media'),
+  ('pages.media.swipeBack', 'Glissez depuis le bord gauche pour revenir.', 'Telezesha kutoka ukingoni wa kushoto kurudi.', 'media'),
+  ('pages.media.offlineTitle', 'Contenu non disponible hors-ligne', 'Maudhui hayapatikani bila mtandao', 'media'),
+  ('pages.media.offlineHint', 'Téléchargez ce contenu lorsque vous êtes connecté pour le consulter sans réseau.', 'Pakua maudhui haya ukiwa na mtandao ili uweze kuyatumia bila mtandao.', 'media'),
+  ('pages.media.relatedHeading', 'Contenus liés', 'Maudhui yanayohusiana', 'media'),
+  ('pages.media.tabsAria', 'Types de contenus liés', 'Aina za maudhui yanayohusiana', 'media'),
+  ('pages.media.noRelated', 'Aucun contenu pour le moment.', 'Hakuna maudhui kwa sasa.', 'media'),
+  ('pages.media.tabStory', 'Récit', 'Hadithi', 'media'),
+  ('pages.media.tabTestimony', 'Témoignage', 'Ushuhuda', 'media'),
+  ('pages.media.tabPhoto', 'Photo', 'Picha', 'media'),
+  ('pages.media.titleUnavailable', 'Titre indisponible', 'Hakuna kichwa', 'media'),
+  ('pages.media.noTitleFr', 'Ce contenu n''a pas encore de titre en français.', 'Maudhui haya hayana bado kichwa kwa Kifaransa.', 'media'),
+  ('pages.media.noTitleShk', 'Ce contenu n''a pas encore de titre en shikomori.', 'Maudhui haya hayana bado kichwa kwa Shikomori.', 'media')
+ON CONFLICT (key) DO UPDATE SET value_fr = EXCLUDED.value_fr, value_shk = EXCLUDED.value_shk, screen = EXCLUDED.screen, updated_at = now();
