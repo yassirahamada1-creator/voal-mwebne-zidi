@@ -2,7 +2,7 @@ import { lazy, Suspense, memo } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+
 import { I18nProvider } from "@/contexts/I18nContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AppSettingsProvider } from "@/hooks/useAppSettings";
@@ -146,28 +146,26 @@ const AppShell = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <I18nProvider>
-          <AppSettingsProvider>
-            <FontProvider>
-              <OfflineSyncProvider>
-                <OfflineAvailabilityProvider>
-                  <AccessibilityApplier />
-                  <MemoConnectionStatus />
-                  <OfflineBanner />
-                  {import.meta.env.DEV && <OfflineDevTool />}
-                  <Sonner />
-                  <BrowserRouter>
-                    <AppShell />
-                  </BrowserRouter>
-                </OfflineAvailabilityProvider>
-              </OfflineSyncProvider>
-            </FontProvider>
-          </AppSettingsProvider>
-        </I18nProvider>
-      </AuthProvider>
-    </TooltipProvider>
+    <AuthProvider>
+      <I18nProvider>
+        <AppSettingsProvider>
+          <FontProvider>
+            <OfflineSyncProvider>
+              <OfflineAvailabilityProvider>
+                <AccessibilityApplier />
+                <MemoConnectionStatus />
+                <OfflineBanner />
+                {import.meta.env.DEV && <OfflineDevTool />}
+                <Sonner />
+                <BrowserRouter>
+                  <AppShell />
+                </BrowserRouter>
+              </OfflineAvailabilityProvider>
+            </OfflineSyncProvider>
+          </FontProvider>
+        </AppSettingsProvider>
+      </I18nProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
