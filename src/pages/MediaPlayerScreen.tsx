@@ -232,11 +232,6 @@ const MediaPlayerScreen = () => {
       )}
 
       <div className="px-4 pt-4">
-        {content.type !== "image" && (
-          <h1 className="font-display text-xl font-bold text-foreground" style={{ lineHeight: "1.15" }}>
-            {bi(content.title_fr, content.title_shk)}
-          </h1>
-        )}
         {content.type === "text" || content.type === "image" ? (
           (() => {
             const hasFr = !!content.description_fr;
