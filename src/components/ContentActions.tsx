@@ -207,5 +207,8 @@ export default function ContentActions({ item, showDownload = false, compact = t
         </button>
       )}
     </div>
+    {removeDialog}
+    </>
   );
 }
+
