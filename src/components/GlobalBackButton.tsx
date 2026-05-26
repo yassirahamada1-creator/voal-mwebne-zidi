@@ -25,7 +25,6 @@ const ROOT_ROUTES = new Set([
 ]);
 
 const SETTINGS_CHILDREN = new Set([
-  "/accessibility",
   "/licenses",
   "/terms",
   "/privacy",
