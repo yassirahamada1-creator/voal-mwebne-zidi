@@ -198,15 +198,26 @@ const NativeVideo = ({
     };
   }, [exitFullscreenAndPortrait]);
 
-  // Sécurité : si le composant est démonté pendant le plein écran, restaurer
-  // le portrait pour éviter que l'app reste bloquée en paysage.
+  // Restauration centralisée : portrait + sortie plein écran.
+  // Couvre la navigation pendant la lecture, le démontage du composant,
+  // et les événements "pagehide" (back natif Android, fermeture d'onglet).
   useEffect(() => {
-    return () => {
+    const restorePortrait = () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
       ScreenOrientation.lock({ orientation: "portrait" })
         .then(() => ScreenOrientation.unlock())
         .catch(() => {});
     };
+
+    window.addEventListener("pagehide", restorePortrait);
+    return () => {
+      window.removeEventListener("pagehide", restorePortrait);
+      restorePortrait();
+    };
   }, []);
+
 
   return (
     <div
