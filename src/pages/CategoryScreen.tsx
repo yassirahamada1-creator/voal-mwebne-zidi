@@ -170,7 +170,6 @@ const CategoryScreen = () => {
             <OfflineLock
               key={item.id}
               urls={[item.media_url, item.thumbnail_url]}
-              requireCached
             >
             <div
               className="card-cultural card-cultural-interactive animate-fade-up"
