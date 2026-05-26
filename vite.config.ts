@@ -7,10 +7,10 @@ import { componentTagger } from "lovable-tagger";
 // Fallbacks publics (publishable keys) pour que le build APK fonctionne
 // même si le fichier .env est absent (ex: après git pull, car .env est gitignore).
 // Ces valeurs sont publiques côté client — aucun risque de sécurité.
-const SUPABASE_URL_FALLBACK = "https://gvzdxpczwdrkuqkeqtrr.supabase.co";
+const SUPABASE_URL_FALLBACK = "https://vgakulafrptoirrpqppu.supabase.co";
 const SUPABASE_KEY_FALLBACK =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2emR4cGN6d2Rya3Vxa2VxdHJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1ODY0NjIsImV4cCI6MjA5MzE2MjQ2Mn0.XjQZBq1DU0tSBlyPcCeEPfaKVjgyCV2JuFJAwhFnfc0";
-const SUPABASE_PROJECT_ID_FALLBACK = "gvzdxpczwdrkuqkeqtrr";
+  "sb_publishable_slyLUuO7gCdL2eS8MFReng_O2waSRri";
+const SUPABASE_PROJECT_ID_FALLBACK = "vgakulafrptoirrpqppu";
 
 export default defineConfig(({ mode }) => ({
   define: {
