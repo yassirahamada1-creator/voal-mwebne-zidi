@@ -28,7 +28,7 @@ const slugStyles: Record<string, { icon?: any; image?: string; gradient: string 
 };
 
 const HomeScreen = () => {
-  const { t, lang } = useI18n();
+  const { t, tFr, tShi, lang } = useI18n();
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLDivElement>(null);
   const { data: modules, loading } = useModules();
@@ -327,8 +327,8 @@ style={{ paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24p
             <div className="min-w-0 flex-1">
               <BilingualText
                 as="p"
-                fr={useI18n().tFr.pages.home.banner}
-                shi={useI18n().tShi.pages.home.banner}
+                fr={tFr.pages.home.banner}
+                shi={tShi.pages.home.banner}
                 variant="body"
                 className="font-display text-[13px] leading-snug text-foreground hyphens-auto [text-wrap:balance] sm:text-[15px]"
               />
