@@ -1,16 +1,17 @@
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Home, BookOpen, Download, Settings, Heart } from "lucide-react";
 import { BilingualText } from "@/lib/bilingual";
+import { useI18n } from "@/contexts/I18nContext";
 
 // Préchargement par intention : seulement le chunk JS de la cible (les données
 // sont gérées par le sync hors ligne global, plus besoin de prefetch séparé).
-const items = [
-  { to: "/home",        icon: Home,      fr: "Accueil",         shi: "Nyumbani",  prefetch: () => import("@/pages/HomeScreen") },
-  { to: "/pedagogical", icon: BookOpen,  fr: "Apprendre",       shi: "Fundza",    prefetch: () => import("@/pages/PedagogicalScreen") },
-  { to: "/favorites",   icon: Heart,     fr: "Favoris",         shi: "Vipendwa",  prefetch: () => import("@/pages/FavoritesScreen") },
-  { to: "/downloads",   icon: Download,  fr: "Téléchargements", shi: "Upakuaji",  prefetch: () => import("@/pages/DownloadsScreen") },
-  { to: "/settings",    icon: Settings,  fr: "Paramètres",      shi: "Mpangilio", prefetch: () => import("@/pages/SettingsScreen") },
+const buildItems = (tFr: any, tShi: any) => [
+  { to: "/home",        icon: Home,      fr: tFr.nav.home,        shi: tShi.nav.home,        prefetch: () => import("@/pages/HomeScreen") },
+  { to: "/pedagogical", icon: BookOpen,  fr: tFr.nav.learn,       shi: tShi.nav.learn,       prefetch: () => import("@/pages/PedagogicalScreen") },
+  { to: "/favorites",   icon: Heart,     fr: tFr.nav.favorites,   shi: tShi.nav.favorites,   prefetch: () => import("@/pages/FavoritesScreen") },
+  { to: "/downloads",   icon: Download,  fr: tFr.nav.downloads,   shi: tShi.nav.downloads,   prefetch: () => import("@/pages/DownloadsScreen") },
+  { to: "/settings",    icon: Settings,  fr: tFr.nav.settings,    shi: tShi.nav.settings,    prefetch: () => import("@/pages/SettingsScreen") },
 ];
 
 const BottomNav = () => {
