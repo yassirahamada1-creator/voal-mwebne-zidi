@@ -233,7 +233,7 @@ const MediaPlayerScreen = () => {
       )}
 
       <div className="px-4 pt-4">
-        {content.type !== "image" && (
+        {content.type !== "image" && content.type !== "text" && (
           <h1 className="font-display text-xl font-bold text-foreground" style={{ lineHeight: "1.15" }}>
             {bi(content.title_fr, content.title_shk)}
           </h1>
@@ -246,32 +246,44 @@ const MediaPlayerScreen = () => {
             if (!hasFr && !hasShk) return null;
             if (!bilingual) {
               const single = hasFr ? content.description_fr! : content.description_shk!;
+              const singleTitle = hasFr ? content.title_fr : content.title_shk;
               return (
-                <p
-                  lang={hasShk ? "zdj" : "fr"}
-                  className="mt-4 text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap"
-                >
-                  {single}
-                </p>
+                <div>
+                  {singleTitle && (
+                    <h1
+                      lang={hasShk ? "zdj" : "fr"}
+                      className="font-display text-xl font-bold text-foreground"
+                      style={{ lineHeight: "1.15" }}
+                    >
+                      {singleTitle}
+                    </h1>
+                  )}
+                  <p
+                    lang={hasShk ? "zdj" : "fr"}
+                    className="mt-4 text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap"
+                  >
+                    {normalizeDisplayText(single)}
+                  </p>
+                </div>
               );
             }
             return (
-              <div className="mt-4 space-y-6">
-                <section aria-label="Texte en français">
+              <div className="space-y-6">
+                <section aria-label={content.title_fr || "Texte en français"}>
                   <header className="mb-2 flex items-center gap-2">
                     <span
                       aria-hidden="true"
-                      className="inline-flex h-5 w-7 items-center justify-center rounded-sm bg-primary text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-sm"
+                      className="inline-flex h-5 w-7 items-center justify-center rounded-sm bg-primary text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-sm shrink-0"
                     >
                       FR
                     </span>
-                    <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      Français
+                    <h2 className="font-display text-base sm:text-lg font-bold text-foreground leading-tight">
+                      {content.title_fr}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-gold/60 via-terracotta/40 to-transparent" />
                   </header>
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                    {content.description_fr}
+                    {normalizeDisplayText(content.description_fr)}
                   </p>
                 </section>
 
@@ -287,21 +299,21 @@ const MediaPlayerScreen = () => {
                   </span>
                 </div>
 
-                <section aria-label="Matini kwa Shikomori" lang="zdj">
+                <section aria-label={content.title_shk || "Matini kwa Shikomori"} lang="zdj">
                   <header className="mb-2 flex items-center gap-2">
                     <span
                       aria-hidden="true"
-                      className="inline-flex h-5 w-7 items-center justify-center rounded-sm bg-secondary text-[10px] font-bold uppercase tracking-wider text-secondary-foreground shadow-sm"
+                      className="inline-flex h-5 w-7 items-center justify-center rounded-sm bg-secondary text-[10px] font-bold uppercase tracking-wider text-secondary-foreground shadow-sm shrink-0"
                     >
                       SHI
                     </span>
-                    <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      Shikomori
+                    <h2 className="font-display text-base sm:text-lg font-bold text-foreground leading-tight">
+                      {content.title_shk}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-terracotta/60 via-gold/40 to-transparent" />
                   </header>
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                    {content.description_shk}
+                    {normalizeDisplayText(content.description_shk)}
                   </p>
                 </section>
               </div>
@@ -310,10 +322,11 @@ const MediaPlayerScreen = () => {
         ) : (
           description && (
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {description}
+              {normalizeDisplayText(typeof description === "string" ? description : String(description))}
             </p>
           )
         )}
+
 
         <div className="mt-4">
           <ContentActions
