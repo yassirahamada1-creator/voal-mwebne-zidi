@@ -1,6 +1,5 @@
-import { Link } from "react-router-dom";
-import { ChevronLeft, ExternalLink, Package, Heart } from "lucide-react";
-import { bi, biStr } from "@/lib/bilingual";
+import { ExternalLink, Package, Heart } from "lucide-react";
+import { bi } from "@/lib/bilingual";
 import { openSourceLibraries } from "@/config/legal";
 
 const licenseColor = (license: string) => {
