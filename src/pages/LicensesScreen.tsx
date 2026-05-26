@@ -1,6 +1,7 @@
 import { ExternalLink, Package, Heart } from "lucide-react";
 import { bi, biStr } from "@/lib/bilingual";
 import { openSourceLibraries } from "@/config/legal";
+import { useI18n } from "@/contexts/I18nContext";
 
 const licenseColor = (license: string) => {
   switch (license) {
@@ -16,10 +17,11 @@ const licenseColor = (license: string) => {
 };
 
 const LicensesScreen = () => {
+  const { tFr, tShi } = useI18n();
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="px-4 pt-6 pb-2">
-        {bi("Licences", "Leseni", "title")}
+        {bi(tFr.pages.licenses.title, tShi.pages.licenses.title, "title")}
       </header>
 
       <div className="px-4 mt-4 space-y-5">

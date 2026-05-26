@@ -347,7 +347,7 @@ const AppearanceContent = ({ fr }: { fr: boolean }) => {
 /* -------------------------------------------------------------------------- */
 
 const SettingsScreen = () => {
-  const { lang } = useI18n();
+  const { lang, tFr, tShi } = useI18n();
   const fr = lang === "fr";
 
   return (
@@ -357,7 +357,7 @@ const SettingsScreen = () => {
         style={{ paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 1rem)" }}
       >
         <div className="relative z-10">
-          {bi("Paramètres", "Mpangilio", "title")}
+          {bi(tFr.pages.settings.title, tShi.pages.settings.title, "title")}
         </div>
         <div className="divider-comorian mt-3" />
       </header>
