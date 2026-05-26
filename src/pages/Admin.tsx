@@ -2134,14 +2134,70 @@ export function TranslationsTab({ items, reload }: { items: Translation[]; reloa
     return matchesAllTokens([t.key, t.value_fr, t.value_shk, t.screen], filter);
   });
 
+  const SCREEN_LABELS: Record<string, string> = {
+    splash: "Écran d'accueil",
+    home: "Page d'accueil",
+    nav: "Navigation (barre du bas)",
+    language: "Choix de la langue",
+    categories: "Catégories de contenu",
+    content: "Page d'un contenu",
+    pedagogical: "Espace pédagogique",
+    quiz: "Quiz",
+    settings: "Paramètres",
+    common: "Éléments communs",
+    autre: "Autres",
+  };
+
+  const SECTION_LABELS: Record<string, string> = {
+    categories: "Noms des catégories",
+    categoryDescs: "Descriptions des catégories",
+    appTitle: "Titre de l'application",
+    appSubtitle: "Sous-titre",
+    appTagline: "Phrase d'accroche",
+  };
+
+  const sectionLabel = (prefix: string) =>
+    SECTION_LABELS[prefix] ??
+    prefix.charAt(0).toUpperCase() + prefix.slice(1).replace(/([A-Z])/g, " $1");
+
+  const friendlyLabel = (t: Translation) => {
+    // Use the French value when short enough; otherwise fall back to the key suffix.
+    const suffix = t.key.includes(".") ? t.key.split(".").slice(1).join(".") : t.key;
+    const human = suffix
+      .replace(/[._-]/g, " ")
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .toLowerCase();
+    return human.charAt(0).toUpperCase() + human.slice(1);
+  };
+
   const grouped = filtered.reduce<Record<string, Translation[]>>((acc, t) => {
     const k = t.screen || "autre";
     (acc[k] = acc[k] || []).push(t);
     return acc;
   }, {});
 
-  const groupOrder = Object.keys(grouped).sort();
+  const SCREEN_ORDER = [
+    "splash",
+    "home",
+    "nav",
+    "language",
+    "categories",
+    "content",
+    "pedagogical",
+    "quiz",
+    "settings",
+    "common",
+  ];
+  const groupOrder = Object.keys(grouped).sort((a, b) => {
+    const ia = SCREEN_ORDER.indexOf(a);
+    const ib = SCREEN_ORDER.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
   const previewCount = Object.values(previewing).filter(Boolean).length;
+
 
   return (
     <div className="space-y-4">
