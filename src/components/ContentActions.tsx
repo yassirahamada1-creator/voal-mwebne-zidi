@@ -44,6 +44,8 @@ export default function ContentActions({ item, showDownload = false, compact = t
     thumbnailUrl: item.thumbnailUrl ?? (item.type === "image" ? item.mediaUrl : undefined),
   });
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   const onFav = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -59,8 +61,7 @@ export default function ContentActions({ item, showDownload = false, compact = t
     e.stopPropagation();
     e.preventDefault();
     if (cached) {
-      await remove();
-      toast.success(lang === "fr" ? "Téléchargement supprimé" : "Upakuaji umefutwa");
+      setConfirmOpen(true);
       return;
     }
     if (typeof navigator !== "undefined" && !navigator.onLine) {
@@ -74,6 +75,41 @@ export default function ContentActions({ item, showDownload = false, compact = t
         : "Upakuaji umeongezwa kwenye foleni",
     );
   };
+
+  const confirmRemove = async () => {
+    await remove();
+    setConfirmOpen(false);
+    toast.success(lang === "fr" ? "Téléchargement supprimé" : "Upakuaji umefutwa");
+  };
+
+  const removeDialog = (
+    <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {lang === "fr" ? "Supprimer ce téléchargement ?" : "Futa upakuaji huu?"}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {lang === "fr"
+              ? "Le contenu ne sera plus disponible hors ligne. Vous pourrez le retélécharger plus tard."
+              : "Maudhui hayatapatikana bila mtandao. Unaweza kuyapakua tena baadaye."}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            {lang === "fr" ? "Annuler" : "Ghairi"}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={(e) => { e.preventDefault(); void confirmRemove(); }}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {lang === "fr" ? "Supprimer" : "Futa"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
 
   if (compact) {
     return (
