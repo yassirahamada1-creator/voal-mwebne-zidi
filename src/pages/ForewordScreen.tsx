@@ -30,15 +30,7 @@ const ForewordScreen = () => {
       className="min-h-screen pb-24"
       style={{ backgroundColor: "#1A3A5C", color: "#FAF7F0" }}
     >
-      <header className="flex items-center gap-2 px-4 pt-6 pb-2">
-        <Link
-          to="/settings"
-          aria-label={biStr("Retour", "Rudi")}
-          className="-ml-1 inline-flex h-11 w-11 items-center justify-center rounded-md hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A84C]"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </Link>
-      </header>
+      <header className="px-4 pt-6 pb-2" aria-label={biStr("En-tête", "Kichwa")} />
 
       <article className="px-6 pt-4">
         <h1
