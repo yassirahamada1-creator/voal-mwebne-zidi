@@ -13,7 +13,7 @@ import OfflineLock from "@/components/OfflineLock";
 import OfflineImage from "@/components/OfflineImage";
 import PhotoStrip from "@/components/PhotoStrip";
 import { getFallbackThumbnail } from "@/lib/contentThumbnails";
-import ScreenHeader from "@/components/ScreenHeader";
+
 import { normalizeDisplayText } from "@/lib/textNormalize";
 
 
