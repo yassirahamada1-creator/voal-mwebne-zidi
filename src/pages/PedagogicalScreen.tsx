@@ -16,7 +16,8 @@ const slugEmojis: Record<string, string> = {
 const PedagogicalScreen = () => {
   const { t, lang } = useI18n();
   const navigate = useNavigate();
-  const { data: modules, loading } = useModules();
+  const { data: allModules, loading } = useModules();
+  const modules = allModules.filter((m) => m.slug !== "galerie");
   void t;
   void lang;
 
