@@ -18,10 +18,11 @@ const partnerLogos: LogoCell[] = [
   { src: logoCndrs, alt: "CNDRS" },
 ];
 
-const MIN_SPLASH_MS = 3600;
-const MAX_SPLASH_MS = 6000;
-// Plafond du blocage en cas de 1ère synchro (sécurité, ≈ 2 min).
-const FIRST_SYNC_HARD_TIMEOUT_MS = 120_000;
+const MIN_SPLASH_MS = 3000;
+// Plafond de sécurité si les polices tardent à charger (ex. réseau lent).
+// Hors-ligne / mode avion : `document.fonts.ready` se résout immédiatement.
+const MAX_SPLASH_MS = 4500;
+
 
 const waitForFonts = (): Promise<void> => {
   if (typeof document === "undefined" || !("fonts" in document)) {
