@@ -15,7 +15,8 @@ import ConnectionStatus from "@/components/ConnectionStatus";
 import OfflineBanner from "@/components/OfflineBanner";
 import OfflineDevTool from "@/components/dev/OfflineDevTool";
 import SwipeBackGesture from "@/components/SwipeBackGesture";
-import GlobalBackButton from "@/components/GlobalBackButton";
+// GlobalBackButton retiré : la navigation arrière se fait par le geste swipe
+// global et par le bouton retour natif Android (NativeBackHandler).
 import NativeBackHandler from "@/components/NativeBackHandler";
 
 import SplashScreen from "@/pages/SplashScreen";
@@ -137,7 +138,6 @@ const AppShell = () => {
         </Routes>
       </Suspense>
       <SwipeBackGesture />
-      <GlobalBackButton />
       <NativeBackHandler />
       <MemoBottomNav />
     </div>

@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { ChevronLeft, ExternalLink, Package, Heart } from "lucide-react";
+import { ExternalLink, Package, Heart } from "lucide-react";
 import { bi, biStr } from "@/lib/bilingual";
 import { openSourceLibraries } from "@/config/legal";
 
@@ -19,14 +18,7 @@ const licenseColor = (license: string) => {
 const LicensesScreen = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="px-4 pt-6 pb-2 flex items-center gap-3">
-        <Link
-          to="/settings"
-          aria-label={biStr("Retour", "Rudi")}
-          className="p-1 -ml-1 rounded-md hover:bg-accent/40"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </Link>
+      <header className="px-4 pt-6 pb-2">
         {bi("Licences", "Leseni", "title")}
       </header>
 

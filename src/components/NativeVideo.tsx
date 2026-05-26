@@ -141,8 +141,29 @@ const NativeVideo = ({
     }
   }, []);
 
+  // Helper : sortir du plein écran + restaurer l'orientation portrait
+  const exitFullscreenAndPortrait = useCallback(async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+    }
+    // On reverrouille explicitement en portrait pour que l'app reprenne le bon
+    // sens même si le device est physiquement encore en paysage.
+    await ScreenOrientation.lock({ orientation: "portrait" }).catch(() => {});
+    await ScreenOrientation.unlock().catch(() => {});
+    setIsFullscreen(false);
+  }, []);
+
   useEffect(() => {
-    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+    const onChange = () => {
+      const fs = !!document.fullscreenElement;
+      setIsFullscreen(fs);
+      // À la sortie du plein écran : forcer le retour en portrait
+      if (!fs) {
+        ScreenOrientation.lock({ orientation: "portrait" })
+          .then(() => ScreenOrientation.unlock())
+          .catch(() => {});
+      }
+    };
     document.addEventListener("fullscreenchange", onChange);
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
@@ -157,12 +178,15 @@ const NativeVideo = ({
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
     const onError = () => setHasError(true);
+    // À la fin de la vidéo : sortir du plein écran et revenir en portrait.
+    const onEnded = () => { exitFullscreenAndPortrait(); };
 
     v.addEventListener("timeupdate", onTimeUpdate);
     v.addEventListener("durationchange", onDurationChange);
     v.addEventListener("play", onPlay);
     v.addEventListener("pause", onPause);
     v.addEventListener("error", onError);
+    v.addEventListener("ended", onEnded);
 
     return () => {
       v.removeEventListener("timeupdate", onTimeUpdate);
@@ -170,6 +194,17 @@ const NativeVideo = ({
       v.removeEventListener("play", onPlay);
       v.removeEventListener("pause", onPause);
       v.removeEventListener("error", onError);
+      v.removeEventListener("ended", onEnded);
+    };
+  }, [exitFullscreenAndPortrait]);
+
+  // Sécurité : si le composant est démonté pendant le plein écran, restaurer
+  // le portrait pour éviter que l'app reste bloquée en paysage.
+  useEffect(() => {
+    return () => {
+      ScreenOrientation.lock({ orientation: "portrait" })
+        .then(() => ScreenOrientation.unlock())
+        .catch(() => {});
     };
   }, []);
 
