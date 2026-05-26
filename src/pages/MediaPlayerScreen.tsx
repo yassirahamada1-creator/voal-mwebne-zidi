@@ -13,6 +13,9 @@ import OfflineLock from "@/components/OfflineLock";
 import OfflineImage from "@/components/OfflineImage";
 import PhotoStrip from "@/components/PhotoStrip";
 import { getFallbackThumbnail } from "@/lib/contentThumbnails";
+import ScreenHeader from "@/components/ScreenHeader";
+import { normalizeDisplayText } from "@/lib/textNormalize";
+
 
 const RELATED_TYPES = [
   { type: "text",  fr: "Récit",      shi: "Hadithi",  icon: BookOpen },
@@ -136,18 +139,46 @@ const MediaPlayerScreen = () => {
   return (
     <div
       className="min-h-screen bg-background pb-20"
-      style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
+      style={
+        content?.type === "video"
+          ? { paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }
+          : undefined
+      }
     >
-      {content.type === "image" && (
-        <div className="px-4 pt-4 pb-3">
-          <h1
-            className="font-display text-xl font-bold text-foreground"
-            style={{ lineHeight: "1.15" }}
-          >
-            {bi(content.title_fr, content.title_shk)}
-          </h1>
+      {content.type !== "video" && (
+        <div
+          className="sticky top-0 z-30 bg-background"
+          style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
+        >
+          <ScreenHeader
+            icon={
+              content.type === "audio"
+                ? Mic
+                : content.type === "image"
+                  ? ImageIcon
+                  : BookOpen
+            }
+            labelFr={
+              content.type === "audio"
+                ? "Témoignage"
+                : content.type === "image"
+                  ? "Photo"
+                  : "Récit"
+            }
+            labelShi={
+              content.type === "audio"
+                ? "Ushuhuda"
+                : content.type === "image"
+                  ? "Picha"
+                  : "Hadithi"
+            }
+            titleFr={content.title_fr}
+            titleShi={content.title_shk}
+            posterUrl={posterUrl ?? undefined}
+          />
         </div>
       )}
+
 
       <div className="relative w-full bg-foreground/90">
         {blockedOffline ? (
