@@ -53,7 +53,23 @@
   <!-- Évite le flash blanc avant le montage de l'écran d'accueil (couleur de marque) -->
   <style>
     html, body, #root { background-color: #2d6a4f; }
+    html.dark, html.dark body, html.dark #root { background-color: #0f1923; }
   </style>
+  <script>
+    (function () {
+      try {
+        var mql = window.matchMedia('(prefers-color-scheme: dark)');
+        var apply = function (isDark) {
+          document.documentElement.classList.toggle('dark', !!isDark);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', isDark ? '#0f1923' : '#2d6a4f');
+        };
+        apply(mql.matches);
+        if (mql.addEventListener) mql.addEventListener('change', function (e) { apply(e.matches); });
+        else if (mql.addListener) mql.addListener(function (e) { apply(e.matches); });
+      } catch (e) {}
+    })();
+  </script>
 </head>
 
   <body>
