@@ -138,16 +138,6 @@ const MediaPlayerScreen = () => {
       className="min-h-screen bg-background pb-20"
       style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
     >
-      {content.type === "image" && (
-        <div className="px-4 pt-4 pb-3">
-          <h1
-            className="font-display text-xl font-bold text-foreground"
-            style={{ lineHeight: "1.15" }}
-          >
-            {bi(content.title_fr, content.title_shk)}
-          </h1>
-        </div>
-      )}
 
       <div className="relative w-full bg-foreground/90">
         {blockedOffline ? (
