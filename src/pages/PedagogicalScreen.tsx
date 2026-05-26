@@ -14,21 +14,17 @@ const slugEmojis: Record<string, string> = {
 };
 
 const PedagogicalScreen = () => {
-  const { t, tFr, tShi, lang } = useI18n();
+  const { t, lang } = useI18n();
   const navigate = useNavigate();
-  const { data: allModules, loading } = useModules();
-  const modules = allModules.filter((m) => m.slug !== "galerie");
+  const { data: modules, loading } = useModules();
   void t;
   void lang;
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header
-        className="sticky top-0 z-30 relative overflow-hidden gradient-hero pattern-stars px-4 pb-6 text-primary-foreground border-b border-primary-foreground/15"
-        style={{ paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 1rem)" }}
-      >
+      <header className="sticky top-0 z-30 relative overflow-hidden gradient-hero pattern-stars px-4 pt-5 pb-6 text-primary-foreground border-b border-primary-foreground/15">
         <div className="relative z-10">
-          {bi(tFr.pages.pedagogical.title, tShi.pages.pedagogical.title, "title")}
+          {bi("Espace Pédagogique", "Nafasi ya Kufundisha", "title")}
         </div>
         <div className="divider-comorian mt-3" />
       </header>
@@ -38,7 +34,7 @@ const PedagogicalScreen = () => {
         <section>
           <div className="flex items-center gap-2 mb-3">
             <Brain className="h-5 w-5 text-secondary" />
-            <h2 className="font-display text-lg font-semibold text-foreground">{bi(tFr.pages.pedagogical.quizzesSection, tShi.pages.pedagogical.quizzesSection)}</h2>
+            <h2 className="font-display text-lg font-semibold text-foreground">{bi("Quiz Interactifs", "Maswali")}</h2>
           </div>
           {loading ? (
             <div className="grid grid-cols-2 gap-3">
@@ -61,8 +57,8 @@ const PedagogicalScreen = () => {
                     <span className="text-2xl" aria-hidden="true">{slugEmojis[mod.slug] ?? "📚"}</span>
                     <span className="text-xs font-semibold text-foreground text-center leading-tight">{name}</span>
                     <span className="text-[10px] text-secondary font-semibold text-center leading-tight">
-                      <span className="block whitespace-nowrap">{tFr.pages.pedagogical.startCta} →</span>
-                      <span className="block whitespace-nowrap opacity-80">{tShi.pages.pedagogical.startCta} →</span>
+                      <span className="block whitespace-nowrap">Commencer →</span>
+                      <span className="block whitespace-nowrap opacity-80">Anza →</span>
                     </span>
                   </button>
                 );

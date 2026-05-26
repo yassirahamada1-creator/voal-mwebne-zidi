@@ -152,23 +152,9 @@ async function fetchAndCache(url: string, signal?: AbortSignal): Promise<boolean
   try {
     const existing = await c.match(url);
     if (existing) return true;
-    // 1) Tentative CORS (web + Capacitor si bucket autorise l'origine)
-    try {
-      const res = await fetch(url, { mode: "cors", credentials: "omit", signal });
-      if (res.ok) {
-        await c.put(url, res.clone());
-        return true;
-      }
-    } catch {
-      // ignore, on tente no-cors
-    }
-    // 2) Fallback no-cors : réponse opaque, mais Cache API peut la stocker
-    //    et OfflineImage / <video> peuvent la rejouer depuis le cache.
-    //    Indispensable sur Android WebView où l'origine peut être bloquée.
-    if (signal?.aborted) return false;
-    const opaque = await fetch(url, { mode: "no-cors", credentials: "omit", signal });
-    // Une réponse opaque a status=0 mais peut être mise en cache
-    await c.put(url, opaque.clone());
+    const res = await fetch(url, { mode: "cors", signal });
+    if (!res.ok) return false;
+    await c.put(url, res.clone());
     return true;
   } catch {
     return false;

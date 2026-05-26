@@ -1,4 +1,6 @@
-import { bi } from "@/lib/bilingual";
+import { Link } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
+import { bi, biStr } from "@/lib/bilingual";
 import { privacyPolicy } from "@/config/legal";
 
 const PrivacyScreen = () => {
@@ -6,7 +8,14 @@ const PrivacyScreen = () => {
   const shi = privacyPolicy.shi;
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="px-4 pt-6 pb-2">
+      <header className="px-4 pt-6 pb-2 flex items-center gap-3">
+        <Link
+          to="/settings"
+          aria-label={biStr("Retour", "Rudi")}
+          className="p-1 -ml-1 rounded-md hover:bg-accent/40"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Link>
         {bi(fr.title, shi.title, "title")}
       </header>
 

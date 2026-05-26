@@ -1,5 +1,6 @@
+import { Link } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
 import { biStr } from "@/lib/bilingual";
-import { useI18n } from "@/contexts/I18nContext";
 
 const HighlightedText = ({ text }: { text: string }) => {
   const parts = text.split(/(Voix de Lune)/g);
@@ -26,24 +27,28 @@ const paragraphs = [
 ];
 
 const ForewordScreen = () => {
-  const { tFr, tShi } = useI18n();
   return (
     <div
       className="min-h-screen pb-24"
       style={{ backgroundColor: "#1A3A5C", color: "#FAF7F0" }}
     >
-      <header className="px-4 pt-6 pb-2" aria-label={biStr("En-tête", "Kichwa")} />
+      <header className="flex items-center gap-2 px-4 pt-6 pb-2">
+        <Link
+          to="/settings"
+          aria-label={biStr("Retour", "Rudi")}
+          className="-ml-1 inline-flex h-11 w-11 items-center justify-center rounded-md hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A84C]"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Link>
+      </header>
 
       <article className="px-6 pt-4">
         <h1
           className="text-center font-serif text-3xl sm:text-4xl"
           style={{ fontFamily: "'Playfair Display', serif", color: "#FAF7F0" }}
         >
-          {tFr.pages.foreword.title}
+          Avant-propos
         </h1>
-        <p className="text-center mt-1 text-sm italic" style={{ color: "#C9A84C" }}>
-          {tShi.pages.foreword.title}
-        </p>
 
         <div
           className="my-5 flex items-center justify-center gap-3"
