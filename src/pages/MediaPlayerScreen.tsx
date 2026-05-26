@@ -172,9 +172,8 @@ const MediaPlayerScreen = () => {
                   ? "Picha"
                   : "Hadithi"
             }
-            titleFr={content.title_fr}
-            titleShi={content.title_shk}
             posterUrl={posterUrl ?? undefined}
+
           />
         </div>
       )}
