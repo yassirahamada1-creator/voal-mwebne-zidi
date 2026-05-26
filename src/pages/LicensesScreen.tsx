@@ -1,5 +1,5 @@
 import { ExternalLink, Package, Heart } from "lucide-react";
-import { bi } from "@/lib/bilingual";
+import { bi, biStr } from "@/lib/bilingual";
 import { openSourceLibraries } from "@/config/legal";
 
 const licenseColor = (license: string) => {
