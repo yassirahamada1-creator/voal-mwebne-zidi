@@ -9,7 +9,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
-import { ArrowLeft } from "lucide-react";
+// ArrowLeft retiré : plus de bouton "Retour" manuel dans la lightbox.
 import Counter from "yet-another-react-lightbox/plugins/counter";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
