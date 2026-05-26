@@ -64,19 +64,7 @@ export async function uploadFile(
   onProgress?: UploadProgress
 ): Promise<string> {
   const path = buildPath(file, folder);
-
-  // Petits fichiers : upload simple, plus rapide.
-  if (file.size < TUS_THRESHOLD) {
-    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-      cacheControl: "3600",
-      upsert: false,
-    });
-    if (error) throw error;
-    onProgress?.(file.size, file.size);
-    return publicUrl(path);
-  }
-
-  // Gros fichiers (vidéos > 6 Mo) : upload résumable TUS, reprend
-  // automatiquement en cas de coupure réseau ou de timeout proxy.
+  // Upload résumable TUS pour toutes les tailles : reprend automatiquement
+  // en cas de coupure réseau et évite les timeouts de proxy.
   return uploadResumable(file, path, onProgress);
 }
