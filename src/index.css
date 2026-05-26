@@ -413,6 +413,35 @@ html { font-size: calc(16px * var(--a11y-font-scale, 1)); }
   letter-spacing: 0.02em;
 }
 
+/* Contraste élevé : assombrit fortement les bords/textes et augmente le contraste */
+.a11y-high-contrast {
+  --foreground: 0 0% 0%;
+  --muted-foreground: 0 0% 15%;
+  --border: 0 0% 10%;
+  --input: 0 0% 10%;
+  --card-foreground: 0 0% 0%;
+  --primary: 210 80% 12%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 0 0% 0%;
+}
+.dark.a11y-high-contrast {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --muted-foreground: 0 0% 90%;
+  --border: 0 0% 85%;
+  --input: 0 0% 85%;
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 100%;
+  --primary: 40 95% 65%;
+  --primary-foreground: 0 0% 0%;
+  --ring: 40 95% 65%;
+}
+.a11y-high-contrast *:focus-visible {
+  outline: 3px solid hsl(var(--ring)) !important;
+  outline-offset: 2px !important;
+}
+
+
 /* ===== Performance — animations ramenées à ≤150ms ===== */
 .animate-fade-in,
 .animate-scale-in,
