@@ -36,7 +36,7 @@ const FavoritesScreen = lazy(importFavorites);
 const importDownloads = () => import("@/pages/DownloadsScreen");
 const DownloadsScreen = lazy(importDownloads);
 
-const AccessibilityScreen = lazy(() => import("@/pages/AccessibilityScreen"));
+
 const LicensesScreen = lazy(() => import("@/pages/LicensesScreen"));
 const TermsScreen = lazy(() => import("@/pages/TermsScreen"));
 const PrivacyScreen = lazy(() => import("@/pages/PrivacyScreen"));
@@ -128,7 +128,7 @@ const AppShell = () => {
           
           <Route path="/downloads" element={<DownloadsScreen />} />
           
-          <Route path="/accessibility" element={<AccessibilityScreen />} />
+          
           <Route path="/licenses" element={<LicensesScreen />} />
           <Route path="/terms" element={<TermsScreen />} />
           <Route path="/privacy" element={<PrivacyScreen />} />
