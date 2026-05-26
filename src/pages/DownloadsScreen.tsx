@@ -11,7 +11,10 @@ const DownloadsScreen = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <header className="sticky top-0 z-30 gradient-hero pattern-stars relative overflow-hidden px-4 pb-3 pt-3 border-b border-primary-foreground/15">
+      <header
+        className="sticky top-0 z-30 gradient-hero pattern-stars relative overflow-hidden px-4 pb-3 border-b border-primary-foreground/15"
+        style={{ paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 0.75rem)" }}
+      >
         <div className="pointer-events-none absolute -right-16 -top-16 h-32 w-32 rounded-full bg-primary-foreground/10 blur-3xl" />
         <div className="relative z-10 flex items-center gap-2">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-background/15 ring-1 ring-background/25 backdrop-blur">
