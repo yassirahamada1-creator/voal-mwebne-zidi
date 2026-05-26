@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
 import { biStr } from "@/lib/bilingual";
 
 const HighlightedText = ({ text }: { text: string }) => {
