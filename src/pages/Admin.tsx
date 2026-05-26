@@ -1795,14 +1795,92 @@ export function QuizTab({
     reload();
   };
 
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+
+  const visibleModules = modules.filter((m) => m.slug !== "galerie");
+  const selectedModule = visibleModules.find((m) => m.slug === selectedSlug) || null;
+  const moduleItems = selectedSlug
+    ? items.filter((q) => q.module_slug === selectedSlug)
+    : [];
+  const countBySlug = (slug: string) =>
+    items.filter((q) => q.module_slug === slug).length;
+
+  // Vue 1 : sélection du module
+  if (!selectedModule) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h2 className="font-semibold">Quiz par module</h2>
+          <p className="text-xs text-muted-foreground">
+            Choisissez un module pour gérer ses questions.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {visibleModules.map((m) => {
+            const count = countBySlug(m.slug);
+            return (
+              <button
+                key={m.id}
+                onClick={() => setSelectedSlug(m.slug)}
+                className="text-left rounded-lg border bg-card p-4 hover:border-indigo-300 hover:shadow-md transition group"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm truncate">{m.name_fr}</p>
+                    <p className="text-xs text-muted-foreground truncate">{m.name_shk}</p>
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] shrink-0">
+                    {count} quiz
+                  </Badge>
+                </div>
+                <p className="mt-3 text-xs text-indigo-600 group-hover:underline">
+                  Gérer les quiz →
+                </p>
+              </button>
+            );
+          })}
+          {visibleModules.length === 0 && (
+            <p className="text-sm text-muted-foreground col-span-full">
+              Aucun module disponible. Créez d'abord un module.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Vue 2 : quiz du module sélectionné
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="font-semibold">Quiz ({items.length})</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedSlug(null)}
+            className="shrink-0"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" /> Modules
+          </Button>
+          <div className="min-w-0">
+            <h2 className="font-semibold truncate">{selectedModule.name_fr}</h2>
+            <p className="text-xs text-muted-foreground truncate">
+              {moduleItems.length} quiz
+            </p>
+          </div>
+        </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditing({ correct_index: 0, is_published: true })}>
-              <Plus className="w-4 h-4 mr-1" /> Nouvelle question
+            <Button
+              onClick={() =>
+                setEditing({
+                  correct_index: 0,
+                  is_published: true,
+                  module_slug: selectedSlug,
+                })
+              }
+            >
+              <Plus className="w-4 h-4 mr-1" /> Créer un quiz
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1856,7 +1934,7 @@ export function QuizTab({
                   </div>
                 ))}
                 <div>
-                  <Label>Module (optionnel)</Label>
+                  <Label>Module</Label>
                   <Select
                     value={editing.module_slug || ""}
                     onValueChange={(v) => setEditing({ ...editing, module_slug: v })}
@@ -1865,7 +1943,7 @@ export function QuizTab({
                       <SelectValue placeholder="Aucun" />
                     </SelectTrigger>
                     <SelectContent>
-                      {modules.map((m) => (
+                      {visibleModules.map((m) => (
                         <SelectItem key={m.slug} value={m.slug}>
                           {m.name_fr}
                         </SelectItem>
@@ -1887,16 +1965,14 @@ export function QuizTab({
           <TableHeader>
             <TableRow>
               <TableHead>Question</TableHead>
-              <TableHead>Module</TableHead>
               <TableHead>Publié</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((q) => (
+            {moduleItems.map((q) => (
               <TableRow key={q.id}>
                 <TableCell className="max-w-md truncate">{q.question_fr}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">{q.module_slug || "—"}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Switch
@@ -1918,6 +1994,13 @@ export function QuizTab({
                 </TableCell>
               </TableRow>
             ))}
+            {moduleItems.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center text-sm text-muted-foreground py-6">
+                  Aucun quiz pour ce module. Cliquez sur « Créer un quiz » pour commencer.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
