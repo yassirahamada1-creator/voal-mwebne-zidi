@@ -16,6 +16,8 @@ const buildItems = (tFr: any, tShi: any) => [
 
 const BottomNav = () => {
   const location = useLocation();
+  const { tFr, tShi } = useI18n();
+  const items = useMemo(() => buildItems(tFr, tShi), [tFr, tShi]);
   const handlePrefetch = useCallback((p: () => Promise<unknown>) => {
     p().catch(() => {});
   }, []);
