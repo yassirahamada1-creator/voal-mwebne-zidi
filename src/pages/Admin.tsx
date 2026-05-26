@@ -2236,36 +2236,60 @@ export function TranslationsTab({ items, reload }: { items: Translation[]; reloa
         </p>
       )}
 
-      {groupOrder.map((screen) => (
-        <div key={screen} className="border rounded-lg overflow-hidden bg-card">
-          <div className="px-4 py-2 bg-muted/50 border-b flex items-center justify-between">
-            <h3 className="font-medium text-sm capitalize">{screen}</h3>
-            <Badge variant="secondary">{grouped[screen].length}</Badge>
-          </div>
-          <div className="divide-y">
-            {grouped[screen].map((t) => {
-              const d = drafts[t.id] || { value_fr: t.value_fr, value_shk: t.value_shk };
-              const dirty = isDirty(t);
-              const isPreviewing = !!previewing[t.id];
-              return (
-                <div key={t.id} className="p-3 sm:p-4 space-y-2">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <code className="text-xs font-mono text-muted-foreground break-all">
-                      {t.key}
-                    </code>
-                    <div className="flex items-center gap-1">
-                      {isPreviewing && (
-                        <Badge className="text-[10px] bg-primary/15 text-primary hover:bg-primary/15">
-                          <Eye className="w-3 h-3 mr-1" /> Aperçu
-                        </Badge>
-                      )}
-                      {dirty && !isPreviewing && (
-                        <Badge variant="outline" className="text-[10px]">
-                          Modifié
-                        </Badge>
-                      )}
-                    </div>
+      {groupOrder.map((screen) => {
+        // Sub-group rows by key prefix (the part before the first dot).
+        const rows = grouped[screen];
+        const sections = rows.reduce<Record<string, Translation[]>>((acc, t) => {
+          const prefix = t.key.includes(".") ? t.key.split(".")[0] : t.key;
+          (acc[prefix] = acc[prefix] || []).push(t);
+          return acc;
+        }, {});
+        const sectionKeys = Object.keys(sections).sort();
+        return (
+          <div key={screen} className="border rounded-lg overflow-hidden bg-card">
+            <div className="px-4 py-3 bg-muted/50 border-b flex items-center justify-between">
+              <div className="min-w-0">
+                <h3 className="font-medium text-sm">{SCREEN_LABELS[screen] ?? screen}</h3>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Textes affichés sur cette page de l'application
+                </p>
+              </div>
+              <Badge variant="secondary">{rows.length}</Badge>
+            </div>
+            {sectionKeys.map((prefix) => (
+              <div key={prefix} className="border-t first:border-t-0">
+                {sectionKeys.length > 1 && (
+                  <div className="px-4 py-1.5 bg-muted/20 border-b">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {sectionLabel(prefix)}
+                    </p>
                   </div>
+                )}
+                <div className="divide-y">
+                  {sections[prefix].map((t) => {
+                    const d = drafts[t.id] || { value_fr: t.value_fr, value_shk: t.value_shk };
+                    const dirty = isDirty(t);
+                    const isPreviewing = !!previewing[t.id];
+                    return (
+                      <div key={t.id} className="p-3 sm:p-4 space-y-2">
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <p className="text-sm font-medium text-foreground">
+                            {friendlyLabel(t)}
+                          </p>
+                          <div className="flex items-center gap-1">
+                            {isPreviewing && (
+                              <Badge className="text-[10px] bg-primary/15 text-primary hover:bg-primary/15">
+                                <Eye className="w-3 h-3 mr-1" /> Aperçu
+                              </Badge>
+                            )}
+                            {dirty && !isPreviewing && (
+                              <Badge variant="outline" className="text-[10px]">
+                                Modifié
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div>
                       <Label className="text-xs">Français</Label>
