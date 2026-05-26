@@ -137,7 +137,6 @@ const AppShell = () => {
         </Routes>
       </Suspense>
       <SwipeBackGesture />
-      <GlobalBackButton />
       <NativeBackHandler />
       <MemoBottomNav />
     </div>
