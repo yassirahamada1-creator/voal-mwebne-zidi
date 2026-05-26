@@ -134,7 +134,10 @@ const MediaPlayerScreen = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div
+      className="min-h-screen bg-background pb-20"
+      style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
+    >
       {content.type === "image" && (
         <div className="px-4 pt-4 pb-3">
           <h1
