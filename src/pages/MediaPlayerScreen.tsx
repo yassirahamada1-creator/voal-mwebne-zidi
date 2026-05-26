@@ -78,7 +78,7 @@ const MediaPlayerScreen = () => {
       list.push({
         src: buildSimpleVtt(content.description_fr),
         srclang: "fr",
-        label: "Français",
+        label: content?.title_fr || "Français",
         default: lang === "fr",
       });
     }
@@ -86,7 +86,7 @@ const MediaPlayerScreen = () => {
       list.push({
         src: buildSimpleVtt(content.description_shk),
         srclang: "zdj",
-        label: "Shikomori",
+        label: content?.title_shk || "Shikomori",
         default: lang !== "fr",
       });
     }
