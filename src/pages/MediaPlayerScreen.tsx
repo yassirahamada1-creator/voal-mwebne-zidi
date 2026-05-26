@@ -275,7 +275,7 @@ const MediaPlayerScreen = () => {
                       FR
                     </span>
                     <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      Français
+                      {content.title_fr || "Français"}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-gold/60 via-terracotta/40 to-transparent" />
                   </header>
@@ -305,7 +305,7 @@ const MediaPlayerScreen = () => {
                       SHI
                     </span>
                     <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      Shikomori
+                      {content.title_shk || "Shikomori"}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-terracotta/60 via-gold/40 to-transparent" />
                   </header>
