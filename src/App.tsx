@@ -128,7 +128,7 @@ const AppShell = () => {
           
           <Route path="/downloads" element={<DownloadsScreen />} />
           
-          <Route path="/accessibility" element={<AccessibilityScreen />} />
+          
           <Route path="/licenses" element={<LicensesScreen />} />
           <Route path="/terms" element={<TermsScreen />} />
           <Route path="/privacy" element={<PrivacyScreen />} />
