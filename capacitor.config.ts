@@ -21,7 +21,9 @@ const config: CapacitorConfig = {
     contentInset: "always",
   },
   android: {
-    webContentsDebuggingEnabled: false,
+    // Temporairement activé pour pouvoir inspecter le WebView via chrome://inspect
+    // et diagnostiquer l'absence de modules/quiz après build APK.
+    webContentsDebuggingEnabled: true,
   },
   plugins: {
     StatusBar: {
