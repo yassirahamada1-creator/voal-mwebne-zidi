@@ -2135,25 +2135,23 @@ export function TranslationsTab({ items, reload }: { items: Translation[]; reloa
   });
 
   const SCREEN_LABELS: Record<string, string> = {
-    splash: "Écran d'accueil",
+    splash: "Écran d'accueil (Splash)",
+    nav: "Barre du bas",
     home: "Page d'accueil",
-    nav: "Navigation (barre du bas)",
-    language: "Choix de la langue",
-    categories: "Catégories de contenu",
-    content: "Page d'un contenu",
     pedagogical: "Espace pédagogique",
-    quiz: "Quiz",
+    downloads: "Téléchargements",
+    favorites: "Favoris",
     settings: "Paramètres",
-    common: "Éléments communs",
+    foreword: "Avant-propos",
+    licenses: "Licences",
+    quiz: "Quiz",
     autre: "Autres",
   };
 
   const SECTION_LABELS: Record<string, string> = {
-    categories: "Noms des catégories",
-    categoryDescs: "Descriptions des catégories",
-    appTitle: "Titre de l'application",
-    appSubtitle: "Sous-titre",
-    appTagline: "Phrase d'accroche",
+    splash: "Écran de démarrage",
+    nav: "Onglets de navigation",
+    pages: "Textes des pages",
   };
 
   const sectionLabel = (prefix: string) =>
@@ -2161,8 +2159,7 @@ export function TranslationsTab({ items, reload }: { items: Translation[]; reloa
     prefix.charAt(0).toUpperCase() + prefix.slice(1).replace(/([A-Z])/g, " $1");
 
   const friendlyLabel = (t: Translation) => {
-    // Use the French value when short enough; otherwise fall back to the key suffix.
-    const suffix = t.key.includes(".") ? t.key.split(".").slice(1).join(".") : t.key;
+    const suffix = t.key.includes(".") ? t.key.split(".").slice(-1)[0] : t.key;
     const human = suffix
       .replace(/[._-]/g, " ")
       .replace(/([a-z])([A-Z])/g, "$1 $2")
@@ -2178,15 +2175,15 @@ export function TranslationsTab({ items, reload }: { items: Translation[]; reloa
 
   const SCREEN_ORDER = [
     "splash",
-    "home",
     "nav",
-    "language",
-    "categories",
-    "content",
+    "home",
     "pedagogical",
-    "quiz",
+    "downloads",
+    "favorites",
     "settings",
-    "common",
+    "foreword",
+    "licenses",
+    "quiz",
   ];
   const groupOrder = Object.keys(grouped).sort((a, b) => {
     const ia = SCREEN_ORDER.indexOf(a);
@@ -2197,6 +2194,7 @@ export function TranslationsTab({ items, reload }: { items: Translation[]; reloa
     return ia - ib;
   });
   const previewCount = Object.values(previewing).filter(Boolean).length;
+
 
 
   return (
