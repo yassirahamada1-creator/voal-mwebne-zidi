@@ -10,6 +10,7 @@ import { FontProvider } from "@/contexts/FontContext";
 import { OfflineSyncProvider } from "@/hooks/useOfflineSync";
 import { OfflineAvailabilityProvider } from "@/hooks/useOfflineAvailability";
 import { AccessibilityApplier } from "@/components/AccessibilityApplier";
+import AppLifecycle from "@/components/AppLifecycle";
 import BottomNav from "@/components/BottomNav";
 import ConnectionStatus from "@/components/ConnectionStatus";
 import OfflineBanner from "@/components/OfflineBanner";
@@ -151,6 +152,7 @@ const App = () => (
             <OfflineSyncProvider>
               <OfflineAvailabilityProvider>
                 <AccessibilityApplier />
+                <AppLifecycle />
                 <MemoConnectionStatus />
                 <OfflineBanner />
                 {import.meta.env.DEV && <OfflineDevTool />}
