@@ -136,7 +136,6 @@ const AppShell = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-      <SwipeBackGesture />
       <NativeBackHandler />
       <MemoBottomNav />
     </div>
