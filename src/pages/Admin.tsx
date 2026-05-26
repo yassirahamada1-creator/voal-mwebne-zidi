@@ -2353,12 +2353,16 @@ export function TranslationsTab({ items, reload }: { items: Translation[]; reloa
                       </Button>
                     </div>
                   )}
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
-        </div>
-      ))}
+        );
+      })}
+
     </div>
   );
 }
