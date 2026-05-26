@@ -14,9 +14,6 @@ import OfflineImage from "@/components/OfflineImage";
 import PhotoStrip from "@/components/PhotoStrip";
 import { getFallbackThumbnail } from "@/lib/contentThumbnails";
 
-import { normalizeDisplayText } from "@/lib/textNormalize";
-
-
 const RELATED_TYPES = [
   { type: "text",  fr: "Récit",      shi: "Hadithi",  icon: BookOpen },
   { type: "audio", fr: "Témoignage", shi: "Ushuhuda", icon: Mic },
@@ -136,55 +133,24 @@ const MediaPlayerScreen = () => {
     );
   }
 
-  const headerIcon =
-    content.type === "audio" ? Headphones :
-    content.type === "image" ? ImageIcon :
-    FileText;
-  const headerLabel = biStr(
-    content.type === "audio" ? "Témoignage" : content.type === "image" ? "Photo" : "Récit",
-    content.type === "audio" ? "Ushuhuda"  : content.type === "image" ? "Picha"  : "Hadithi",
-  );
-  const HeaderIconCmp = headerIcon;
-
   return (
     <div
       className="min-h-screen bg-background pb-20"
-      style={
-        content.type === "video"
-          ? { paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }
-          : undefined
-      }
+      style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
     >
-      {/* Header de page (sticky) — repris du bandeau existant : icône + label de type. */}
-      {content.type !== "video" && (
-        <div
-          className="sticky top-0 z-30 w-full overflow-hidden bg-foreground/90"
-          style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
-        >
-          <div className="relative h-32 sm:h-36 w-full overflow-hidden">
-            {posterUrl && (
-              <img
-                src={posterUrl}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover scale-110 blur-md opacity-60"
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-br from-foreground/80 via-foreground/60 to-secondary/40" />
-            <div className="relative h-full w-full flex items-center justify-center gap-3 px-6">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/95 shadow-lg ring-1 ring-secondary-foreground/10">
-                <HeaderIconCmp className="h-6 w-6 text-secondary-foreground" />
-              </div>
-              <span className="text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground/85">
-                {headerLabel}
-              </span>
-            </div>
-          </div>
+      {content.type === "image" && (
+        <div className="px-4 pt-4 pb-3">
+          <h1
+            className="font-display text-xl font-bold text-foreground"
+            style={{ lineHeight: "1.15" }}
+          >
+            {bi(content.title_fr, content.title_shk)}
+          </h1>
         </div>
       )}
 
-      {/* Média principal : seul l'aperçu vidéo / image / état hors-ligne y reste. */}
-      {blockedOffline ? (
-        <div className="relative w-full bg-foreground/90">
+      <div className="relative w-full bg-foreground/90">
+        {blockedOffline ? (
           <div className="aspect-video w-full flex flex-col items-center justify-center gap-3 px-6 text-center bg-foreground/95 text-primary-foreground">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive/90 shadow-lg">
               <WifiOff className="h-6 w-6" aria-hidden="true" />
@@ -199,28 +165,71 @@ const MediaPlayerScreen = () => {
               )}
             </p>
           </div>
-        </div>
-      ) : content.type === "video" && youtubeId ? (
-        <iframe
-          src={`https://www.youtube.com/embed/${youtubeId}?rel=0`}
-          title={titleStr}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full aspect-video bg-media-letterbox"
-        />
-      ) : content.type === "video" && playableUrl ? (
-        <div className="mx-auto w-full max-w-[min(100%,calc(70vh*16/9))] bg-media-letterbox">
-          <NativeVideo
-            src={playableUrl}
-            poster={posterUrl ?? undefined}
-            ariaLabel={titleStr}
-            className="w-full"
+        ) : content.type === "video" && youtubeId ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${youtubeId}?rel=0`}
+            title={titleStr}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full aspect-video bg-media-letterbox"
           />
-        </div>
-      ) : content.type === "image" && playableUrl ? (
-        <img src={playableUrl} alt={titleStr} className="w-full max-h-[60vh] object-contain bg-media-letterbox" />
-      ) : null}
-
+        ) : content.type === "video" && playableUrl ? (
+          <div className="mx-auto w-full max-w-[min(100%,calc(70vh*16/9))] bg-media-letterbox">
+            <NativeVideo
+              src={playableUrl}
+              poster={posterUrl ?? undefined}
+              ariaLabel={titleStr}
+              className="w-full"
+            />
+          </div>
+        ) : content.type === "image" && playableUrl ? (
+          <img src={playableUrl} alt={titleStr} className="w-full max-h-[60vh] object-contain bg-media-letterbox" />
+        ) : content.type === "audio" && playableUrl ? (
+          <div className="relative h-32 sm:h-36 w-full overflow-hidden">
+            {posterUrl && (
+              <img
+                src={posterUrl}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover scale-110 blur-md opacity-60"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-br from-foreground/80 via-foreground/60 to-secondary/40" />
+            <div className="relative h-full w-full flex items-center justify-center gap-3 px-6">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/95 shadow-lg ring-1 ring-secondary-foreground/10">
+                <Headphones className="h-6 w-6 text-secondary-foreground" />
+              </div>
+              <span className="text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground/85">
+                {biStr("Témoignage", "Ushuhuda")}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="relative h-32 sm:h-36 w-full overflow-hidden">
+            {posterUrl && (
+              <img
+                src={posterUrl}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover scale-110 blur-md opacity-60"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-br from-foreground/80 via-foreground/60 to-secondary/40" />
+            <div className="relative h-full w-full flex items-center justify-center gap-3 px-6">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/95 shadow-lg ring-1 ring-secondary-foreground/10">
+                {content.type === "text" ? (
+                  <FileText className="h-6 w-6 text-secondary-foreground" />
+                ) : (
+                  <ImageIcon className="h-6 w-6 text-secondary-foreground" />
+                )}
+              </div>
+              <span className="text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground/85">
+                {content.type === "text"
+                  ? biStr("Récit", "Hadithi")
+                  : biStr("Photo", "Picha")}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
 
       {!blockedOffline && content.type === "audio" && playableUrl && (
         <div className="px-4 pt-4">
@@ -233,7 +242,7 @@ const MediaPlayerScreen = () => {
       )}
 
       <div className="px-4 pt-4">
-        {content.type !== "image" && content.type !== "text" && (
+        {content.type !== "image" && (
           <h1 className="font-display text-xl font-bold text-foreground" style={{ lineHeight: "1.15" }}>
             {bi(content.title_fr, content.title_shk)}
           </h1>
@@ -246,44 +255,32 @@ const MediaPlayerScreen = () => {
             if (!hasFr && !hasShk) return null;
             if (!bilingual) {
               const single = hasFr ? content.description_fr! : content.description_shk!;
-              const singleTitle = hasFr ? content.title_fr : content.title_shk;
               return (
-                <div>
-                  {singleTitle && (
-                    <h1
-                      lang={hasShk ? "zdj" : "fr"}
-                      className="font-display text-xl font-bold text-foreground"
-                      style={{ lineHeight: "1.15" }}
-                    >
-                      {singleTitle}
-                    </h1>
-                  )}
-                  <p
-                    lang={hasShk ? "zdj" : "fr"}
-                    className="mt-4 text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap"
-                  >
-                    {normalizeDisplayText(single)}
-                  </p>
-                </div>
+                <p
+                  lang={hasShk ? "zdj" : "fr"}
+                  className="mt-4 text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap"
+                >
+                  {single}
+                </p>
               );
             }
             return (
-              <div className="space-y-6">
-                <section aria-label={content.title_fr || "Texte en français"}>
+              <div className="mt-4 space-y-6">
+                <section aria-label="Texte en français">
                   <header className="mb-2 flex items-center gap-2">
                     <span
                       aria-hidden="true"
-                      className="inline-flex h-5 w-7 items-center justify-center rounded-sm bg-primary text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-sm shrink-0"
+                      className="inline-flex h-5 w-7 items-center justify-center rounded-sm bg-primary text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-sm"
                     >
                       FR
                     </span>
-                    <h2 className="font-display text-base sm:text-lg font-bold text-foreground leading-tight">
-                      {content.title_fr}
+                    <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
+                      Français
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-gold/60 via-terracotta/40 to-transparent" />
                   </header>
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                    {normalizeDisplayText(content.description_fr)}
+                    {content.description_fr}
                   </p>
                 </section>
 
@@ -299,21 +296,21 @@ const MediaPlayerScreen = () => {
                   </span>
                 </div>
 
-                <section aria-label={content.title_shk || "Matini kwa Shikomori"} lang="zdj">
+                <section aria-label="Matini kwa Shikomori" lang="zdj">
                   <header className="mb-2 flex items-center gap-2">
                     <span
                       aria-hidden="true"
-                      className="inline-flex h-5 w-7 items-center justify-center rounded-sm bg-secondary text-[10px] font-bold uppercase tracking-wider text-secondary-foreground shadow-sm shrink-0"
+                      className="inline-flex h-5 w-7 items-center justify-center rounded-sm bg-secondary text-[10px] font-bold uppercase tracking-wider text-secondary-foreground shadow-sm"
                     >
                       SHI
                     </span>
-                    <h2 className="font-display text-base sm:text-lg font-bold text-foreground leading-tight">
-                      {content.title_shk}
+                    <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
+                      Shikomori
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-terracotta/60 via-gold/40 to-transparent" />
                   </header>
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                    {normalizeDisplayText(content.description_shk)}
+                    {content.description_shk}
                   </p>
                 </section>
               </div>
@@ -322,11 +319,10 @@ const MediaPlayerScreen = () => {
         ) : (
           description && (
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {normalizeDisplayText(typeof description === "string" ? description : String(description))}
+              {description}
             </p>
           )
         )}
-
 
         <div className="mt-4">
           <ContentActions
