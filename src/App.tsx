@@ -14,9 +14,8 @@ import BottomNav from "@/components/BottomNav";
 import ConnectionStatus from "@/components/ConnectionStatus";
 import OfflineBanner from "@/components/OfflineBanner";
 import OfflineDevTool from "@/components/dev/OfflineDevTool";
-import SwipeBackGesture from "@/components/SwipeBackGesture";
-// GlobalBackButton retiré : la navigation arrière se fait par le geste swipe
-// global et par le bouton retour natif Android (NativeBackHandler).
+// Navigation arrière : uniquement via le bouton retour natif Android
+// (NativeBackHandler) + geste swipe natif iOS (WKWebView).
 import NativeBackHandler from "@/components/NativeBackHandler";
 
 import SplashScreen from "@/pages/SplashScreen";
