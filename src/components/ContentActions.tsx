@@ -113,6 +113,7 @@ export default function ContentActions({ item, showDownload = false, compact = t
 
   if (compact) {
     return (
+      <>
       <div className="flex items-center gap-1.5">
         {enableDownload && (
           <button
@@ -150,10 +151,14 @@ export default function ContentActions({ item, showDownload = false, compact = t
           <Heart className={`h-4 w-4 ${fav ? "fill-current" : ""}`} />
         </button>
       </div>
+      {removeDialog}
+      </>
     );
   }
 
   return (
+    <>
+
     <div className="flex flex-col gap-2 sm:flex-row">
       <button
         type="button"
