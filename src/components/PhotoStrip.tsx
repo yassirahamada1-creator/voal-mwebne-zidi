@@ -153,22 +153,7 @@ const PhotoStrip = ({ photos, className = "" }: PhotoStripProps) => {
         slides={slides}
         plugins={[Counter, Zoom, Captions, Thumbnails, Fullscreen]}
         toolbar={{
-          buttons: [
-            <button
-              key="back"
-              type="button"
-              onClick={animatedClose}
-              aria-label={biStr("Retour", "Rudi")}
-              className="yarl__button"
-              style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
-            >
-              <ArrowLeft size={20} />
-              <span style={{ fontSize: 13, fontWeight: 600 }}>
-                {biStr("Retour", "Rudi")}
-              </span>
-            </button>,
-            "close",
-          ],
+          buttons: ["close"],
         }}
         counter={{ container: { style: { top: "unset", bottom: "calc(env(safe-area-inset-bottom, 0px) + 8px)" } } }}
         zoom={{
