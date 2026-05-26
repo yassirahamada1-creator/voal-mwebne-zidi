@@ -260,10 +260,19 @@ const MediaPlayerScreen = () => {
                       FR
                     </span>
                     <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      {content.title_fr || "Français"}
+                      {content.title_fr || (
+                        <span className="italic text-muted-foreground/80">
+                          Titre indisponible
+                        </span>
+                      )}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-gold/60 via-terracotta/40 to-transparent" />
                   </header>
+                  {!content.title_fr && (
+                    <p className="mb-2 text-xs text-muted-foreground/60 italic">
+                      Ce contenu n’a pas encore de titre en français.
+                    </p>
+                  )}
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
                     {content.description_fr}
                   </p>
@@ -290,10 +299,19 @@ const MediaPlayerScreen = () => {
                       SHI
                     </span>
                     <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      {content.title_shk || "Shikomori"}
+                      {content.title_shk || (
+                        <span className="italic text-muted-foreground/80">
+                          Titre indisponible
+                        </span>
+                      )}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-terracotta/60 via-gold/40 to-transparent" />
                   </header>
+                  {!content.title_shk && (
+                    <p className="mb-2 text-xs text-muted-foreground/60 italic">
+                      Ce contenu n’a pas encore de titre en shikomori.
+                    </p>
+                  )}
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
                     {content.description_shk}
                   </p>
