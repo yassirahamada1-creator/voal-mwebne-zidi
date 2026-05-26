@@ -2,6 +2,18 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
+// Diagnostic build : confirme que Vite a bien inliné les credentials Supabase
+// dans le bundle APK. Visible dans chrome://inspect → Console.
+// eslint-disable-next-line no-console
+console.log("[BUILD] SUPABASE_URL =", import.meta.env.VITE_SUPABASE_URL);
+// eslint-disable-next-line no-console
+console.log(
+  "[BUILD] SUPABASE_KEY present =",
+  !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+  "len=",
+  (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "").length,
+);
+
 (async () => {
   try {
     const { Capacitor } = await import("@capacitor/core");
