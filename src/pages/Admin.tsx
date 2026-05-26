@@ -1796,6 +1796,7 @@ export function QuizTab({
   };
 
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const visibleModules = modules.filter((m) => m.slug !== "galerie");
   const selectedModule = visibleModules.find((m) => m.slug === selectedSlug) || null;
@@ -1805,6 +1806,22 @@ export function QuizTab({
   const countBySlug = (slug: string) =>
     items.filter((q) => q.module_slug === slug).length;
 
+  const toggleModuleActive = async (m: Module, value: boolean) => {
+    setTogglingId(m.id);
+    const { error } = await supabase
+      .from("modules")
+      .update({ is_active: value })
+      .eq("id", m.id);
+    setTogglingId(null);
+    if (error) return toast.error(error.message);
+    toast.success(
+      value
+        ? `Module « ${m.name_fr} » rendu visible`
+        : `Module « ${m.name_fr} » masqué dans l'application`,
+    );
+    reload();
+  };
+
   // Vue 1 : sélection du module
   if (!selectedModule) {
     return (
@@ -1812,31 +1829,51 @@ export function QuizTab({
         <div>
           <h2 className="font-semibold">Quiz par module</h2>
           <p className="text-xs text-muted-foreground">
-            Choisissez un module pour gérer ses questions.
+            Choisissez un module pour gérer ses questions. Utilisez l'interrupteur pour masquer
+            un module dans l'application (il restera modifiable ici).
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {visibleModules.map((m) => {
             const count = countBySlug(m.slug);
+            const inactive = !m.is_active;
             return (
-              <button
+              <div
                 key={m.id}
-                onClick={() => setSelectedSlug(m.slug)}
-                className="text-left rounded-lg border bg-card p-4 hover:border-indigo-300 hover:shadow-md transition group"
+                className={`text-left rounded-lg border bg-card p-4 transition group ${
+                  inactive ? "opacity-60 border-dashed" : "hover:border-indigo-300 hover:shadow-md"
+                }`}
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
+                  <button
+                    onClick={() => setSelectedSlug(m.slug)}
+                    className="flex-1 min-w-0 text-left"
+                  >
                     <p className="font-medium text-sm truncate">{m.name_fr}</p>
                     <p className="text-xs text-muted-foreground truncate">{m.name_shk}</p>
-                  </div>
+                  </button>
                   <Badge variant="secondary" className="text-[10px] shrink-0">
                     {count} quiz
                   </Badge>
                 </div>
-                <p className="mt-3 text-xs text-indigo-600 group-hover:underline">
-                  Gérer les quiz →
-                </p>
-              </button>
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => setSelectedSlug(m.slug)}
+                    className="text-xs text-indigo-600 group-hover:underline"
+                  >
+                    Gérer les quiz →
+                  </button>
+                  <label className="flex items-center gap-2 text-[11px] text-muted-foreground cursor-pointer">
+                    <span>{inactive ? "Masqué" : "Visible"}</span>
+                    <Switch
+                      checked={m.is_active}
+                      disabled={togglingId === m.id}
+                      onCheckedChange={(v) => toggleModuleActive(m, v)}
+                      aria-label={`Rendre ${m.name_fr} ${m.is_active ? "invisible" : "visible"} dans l'application`}
+                    />
+                  </label>
+                </div>
+              </div>
             );
           })}
           {visibleModules.length === 0 && (
@@ -1848,6 +1885,7 @@ export function QuizTab({
       </div>
     );
   }
+
 
   // Vue 2 : quiz du module sélectionné
   return (
