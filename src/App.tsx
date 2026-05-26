@@ -2,7 +2,7 @@ import { lazy, Suspense, memo } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+
 import { I18nProvider } from "@/contexts/I18nContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AppSettingsProvider } from "@/hooks/useAppSettings";
