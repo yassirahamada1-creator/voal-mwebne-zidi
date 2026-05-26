@@ -110,7 +110,10 @@ const AccessibilityScreen = () => {
       className="min-h-screen pb-28"
       style={{ backgroundColor: "hsl(var(--background))", color: "hsl(var(--foreground))" }}
     >
-      <header className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-4 pb-3">
+      <header
+        className="sticky top-0 z-10 bg-card border-b border-border px-4 pb-3"
+        style={{ paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 0.5rem)" }}
+      >
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0 text-center">
             <h1 className="text-base font-bold" style={{ color: "hsl(var(--foreground))" }}>
