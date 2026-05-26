@@ -146,28 +146,26 @@ const AppShell = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <I18nProvider>
-          <AppSettingsProvider>
-            <FontProvider>
-              <OfflineSyncProvider>
-                <OfflineAvailabilityProvider>
-                  <AccessibilityApplier />
-                  <MemoConnectionStatus />
-                  <OfflineBanner />
-                  {import.meta.env.DEV && <OfflineDevTool />}
-                  <Sonner />
-                  <BrowserRouter>
-                    <AppShell />
-                  </BrowserRouter>
-                </OfflineAvailabilityProvider>
-              </OfflineSyncProvider>
-            </FontProvider>
-          </AppSettingsProvider>
-        </I18nProvider>
-      </AuthProvider>
-    </TooltipProvider>
+    <AuthProvider>
+      <I18nProvider>
+        <AppSettingsProvider>
+          <FontProvider>
+            <OfflineSyncProvider>
+              <OfflineAvailabilityProvider>
+                <AccessibilityApplier />
+                <MemoConnectionStatus />
+                <OfflineBanner />
+                {import.meta.env.DEV && <OfflineDevTool />}
+                <Sonner />
+                <BrowserRouter>
+                  <AppShell />
+                </BrowserRouter>
+              </OfflineAvailabilityProvider>
+            </OfflineSyncProvider>
+          </FontProvider>
+        </AppSettingsProvider>
+      </I18nProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
