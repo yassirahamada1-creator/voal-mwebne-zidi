@@ -10,7 +10,14 @@ import "./index.css";
 
     await StatusBar.setOverlaysWebView({ overlay: true });
     await StatusBar.setBackgroundColor({ color: "#00000000" });
-    await StatusBar.setStyle({ style: Style.Light });
+
+    const applyStyle = async () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      await StatusBar.setStyle({ style: isDark ? Style.Dark : Style.Light });
+    };
+    await applyStyle();
+    const mo = new MutationObserver(applyStyle);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
     // Injecter la hauteur réelle de la status bar comme variable CSS
     const info = await StatusBar.getInfo();
