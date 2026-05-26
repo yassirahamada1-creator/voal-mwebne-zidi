@@ -1,6 +1,6 @@
 // Service worker cache-first pour permettre l'ouverture hors-ligne.
 // Précache l'app shell au install ; en runtime : cache d'abord, réseau ensuite.
-const CACHE = "vdl-shell-v2";
+const CACHE = "vdl-shell-v3";
 const SHELL = ["/", "/index.html", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
