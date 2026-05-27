@@ -42,6 +42,7 @@ const PrivacyScreen = lazy(() => import("@/pages/PrivacyScreen"));
 const ForewordScreen = lazy(() => import("@/pages/ForewordScreen"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const CorsTestScreen = lazy(() => import("@/pages/CorsTestScreen"));
 
 // Préchargement des écrans de la bottom nav dès que possible
 if (typeof window !== "undefined") {
@@ -132,6 +133,7 @@ const AppShell = () => {
           <Route path="/terms" element={<TermsScreen />} />
           <Route path="/privacy" element={<PrivacyScreen />} />
           <Route path="/foreword" element={<ForewordScreen />} />
+          <Route path="/dev/cors-test" element={<CorsTestScreen />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
