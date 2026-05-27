@@ -58,6 +58,10 @@ const defaultTranslations = {
       foreword: {
         title: "Avant-propos",
       },
+      hommage: {
+        title: "Hommage à Naicha",
+        subtitle: "En mémoire d'une vie trop tôt éteinte",
+      },
       licenses: {
         title: "Licences",
       },
@@ -157,6 +161,10 @@ const defaultTranslations = {
       },
       foreword: {
         title: "Utangulizi",
+      },
+      hommage: {
+        title: "Tukio la Naicha",
+        subtitle: "Kumbukumbu ya maisha yaliyotoweka mapema",
       },
       licenses: {
         title: "Leseni",

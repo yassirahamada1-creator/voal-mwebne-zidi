@@ -13,6 +13,7 @@ import {
   Moon,
   Type,
   Contrast,
+  Flower2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -375,6 +376,7 @@ const SettingsScreen = () => {
             shi="Kuhusu na sheria"
           >
             <div className="divide-y divide-border">
+              <LinkRow to="/hommage" icon={Flower2} fr="Hommage à Naicha" shi="Tukio la Naicha" />
               <LinkRow to="/foreword" icon={BookOpen} fr="Avant-propos" shi="Utangulizi" />
               <LinkRow to="/licenses" icon={Scale} fr="Licences" shi="Leseni" />
               <LinkRow
