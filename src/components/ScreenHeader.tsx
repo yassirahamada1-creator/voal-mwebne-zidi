@@ -2,9 +2,12 @@
  * ScreenHeader — en-tête harmonisé pour les écrans (Récit, Témoignage,
  * Galerie, Quiz, etc.).
  */
+import { useEffect } from "react";
 import { type LucideIcon } from "lucide-react";
 import { biStr } from "@/lib/bilingual";
 import { DecorativePattern } from "@/components/DecorativePattern";
+import { setStatusBarStyle } from "@/lib/statusBar";
+
 
 export type ScreenHeaderProps = {
   icon: LucideIcon;
