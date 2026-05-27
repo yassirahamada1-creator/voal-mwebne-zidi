@@ -131,8 +131,28 @@ const HommageScreen = () => {
     };
   }, []);
 
+  const FALLBACK = {
+    parcours:
+      "Après avoir obtenu son baccalauréat, Naicha a poursuivi ses études supérieures à l'ISPC — l'Institut Supérieur Polytechnique des Comores — où elle a suivi une formation de deux ans dans le domaine du tourisme, de 2020 à 2022. Elle s'y est distinguée par sa curiosité et sa soif d'apprendre.",
+    engagement:
+      "Depuis 2024, Naicha exerçait en tant qu'assistante en ophtalmologie, un métier qu'elle assumait avec dévouement et humanité. Auparavant, elle avait effectué un stage à la Mairie de Foumbouni au service des archives, en janvier et février 2023, y laissant le souvenir d'une jeune femme sérieuse et appliquée.",
+    talents:
+      "Au-delà de ses études et de son travail, Naicha possédait un talent précieux : la confection de kandou, ces pièces de textile traditionnel qui témoignent de la richesse du savoir-faire comorien transmis de génération en génération.",
+    liens:
+      "Naicha entretenait des liens forts avec ses camarades de l'ISPC et faisait partie d'un chama à Toirab sous le nom d'ISPC, un groupe de solidarité où l'entraide et la fraternité étaient au cœur de chaque rencontre.",
+    derniers_mots:
+      "« Elle a dit qu'elle allait récupérer son ordinateur à Dzahadjou Hambou. »",
+    derniers_mots_note:
+      "Ces mots simples, prononcés avant son départ, restent gravés dans la mémoire de ses proches.",
+    famille_retient:
+      "Sa gentillesse, son honnêteté et son grand cœur. Naicha laisse derrière elle l'image d'une jeune femme généreuse, droite et profondément humaine, dont la disparition brutale endeuille tous ceux qui l'ont connue.",
+    hommage_global:
+      "À Naicha, et à toutes les femmes victimes de féminicide à travers le monde. Elles avaient des rêves, des sourires, des familles qui les aimaient. Elles méritaient de vivre. Leur mémoire ne sera jamais oubliée. Non à la violence faite aux femmes. Ensemble, brisons le silence.",
+  };
   const v = data;
   const photo = v?.photo_url || naichaPhoto;
+  const text = (k: keyof typeof FALLBACK) =>
+    (v?.[k] && String(v[k]).trim()) || FALLBACK[k];
 
   return (
     <div className="min-h-screen pb-24 transition-colors duration-200 bg-[#faf6f0] dark:bg-[#121820]">
