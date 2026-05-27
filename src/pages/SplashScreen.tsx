@@ -18,10 +18,11 @@ const partnerLogos: LogoCell[] = [
   { src: logoCndrs, alt: "CNDRS" },
 ];
 
-const MIN_SPLASH_MS = 3600;
-const MAX_SPLASH_MS = 6000;
-// Plafond du blocage en cas de 1ère synchro (sécurité, ≈ 2 min).
-const FIRST_SYNC_HARD_TIMEOUT_MS = 120_000;
+const MIN_SPLASH_MS = 3000;
+// Plafond de sécurité si les polices tardent à charger (ex. réseau lent).
+// Hors-ligne / mode avion : `document.fonts.ready` se résout immédiatement.
+const MAX_SPLASH_MS = 4500;
+
 
 const waitForFonts = (): Promise<void> => {
   if (typeof document === "undefined" || !("fonts" in document)) {
@@ -146,13 +147,13 @@ const SplashScreen = () => {
           className="animate-fade-up text-center font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-primary-foreground"
           style={{ animationDelay: "0.2s", animationFillMode: "both", lineHeight: "1.1" }}
         >
-          {t.appTitle}
+          {t.splash.appTitle}
         </h1>
         <p
           className="animate-fade-up mt-1.5 sm:mt-3 max-w-[320px] text-center sm:text-[11px] md:text-xs font-semibold uppercase not-italic tracking-[0.2em] leading-snug text-orange-300 text-xs"
           style={{ animationDelay: "0.5s", animationFillMode: "both" }}
         >
-          {t.appSubtitle}
+          {t.splash.appSubtitle}
         </p>
       </div>
 
@@ -165,7 +166,7 @@ const SplashScreen = () => {
       >
         <div className="mx-auto w-full max-w-[340px] sm:max-w-[460px] md:max-w-[560px] text-center">
           <p className="font-sans sm:text-[17px] md:text-lg font-normal leading-[1.45] sm:leading-[1.55] text-primary-foreground text-base">
-            {tFr.appTagline}
+            {tFr.splash.appTagline}
           </p>
 
           {/* Séparateur orné ────── ◆ ────── */}
@@ -179,7 +180,7 @@ const SplashScreen = () => {
           </div>
 
           <p className="font-sans sm:text-[15px] md:text-base font-extralight italic leading-[1.45] sm:leading-[1.55] text-primary-foreground/75 text-sm">
-            {tShi.appTagline}
+            {tShi.splash.appTagline}
           </p>
         </div>
       </div>

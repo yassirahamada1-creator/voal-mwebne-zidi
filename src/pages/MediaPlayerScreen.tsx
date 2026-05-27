@@ -15,13 +15,13 @@ import PhotoStrip from "@/components/PhotoStrip";
 import { getFallbackThumbnail } from "@/lib/contentThumbnails";
 
 const RELATED_TYPES = [
-  { type: "text",  fr: "Récit",      shi: "Hadithi",  icon: BookOpen },
-  { type: "audio", fr: "Témoignage", shi: "Ushuhuda", icon: Mic },
-  { type: "image", fr: "Photo",      shi: "Picha",    icon: ImageIcon },
+  { type: "text",  key: "tabStory",     icon: BookOpen },
+  { type: "audio", key: "tabTestimony", icon: Mic },
+  { type: "image", key: "tabPhoto",     icon: ImageIcon },
 ] as const;
 
 const MediaPlayerScreen = () => {
-  const { t, lang } = useI18n();
+  const { t, tFr, tShi, lang } = useI18n();
   const navigate = useNavigate();
   const { mediaId } = useParams();
   const { data: content, loading } = useContent(mediaId);
@@ -78,7 +78,7 @@ const MediaPlayerScreen = () => {
       list.push({
         src: buildSimpleVtt(content.description_fr),
         srclang: "fr",
-        label: "Français",
+        label: content?.title_fr || "Français",
         default: lang === "fr",
       });
     }
@@ -86,7 +86,7 @@ const MediaPlayerScreen = () => {
       list.push({
         src: buildSimpleVtt(content.description_shk),
         srclang: "zdj",
-        label: "Shikomori",
+        label: content?.title_shk || "Shikomori",
         default: lang !== "fr",
       });
     }
@@ -124,27 +124,20 @@ const MediaPlayerScreen = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 text-center">
         <p className="text-sm text-muted-foreground">
-          {bi("Contenu introuvable.", "Maudhui hayapatikani.")}
+          {t.pages.media.notFound}
         </p>
         <p className="mt-3 text-xs text-muted-foreground/80">
-          {biStr("Glissez depuis le bord gauche pour revenir.", "Telezesha kutoka ukingoni wa kushoto kurudi.")}
+          {t.pages.media.swipeBack}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {content.type === "image" && (
-        <div className="px-4 pt-4 pb-3">
-          <h1
-            className="font-display text-xl font-bold text-foreground"
-            style={{ lineHeight: "1.15" }}
-          >
-            {bi(content.title_fr, content.title_shk)}
-          </h1>
-        </div>
-      )}
+    <div
+      className="min-h-screen bg-background pb-20"
+      style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
+    >
 
       <div className="relative w-full bg-foreground/90">
         {blockedOffline ? (
@@ -153,13 +146,10 @@ const MediaPlayerScreen = () => {
               <WifiOff className="h-6 w-6" aria-hidden="true" />
             </div>
             <p className="text-sm font-semibold">
-              {biStr("Contenu non disponible hors-ligne", "Maudhui hayapatikani bila mtandao")}
+              {t.pages.media.offlineTitle}
             </p>
             <p className="text-xs opacity-80 max-w-xs">
-              {biStr(
-                "Téléchargez ce contenu lorsque vous êtes connecté pour le consulter sans réseau.",
-                "Pakua maudhui haya ukiwa na mtandao ili uweze kuyatumia bila mtandao.",
-              )}
+              {t.pages.media.offlineHint}
             </p>
           </div>
         ) : content.type === "video" && youtubeId ? (
@@ -196,7 +186,7 @@ const MediaPlayerScreen = () => {
                 <Headphones className="h-6 w-6 text-secondary-foreground" />
               </div>
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground/85">
-                {biStr("Témoignage", "Ushuhuda")}
+                {t.pages.media.tabTestimony}
               </span>
             </div>
           </div>
@@ -220,8 +210,8 @@ const MediaPlayerScreen = () => {
               </div>
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground/85">
                 {content.type === "text"
-                  ? biStr("Récit", "Hadithi")
-                  : biStr("Photo", "Picha")}
+                  ? t.pages.media.tabStory
+                  : t.pages.media.tabPhoto}
               </span>
             </div>
           </div>
@@ -239,11 +229,6 @@ const MediaPlayerScreen = () => {
       )}
 
       <div className="px-4 pt-4">
-        {content.type !== "image" && (
-          <h1 className="font-display text-xl font-bold text-foreground" style={{ lineHeight: "1.15" }}>
-            {bi(content.title_fr, content.title_shk)}
-          </h1>
-        )}
         {content.type === "text" || content.type === "image" ? (
           (() => {
             const hasFr = !!content.description_fr;
@@ -272,10 +257,19 @@ const MediaPlayerScreen = () => {
                       FR
                     </span>
                     <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      Français
+                      {content.title_fr || (
+                        <span className="italic text-muted-foreground/80">
+                          {tFr.pages.media.titleUnavailable}
+                        </span>
+                      )}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-gold/60 via-terracotta/40 to-transparent" />
                   </header>
+                  {!content.title_fr && (
+                    <p className="mb-2 text-xs text-muted-foreground/60 italic">
+                      {tFr.pages.media.noTitleFr}
+                    </p>
+                  )}
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
                     {content.description_fr}
                   </p>
@@ -302,10 +296,19 @@ const MediaPlayerScreen = () => {
                       SHI
                     </span>
                     <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      Shikomori
+                      {content.title_shk || (
+                        <span className="italic text-muted-foreground/80">
+                          {tShi.pages.media.titleUnavailable}
+                        </span>
+                      )}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-terracotta/60 via-gold/40 to-transparent" />
                   </header>
+                  {!content.title_shk && (
+                    <p className="mb-2 text-xs text-muted-foreground/60 italic">
+                      {tFr.pages.media.noTitleShk}
+                    </p>
+                  )}
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
                     {content.description_shk}
                   </p>
@@ -346,11 +349,11 @@ const MediaPlayerScreen = () => {
         {content.type === "video" && (
           <section className="mt-6" aria-labelledby="related-heading">
             <h2 id="related-heading" className="sr-only">
-              {biStr("Contenus liés", "Maudhui yanayohusiana")}
+              {t.pages.media.relatedHeading}
             </h2>
             <div
               role="tablist"
-              aria-label={biStr("Types de contenus liés", "Aina za maudhui yanayohusiana")}
+              aria-label={t.pages.media.tabsAria}
               className="grid grid-cols-3 gap-2"
             >
               {availableTabs.map((tab) => {
@@ -378,8 +381,8 @@ const MediaPlayerScreen = () => {
                     }`}
                   >
                     <Icon className="h-4 w-4 mb-0.5" aria-hidden="true" />
-                    <span className="truncate max-w-full">{tab.fr}</span>
-                    <span className="opacity-70 truncate max-w-full">/ {tab.shi}</span>
+                    <span className="truncate max-w-full">{tFr.pages.media[tab.key]}</span>
+                    <span className="opacity-70 truncate max-w-full">/ {tShi.pages.media[tab.key]}</span>
                   </button>
                 );
               })}
@@ -393,7 +396,7 @@ const MediaPlayerScreen = () => {
             >
               {currentItems.length === 0 && (
                 <li className="text-center text-sm text-muted-foreground py-6">
-                  {biStr("Aucun contenu pour le moment.", "Hakuna maudhui kwa sasa.")}
+                  {t.pages.media.noRelated}
                 </li>
               )}
               {currentItems.map((it) => {

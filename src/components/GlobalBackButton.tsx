@@ -14,6 +14,7 @@ import { useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { biStr } from "@/lib/bilingual";
+import { useI18n } from "@/contexts/I18nContext";
 
 const ROOT_ROUTES = new Set([
   "/",
@@ -25,7 +26,6 @@ const ROOT_ROUTES = new Set([
 ]);
 
 const SETTINGS_CHILDREN = new Set([
-  "/accessibility",
   "/licenses",
   "/terms",
   "/privacy",
@@ -57,6 +57,7 @@ const resolveParent = (pathname: string, state: unknown): string => {
 const GlobalBackButton = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { tFr, tShi } = useI18n();
   const { pathname } = location;
 
   const enabled =
@@ -85,7 +86,7 @@ const GlobalBackButton = () => {
     <button
       type="button"
       onClick={handleBack}
-      aria-label={biStr("Retour", "Rudi")}
+      aria-label={biStr(tFr.nav.back, tShi.nav.back)}
       className="fixed z-[55] inline-flex h-11 w-11 items-center justify-center rounded-full bg-background/80 text-foreground shadow-lg ring-1 ring-border backdrop-blur-md transition active:scale-95 hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
       style={{
         top: "calc(env(safe-area-inset-top, 0px) + 12px)",

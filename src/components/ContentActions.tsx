@@ -1,8 +1,20 @@
 import { Heart, Download, Trash2, Loader2, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 import { useFavorites, FavoriteItem } from "@/hooks/useFavorites";
 import { toast } from "sonner";
 import { useI18n } from "@/contexts/I18nContext";
 import { useContentDownload } from "@/hooks/useContentDownload";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 
 interface Props {
   item: Omit<FavoriteItem, "addedAt"> & { thumbnailUrl?: string };
@@ -32,6 +44,8 @@ export default function ContentActions({ item, showDownload = false, compact = t
     thumbnailUrl: item.thumbnailUrl ?? (item.type === "image" ? item.mediaUrl : undefined),
   });
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   const onFav = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -47,8 +61,7 @@ export default function ContentActions({ item, showDownload = false, compact = t
     e.stopPropagation();
     e.preventDefault();
     if (cached) {
-      await remove();
-      toast.success(lang === "fr" ? "Téléchargement supprimé" : "Upakuaji umefutwa");
+      setConfirmOpen(true);
       return;
     }
     if (typeof navigator !== "undefined" && !navigator.onLine) {
@@ -63,8 +76,44 @@ export default function ContentActions({ item, showDownload = false, compact = t
     );
   };
 
+  const confirmRemove = async () => {
+    await remove();
+    setConfirmOpen(false);
+    toast.success(lang === "fr" ? "Téléchargement supprimé" : "Upakuaji umefutwa");
+  };
+
+  const removeDialog = (
+    <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {lang === "fr" ? "Supprimer ce téléchargement ?" : "Futa upakuaji huu?"}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {lang === "fr"
+              ? "Le contenu ne sera plus disponible hors ligne. Vous pourrez le retélécharger plus tard."
+              : "Maudhui hayatapatikana bila mtandao. Unaweza kuyapakua tena baadaye."}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            {lang === "fr" ? "Annuler" : "Ghairi"}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={(e) => { e.preventDefault(); void confirmRemove(); }}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {lang === "fr" ? "Supprimer" : "Futa"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
+
   if (compact) {
     return (
+      <>
       <div className="flex items-center gap-1.5">
         {enableDownload && (
           <button
@@ -102,10 +151,14 @@ export default function ContentActions({ item, showDownload = false, compact = t
           <Heart className={`h-4 w-4 ${fav ? "fill-current" : ""}`} />
         </button>
       </div>
+      {removeDialog}
+      </>
     );
   }
 
   return (
+    <>
+
     <div className="flex flex-col gap-2 sm:flex-row">
       <button
         type="button"
@@ -154,5 +207,8 @@ export default function ContentActions({ item, showDownload = false, compact = t
         </button>
       )}
     </div>
+    {removeDialog}
+    </>
   );
 }
+

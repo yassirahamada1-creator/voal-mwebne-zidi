@@ -28,7 +28,7 @@ const slugStyles: Record<string, { icon?: any; image?: string; gradient: string 
 };
 
 const HomeScreen = () => {
-  const { t, lang } = useI18n();
+  const { t, tFr, tShi, lang } = useI18n();
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLDivElement>(null);
   const { data: modules, loading } = useModules();
@@ -203,7 +203,8 @@ const HomeScreen = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Header (sticky) */}
 <header
-className="gradient-hero sticky top-0 z-30 px-4 pt-4 pb-6 border-b border-primary-foreground/15">
+className="gradient-hero sticky top-0 z-30 px-4 pb-6 border-b border-primary-foreground/15"
+style={{ paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 1rem)" }}>
   {/* Motif zellij comorien en filigrane */}
   <DecorativePattern variant="zellij" intensity="subtle" colorVar="var(--gold)" />
   {/* Decorative glows (clipped to header) */}
@@ -326,8 +327,8 @@ className="gradient-hero sticky top-0 z-30 px-4 pt-4 pb-6 border-b border-primar
             <div className="min-w-0 flex-1">
               <BilingualText
                 as="p"
-                fr="Découvrez l'héritage culturel des femmes comoriennes"
-                shi="Gunduani urithi wa kitamaduni wa wanawake wa Kikomori"
+                fr={tFr.pages.home.banner}
+                shi={tShi.pages.home.banner}
                 variant="body"
                 className="font-display text-[13px] leading-snug text-foreground hyphens-auto [text-wrap:balance] sm:text-[15px]"
               />
