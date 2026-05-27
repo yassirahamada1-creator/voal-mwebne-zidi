@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useI18n } from "@/contexts/I18nContext";
 import { Flower2, GraduationCap, Briefcase, Sparkles, Users, MessageCircle, Heart, CalendarDays } from "lucide-react";
 import { setStatusBarStyle } from "@/lib/statusBar";
+import naichaPhoto from "@/assets/naicha.jpeg";
+
 
 const InfoBlock = ({
   icon: Icon,
@@ -100,11 +102,14 @@ const HommageScreen = () => {
       <div className="px-6 -mt-4 relative z-10">
         <div className="mx-auto max-w-[220px]">
           <div className="rounded-2xl border-2 border-[#d4c5a0] dark:border-[#4a5060] bg-[#f0ebe0] dark:bg-[#1a2230] shadow-lg overflow-hidden aspect-[3/4]">
-            <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-[#b8a888] dark:text-[#6a7080]">
-              <Flower2 className="h-10 w-10 opacity-50" />
-              <span className="text-sm font-medium">Photo</span>
-            </div>
+            <img
+              src={naichaPhoto}
+              alt="Portrait de Naicha Mmadi Abdou"
+              loading="lazy"
+              className="w-full h-full object-cover"
+            />
           </div>
+
           <p className="text-center text-xs text-[#9a8a7a] dark:text-[#8a8a98] mt-2 italic">
             Naicha Mmadi Abdou
           </p>
