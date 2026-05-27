@@ -224,34 +224,32 @@ const HommageScreen = () => {
 
         <div className="space-y-4">
           <InfoBlock icon={GraduationCap} label="Parcours">
-            <Paragraphs text={v?.parcours || ""} />
+            <Paragraphs text={text("parcours")} />
           </InfoBlock>
 
           <InfoBlock icon={Briefcase} label="Son engagement professionnel">
-            <Paragraphs text={v?.engagement || ""} />
+            <Paragraphs text={text("engagement")} />
           </InfoBlock>
 
           <InfoBlock icon={Sparkles} label="Talents & savoir-faire">
-            <Paragraphs text={v?.talents || ""} />
+            <Paragraphs text={text("talents")} />
           </InfoBlock>
 
           <InfoBlock icon={Users} label="Ses liens">
-            <Paragraphs text={v?.liens || ""} />
+            <Paragraphs text={text("liens")} />
           </InfoBlock>
 
           <InfoBlock icon={MessageCircle} label="Ses derniers mots" highlight>
             <div className="italic">
-              <Paragraphs text={v?.derniers_mots || ""} />
+              <Paragraphs text={text("derniers_mots")} />
             </div>
-            {v?.derniers_mots_note && (
-              <div className="text-sm mt-2 text-[#6b5290] dark:text-[#b8a8d0]">
-                <Paragraphs text={v.derniers_mots_note} />
-              </div>
-            )}
+            <div className="text-sm mt-2 text-[#6b5290] dark:text-[#b8a8d0]">
+              <Paragraphs text={text("derniers_mots_note")} />
+            </div>
           </InfoBlock>
 
           <InfoBlock icon={Heart} label="Ce que la famille retient d'elle" highlight>
-            <Paragraphs text={v?.famille_retient || ""} />
+            <Paragraphs text={text("famille_retient")} />
           </InfoBlock>
         </div>
 
@@ -267,7 +265,7 @@ const HommageScreen = () => {
               <Heart className="h-7 w-7 text-white" fill="white" />
             </div>
             <div className="text-[15px] sm:text-base leading-[1.8] text-white/95 font-medium">
-              <Paragraphs text={v?.hommage_global || ""} />
+              <Paragraphs text={text("hommage_global")} />
             </div>
           </div>
         </section>
