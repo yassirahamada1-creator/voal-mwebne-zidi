@@ -61,45 +61,120 @@ export default function RichText({ value, onChange, placeholder }: Props) {
         suppressContentEditableWarning
         onInput={(e) => onChange((e.target as HTMLDivElement).innerHTML)}
         onPaste={(e) => {
-          // Coller en texte brut propre, en neutralisant les artefacts
-          // venus de Word / PDF (caractères <, >, &, espaces insécables,
-          // guillemets typographiques, retours ligne mal interprétés, etc.).
+          // Collage intelligent : si la source fournit du HTML (Word, Google Docs,
+          // pages web, certains PDF), on le nettoie et on conserve le formatage
+          // (gras, italique, titres, listes, sauts de ligne, alinéas). Sinon, on
+          // retombe sur le texte brut en préservant les sauts de ligne et les
+          // espaces en début de ligne (alinéas).
           e.preventDefault();
-          let text = e.clipboardData.getData("text/plain") || "";
+          const html = e.clipboardData.getData("text/html") || "";
+          const text = e.clipboardData.getData("text/plain") || "";
 
-          // Décode les URL collées depuis un PDF (%20, %C3%A9, etc.)
-          if (/%[0-9A-Fa-f]{2}/.test(text)) {
-            try {
-              text = decodeURIComponent(text);
-            } catch {
-              /* on garde le texte original */
+          // Balises et attributs autorisés
+          const ALLOWED_TAGS = new Set([
+            "P","BR","DIV","SPAN",
+            "B","STRONG","I","EM","U","S","STRIKE","SUB","SUP",
+            "H1","H2","H3","H4","H5","H6",
+            "UL","OL","LI",
+            "BLOCKQUOTE","PRE","CODE",
+            "A","HR",
+            "TABLE","THEAD","TBODY","TR","TD","TH",
+          ]);
+          const ALLOWED_ATTRS: Record<string, string[]> = {
+            A: ["href", "title", "target", "rel"],
+            "*": ["style"],
+          };
+          // Propriétés CSS conservées pour respecter la mise en forme d'origine
+          const ALLOWED_CSS = new Set([
+            "font-weight","font-style","text-decoration","text-align",
+            "margin-left","padding-left","text-indent",
+          ]);
+
+          const sanitizeStyle = (val: string) =>
+            val
+              .split(";")
+              .map((d) => d.trim())
+              .filter(Boolean)
+              .filter((d) => {
+                const k = d.split(":")[0]?.trim().toLowerCase();
+                return k && ALLOWED_CSS.has(k);
+              })
+              .join("; ");
+
+          const sanitize = (node: Node): string => {
+            if (node.nodeType === Node.TEXT_NODE) {
+              return (node.textContent || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
             }
+            if (node.nodeType !== Node.ELEMENT_NODE) return "";
+            const el = node as HTMLElement;
+            const tag = el.tagName.toUpperCase();
+            const inner = Array.from(el.childNodes).map(sanitize).join("");
+            if (!ALLOWED_TAGS.has(tag)) return inner;
+            const attrs: string[] = [];
+            const allowed = [...(ALLOWED_ATTRS[tag] || []), ...(ALLOWED_ATTRS["*"] || [])];
+            for (const name of allowed) {
+              const v = el.getAttribute(name);
+              if (!v) continue;
+              if (name === "style") {
+                const safe = sanitizeStyle(v);
+                if (safe) attrs.push(`style="${safe.replace(/"/g, "&quot;")}"`);
+              } else if (name === "href") {
+                if (/^(https?:|mailto:|tel:|#|\/)/i.test(v)) {
+                  attrs.push(`href="${v.replace(/"/g, "&quot;")}"`);
+                  attrs.push(`target="_blank"`, `rel="noopener noreferrer"`);
+                }
+              } else {
+                attrs.push(`${name}="${v.replace(/"/g, "&quot;")}"`);
+              }
+            }
+            const attrStr = attrs.length ? " " + attrs.join(" ") : "";
+            if (tag === "BR" || tag === "HR") return `<${tag.toLowerCase()}/>`;
+            return `<${tag.toLowerCase()}${attrStr}>${inner}</${tag.toLowerCase()}>`;
+          };
+
+          let out = "";
+          if (html.trim()) {
+            // Word / Google Docs livrent un fragment HTML. On l'analyse via DOMParser
+            // pour profiter du parseur navigateur, puis on en extrait le <body>.
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            // Supprime les blocs Word inutiles (commentaires, styles, namespaces)
+            doc.querySelectorAll("style,script,meta,link,o\\:p,xml").forEach((n) => n.remove());
+            out = Array.from(doc.body.childNodes).map(sanitize).join("").trim();
           }
 
-          // Normalise les caractères spéciaux Word
-          text = text
-            .replace(/\r\n?/g, "\n")
-            .replace(/\u00A0/g, " ") // espace insécable
-            .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
-            .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
-            .replace(/[\u2013\u2014]/g, "-")
-            .replace(/\u2026/g, "...");
+          if (!out && text) {
+            // Décode les séquences encodées issues des PDF (%20, %C3%A9, etc.)
+            let t = text;
+            if (/%[0-9A-Fa-f]{2}/.test(t)) {
+              try { t = decodeURIComponent(t); } catch { /* keep original */ }
+            }
+            t = t.replace(/\r\n?/g, "\n");
+            const escape = (s: string) =>
+              s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            // Préserve alinéas (espaces / tabulations en début de ligne) et sauts de ligne
+            out = t
+              .split(/\n{2,}/)
+              .map((para) => {
+                const lines = para.split("\n").map((line) => {
+                  const m = line.match(/^([ \t]+)(.*)$/);
+                  if (m) {
+                    const indent = m[1].replace(/\t/g, "    ");
+                    return "&nbsp;".repeat(indent.length) + escape(m[2]);
+                  }
+                  return escape(line);
+                });
+                return `<p>${lines.join("<br/>") || "<br/>"}</p>`;
+              })
+              .join("");
+          }
 
-          // Échappe < > & pour qu'ils s'affichent comme du texte et pas
-          // comme du HTML (sinon "<div" pasté apparaît tel quel).
-          const escape = (s: string) =>
-            s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-          // Transforme les paragraphes / sauts de ligne en HTML propre
-          const html = text
-            .split(/\n{2,}/)
-            .map((para) => escape(para).replace(/\n/g, "<br>"))
-            .map((para) => `<p>${para || "<br>"}</p>`)
-            .join("");
-
-          document.execCommand("insertHTML", false, html);
+          document.execCommand("insertHTML", false, out);
           if (ref.current) onChange(ref.current.innerHTML);
         }}
+
 
         data-placeholder={placeholder}
         className="prose prose-sm max-w-none min-h-[160px] px-3 py-2 text-sm focus-visible:outline-none [&[contenteditable]:empty]:before:content-[attr(data-placeholder)] [&[contenteditable]:empty]:before:text-muted-foreground"
