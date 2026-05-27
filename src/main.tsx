@@ -37,7 +37,7 @@ import { STATUS_BAR_EVENT, type StatusBarMode } from "./lib/statusBar";
     await StatusBar.setBackgroundColor({ color: "#00000000" });
 
     applyStyle = async () => {
-      let style: typeof Style.Light;
+      let style: Style;
       if (currentMode === "light") {
         // Fond sombre → icônes blanches (Capacitor: Style.Dark)
         style = Style.Dark;
@@ -50,6 +50,7 @@ import { STATUS_BAR_EVENT, type StatusBarMode } from "./lib/statusBar";
       }
       await StatusBar.setStyle({ style });
     };
+
     await applyStyle();
     const mo = new MutationObserver(applyStyle);
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
