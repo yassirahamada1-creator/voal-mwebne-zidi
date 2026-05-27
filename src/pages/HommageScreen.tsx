@@ -193,6 +193,26 @@ const HommageScreen = () => {
 
         <Divider />
 
+        {/* ── Hommage à toutes les victimes ── */}
+        <section
+          className="-mx-5 sm:-mx-6 px-5 sm:px-6 py-10 text-center"
+          style={{ background: "linear-gradient(160deg, #7a6ba8 0%, #8a7bb8 50%, #9a8bc8 100%)" }}
+        >
+          <div className="max-w-lg mx-auto flex flex-col items-center gap-4">
+            <div className="rounded-full bg-white/15 p-3 backdrop-blur-sm ring-1 ring-white/25">
+              <Heart className="h-7 w-7 text-white" fill="white" />
+            </div>
+            <p className="text-[15px] sm:text-base leading-[1.8] text-white/95 font-medium">
+              À Naicha, et à toutes les femmes victimes de féminicide à travers le monde.
+              Elles avaient des rêves, des sourires, des familles qui les aimaient.
+              Elles méritaient de vivre. Leur mémoire ne sera jamais oubliée.
+              Non à la violence faite aux femmes. Ensemble, brisons le silence.
+            </p>
+          </div>
+        </section>
+
+        <Divider />
+
         {/* Invocation finale */}
         <div className="text-center space-y-3 pt-2">
           <div className="inline-block rounded-2xl bg-[#f8f4ee] dark:bg-[#1e2535] border border-[#e0d8c8] dark:border-[#3a4050] px-6 py-5 shadow-sm">
@@ -201,14 +221,14 @@ const HommageScreen = () => {
               dir="rtl"
               style={{ fontFamily: "'Amiri', 'Scheherazade New', serif" }}
             >
-              اللهم ارحمها
+              اللهم ارحمهن
             </p>
             <div className="h-px w-16 mx-auto my-3 bg-[#d4c5a0]" />
             <p className="text-sm font-medium text-[#7a6a5a] dark:text-[#a8a0b0]">
-              Allah ya rahma
+              Allah ya rahamhunna
             </p>
             <p className="text-sm text-[#9a8a7a] dark:text-[#a8a0b0] italic mt-1">
-              Que Allah lui accorde Sa miséricorde
+              Que Allah leur accorde Sa miséricorde
             </p>
           </div>
 
@@ -217,24 +237,6 @@ const HommageScreen = () => {
           </p>
         </div>
       </article>
-
-      {/* ── Hommage à toutes les victimes ── */}
-      <section
-        className="mt-6 px-5 sm:px-6 py-10 text-center"
-        style={{ background: "linear-gradient(160deg, #7a6ba8 0%, #8a7bb8 50%, #9a8bc8 100%)" }}
-      >
-        <div className="max-w-lg mx-auto flex flex-col items-center gap-4">
-          <div className="rounded-full bg-white/15 p-3 backdrop-blur-sm ring-1 ring-white/25">
-            <Heart className="h-7 w-7 text-white" fill="white" />
-          </div>
-          <p className="text-[15px] sm:text-base leading-[1.8] text-white/95 font-medium">
-            À Naicha, et à toutes les femmes victimes de féminicide à travers le monde.
-            Elles avaient des rêves, des sourires, des familles qui les aimaient.
-            Elles méritaient de vivre. Leur mémoire ne sera jamais oubliée.
-            Non à la violence faite aux femmes. Ensemble, brisons le silence.
-          </p>
-        </div>
-      </section>
     </div>
   );
 };
