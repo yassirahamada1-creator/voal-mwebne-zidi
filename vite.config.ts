@@ -14,9 +14,16 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: [
+      // Redirige le client auto-généré vers l'override qui pointe sur le
+      // nouveau projet Supabase (gatpaniieoesfboixtco). Doit précéder l'alias
+      // "@" pour gagner la résolution.
+      {
+        find: /^@\/integrations\/supabase\/client$/,
+        replacement: path.resolve(__dirname, "./src/integrations/supabase/clientOverride.ts"),
+      },
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+    ],
   },
   build: {
     cssCodeSplit: true,
