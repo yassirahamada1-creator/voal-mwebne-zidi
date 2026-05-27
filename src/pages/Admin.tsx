@@ -1840,6 +1840,27 @@ export function QuizTab({
     reload();
   };
 
+  const clearModuleQuizzes = async (m: Module) => {
+    const count = countBySlug(m.slug);
+    if (count === 0) {
+      toast.info("Aucun quiz à supprimer pour ce module");
+      return;
+    }
+    if (
+      !(await confirmDelete({
+        itemLabel: `les ${count} quiz du module « ${m.name_fr} »`,
+      }))
+    )
+      return;
+    const { error } = await supabase
+      .from("quiz_questions")
+      .delete()
+      .eq("module_slug", m.slug);
+    if (error) return toast.error(error.message);
+    toast.success(`Quiz du module « ${m.name_fr} » supprimés`);
+    reload();
+  };
+
   // Vue 1 : sélection du module
   if (!selectedModule) {
     return (
@@ -1881,15 +1902,32 @@ export function QuizTab({
                   >
                     Gérer les quiz →
                   </button>
-                  <label className="flex items-center gap-2 text-[11px] text-muted-foreground cursor-pointer">
-                    <span>{inactive ? "Masqué" : "Visible"}</span>
-                    <Switch
-                      checked={m.is_active}
-                      disabled={togglingId === m.id}
-                      onCheckedChange={(v) => toggleModuleActive(m, v)}
-                      aria-label={`Rendre ${m.name_fr} ${m.is_active ? "invisible" : "visible"} dans l'application`}
-                    />
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 text-[11px] text-muted-foreground cursor-pointer">
+                      <span>{inactive ? "Masqué" : "Visible"}</span>
+                      <Switch
+                        checked={m.is_active}
+                        disabled={togglingId === m.id}
+                        onCheckedChange={(v) => toggleModuleActive(m, v)}
+                        aria-label={`Rendre ${m.name_fr} ${m.is_active ? "invisible" : "visible"} dans l'application`}
+                      />
+                    </label>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => clearModuleQuizzes(m)}
+                      disabled={count === 0}
+                      title={
+                        count === 0
+                          ? "Aucun quiz à supprimer"
+                          : `Supprimer les ${count} quiz du module`
+                      }
+                      aria-label={`Supprimer les quiz du module ${m.name_fr}`}
+                      className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 h-8 w-8"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             );
