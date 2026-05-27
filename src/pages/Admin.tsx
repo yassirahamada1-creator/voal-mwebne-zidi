@@ -1840,6 +1840,27 @@ export function QuizTab({
     reload();
   };
 
+  const clearModuleQuizzes = async (m: Module) => {
+    const count = countBySlug(m.slug);
+    if (count === 0) {
+      toast.info("Aucun quiz à supprimer pour ce module");
+      return;
+    }
+    if (
+      !(await confirmDelete({
+        itemLabel: `les ${count} quiz du module « ${m.name_fr} »`,
+      }))
+    )
+      return;
+    const { error } = await supabase
+      .from("quiz_questions")
+      .delete()
+      .eq("module_slug", m.slug);
+    if (error) return toast.error(error.message);
+    toast.success(`Quiz du module « ${m.name_fr} » supprimés`);
+    reload();
+  };
+
   // Vue 1 : sélection du module
   if (!selectedModule) {
     return (
