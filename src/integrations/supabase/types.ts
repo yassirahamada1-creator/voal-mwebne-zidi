@@ -113,6 +113,75 @@ export type Database = {
         }
         Relationships: []
       }
+      hommage_content: {
+        Row: {
+          birth_date: string
+          derniers_mots: string
+          derniers_mots_note: string
+          display_name: string
+          engagement: string
+          famille_retient: string
+          footer_note: string
+          hommage_global: string
+          id: string
+          invocation_ar: string
+          invocation_fr: string
+          invocation_translit: string
+          liens: string
+          parcours: string
+          photo_caption: string
+          photo_url: string | null
+          subtitle: string
+          talents: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          birth_date?: string
+          derniers_mots?: string
+          derniers_mots_note?: string
+          display_name?: string
+          engagement?: string
+          famille_retient?: string
+          footer_note?: string
+          hommage_global?: string
+          id?: string
+          invocation_ar?: string
+          invocation_fr?: string
+          invocation_translit?: string
+          liens?: string
+          parcours?: string
+          photo_caption?: string
+          photo_url?: string | null
+          subtitle?: string
+          talents?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          birth_date?: string
+          derniers_mots?: string
+          derniers_mots_note?: string
+          display_name?: string
+          engagement?: string
+          famille_retient?: string
+          footer_note?: string
+          hommage_global?: string
+          id?: string
+          invocation_ar?: string
+          invocation_fr?: string
+          invocation_translit?: string
+          liens?: string
+          parcours?: string
+          photo_caption?: string
+          photo_url?: string | null
+          subtitle?: string
+          talents?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       modules: {
         Row: {
           cover_image_url: string | null

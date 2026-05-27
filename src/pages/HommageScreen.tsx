@@ -1,9 +1,48 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/contexts/I18nContext";
 import { Flower2, GraduationCap, Briefcase, Sparkles, Users, MessageCircle, Heart, CalendarDays } from "lucide-react";
 import { setStatusBarStyle } from "@/lib/statusBar";
+import { supabase } from "@/integrations/supabase/client";
 import naichaPhoto from "@/assets/naicha.jpeg";
 
+type HommageData = {
+  title: string;
+  subtitle: string;
+  photo_url: string | null;
+  photo_caption: string;
+  display_name: string;
+  birth_date: string;
+  parcours: string;
+  engagement: string;
+  talents: string;
+  liens: string;
+  derniers_mots: string;
+  derniers_mots_note: string;
+  famille_retient: string;
+  hommage_global: string;
+  invocation_ar: string;
+  invocation_translit: string;
+  invocation_fr: string;
+  footer_note: string;
+};
+
+const Paragraphs = ({ text }: { text: string }) => (
+  <>
+    {text
+      .split(/\n{2,}/)
+      .filter(Boolean)
+      .map((p, i) => (
+        <p key={i} className={i > 0 ? "mt-2" : ""}>
+          {p.split("\n").map((line, j, arr) => (
+            <span key={j}>
+              {line}
+              {j < arr.length - 1 && <br />}
+            </span>
+          ))}
+        </p>
+      ))}
+  </>
+);
 
 const InfoBlock = ({
   icon: Icon,
@@ -53,11 +92,30 @@ const Divider = () => (
 
 const HommageScreen = () => {
   const { tFr } = useI18n();
+  const [data, setData] = useState<HommageData | null>(null);
 
   useEffect(() => {
     setStatusBarStyle("dark");
     return () => setStatusBarStyle("auto");
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    supabase
+      .from("hommage_content")
+      .select("*")
+      .eq("id", "main")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (active && data) setData(data as HommageData);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const v = data;
+  const photo = v?.photo_url || naichaPhoto;
 
   return (
     <div className="min-h-screen pb-24 transition-colors duration-200 bg-[#faf6f0] dark:bg-[#121820]">
@@ -82,112 +140,81 @@ const HommageScreen = () => {
         </div>
 
         <div className="relative z-10 flex flex-col items-center">
-          {/* Icône fleur */}
           <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm mb-4 ring-1 ring-white/30">
             <Flower2 className="h-8 w-8 text-white" />
           </div>
           <h1 className="font-display text-xl sm:text-2xl font-bold text-white leading-tight">
-            {tFr.pages.hommage?.title ?? "Hommage à Naicha"}
+            {v?.title || tFr.pages.hommage?.title || "Hommage à Naicha"}
           </h1>
           <p className="text-sm text-white/80 mt-1.5 font-medium">
-            {tFr.pages.hommage?.subtitle ?? "En mémoire d'une vie trop tôt éteinte"}
+            {v?.subtitle || tFr.pages.hommage?.subtitle || "En mémoire d'une vie trop tôt éteinte"}
           </p>
         </div>
 
-        {/* Filet doré en bas */}
         <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#e8d5a0] to-transparent opacity-70" />
       </header>
 
-      {/* ── Photo placeholder ── */}
+      {/* ── Photo ── */}
       <div className="px-6 -mt-4 relative z-10">
         <div className="mx-auto max-w-[220px]">
           <div className="rounded-2xl border-2 border-[#d4c5a0] dark:border-[#4a5060] bg-[#f0ebe0] dark:bg-[#1a2230] shadow-lg overflow-hidden aspect-[3/4]">
             <img
-              src={naichaPhoto}
-              alt="Portrait de Naicha Mmadi Abdou"
+              src={photo}
+              alt={`Portrait de ${v?.display_name || "Naicha Mmadi Abdou"}`}
               loading="lazy"
               className="w-full h-full object-cover"
             />
           </div>
-
           <p className="text-center text-xs text-[#9a8a7a] dark:text-[#8a8a98] mt-2 italic">
-            Naicha Mmadi Abdou
+            {v?.photo_caption || "Naicha Mmadi Abdou"}
           </p>
         </div>
       </div>
 
       {/* ── Corps ── */}
       <article className="px-5 sm:px-6 pt-6 pb-8 space-y-5">
-        {/* Nom & date */}
         <div className="text-center space-y-1.5">
           <h2 className="font-display text-lg font-bold text-[#4a3550] dark:text-[#d8c8e8]">
-            Naicha Mmadi Abdou
+            {v?.display_name || "Naicha Mmadi Abdou"}
           </h2>
           <div className="inline-flex items-center gap-2 text-sm text-[#7a6a5a] dark:text-[#a8a0b0] bg-white/60 dark:bg-[#1e2535]/60 rounded-full px-4 py-1.5 border border-[#e0d8c8] dark:border-[#3a4050]">
             <CalendarDays className="h-3.5 w-3.5 text-[#c9a84c]" />
-            <span>3 juillet 2002</span>
+            <span>{v?.birth_date || "3 juillet 2002"}</span>
           </div>
         </div>
 
         <Divider />
 
-        {/* Narratif — pas de Q&A */}
         <div className="space-y-4">
           <InfoBlock icon={GraduationCap} label="Parcours">
-            <p>
-              Après avoir obtenu son baccalauréat, Naicha a poursuivi ses études supérieures à
-              l’ISPC — l’Institut Supérieur Polytechnique des Comores — où elle a suivi une
-              formation de deux ans dans le domaine du tourisme, de 2020 à 2022. Elle
-              s’y est distinguée par sa curiosité et sa soif d’apprendre.
-            </p>
+            <Paragraphs text={v?.parcours || ""} />
           </InfoBlock>
 
           <InfoBlock icon={Briefcase} label="Son engagement professionnel">
-            <p>
-              Depuis 2024, Naicha exerçait en tant qu’assistante en ophtalmologie, un métier
-              qu’elle assumait avec dévouement et humanité. Auparavant, elle avait
-              effectué un stage à la Mairie de Foumbouni au service des archives, en
-              janvier et février 2023, y laissant le souvenir d’une jeune femme
-              sérieuse et appliquée.
-            </p>
+            <Paragraphs text={v?.engagement || ""} />
           </InfoBlock>
 
           <InfoBlock icon={Sparkles} label="Talents & savoir-faire">
-            <p>
-              Au-delà de ses études et de son travail, Naicha possédait un talent précieux :
-              la confection de <em>kandou</em>, ces pièces de textile traditionnel qui
-              témoignent de la richesse du savoir-faire comorien transmis de génération en
-              génération.
-            </p>
+            <Paragraphs text={v?.talents || ""} />
           </InfoBlock>
 
           <InfoBlock icon={Users} label="Ses liens">
-            <p>
-              Naicha entretenait des liens forts avec ses camarades de l’ISPC et faisait
-              partie d’un chama à Toirab sous le nom d’ISPC, un groupe de solidarité
-              où l’entraide et la fraternité étaient au cœur de chaque rencontre.
-            </p>
+            <Paragraphs text={v?.liens || ""} />
           </InfoBlock>
 
-          {/* Derniers mots — encadré spécial */}
           <InfoBlock icon={MessageCircle} label="Ses derniers mots" highlight>
-            <p className="italic">
-              « Elle a dit qu’elle allait récupérer son ordinateur à Dzahadjou Hambou. »
-            </p>
-            <p className="text-sm mt-2 text-[#6b5290] dark:text-[#b8a8d0]">
-              Ces mots simples, prononcés avant son départ, restent gravés dans la mémoire
-              de ses proches.
-            </p>
+            <div className="italic">
+              <Paragraphs text={v?.derniers_mots || ""} />
+            </div>
+            {v?.derniers_mots_note && (
+              <div className="text-sm mt-2 text-[#6b5290] dark:text-[#b8a8d0]">
+                <Paragraphs text={v.derniers_mots_note} />
+              </div>
+            )}
           </InfoBlock>
 
-          {/* Ce que la famille retient */}
           <InfoBlock icon={Heart} label="Ce que la famille retient d'elle" highlight>
-            <p>
-              Sa <strong>gentillesse</strong>, son <strong>honnêteté</strong> et son{" "}
-              <strong>grand cœur</strong>. Naicha laisse derrière elle l’image d’une
-              jeune femme généreuse, droite et profondément humaine, dont la disparition
-              brutale endeuille tous ceux qui l’ont connue.
-            </p>
+            <Paragraphs text={v?.famille_retient || ""} />
           </InfoBlock>
         </div>
 
@@ -202,12 +229,9 @@ const HommageScreen = () => {
             <div className="rounded-full bg-white/15 p-3 backdrop-blur-sm ring-1 ring-white/25">
               <Heart className="h-7 w-7 text-white" fill="white" />
             </div>
-            <p className="text-[15px] sm:text-base leading-[1.8] text-white/95 font-medium">
-              À Naicha, et à toutes les femmes victimes de féminicide à travers le monde.
-              Elles avaient des rêves, des sourires, des familles qui les aimaient.
-              Elles méritaient de vivre. Leur mémoire ne sera jamais oubliée.
-              Non à la violence faite aux femmes. Ensemble, brisons le silence.
-            </p>
+            <div className="text-[15px] sm:text-base leading-[1.8] text-white/95 font-medium">
+              <Paragraphs text={v?.hommage_global || ""} />
+            </div>
           </div>
         </section>
 
@@ -221,19 +245,19 @@ const HommageScreen = () => {
               dir="rtl"
               style={{ fontFamily: "'Amiri', 'Scheherazade New', serif" }}
             >
-              اللهم ارحمهن
+              {v?.invocation_ar || "اللهم ارحمهن"}
             </p>
             <div className="h-px w-16 mx-auto my-3 bg-[#d4c5a0]" />
             <p className="text-sm font-medium text-[#7a6a5a] dark:text-[#a8a0b0]">
-              Allah ya rahamhunna
+              {v?.invocation_translit || "Allah ya rahamhunna"}
             </p>
             <p className="text-sm text-[#9a8a7a] dark:text-[#a8a0b0] italic mt-1">
-              Que Allah leur accorde Sa miséricorde
+              {v?.invocation_fr || "Que Allah leur accorde Sa miséricorde"}
             </p>
           </div>
 
           <p className="text-[11px] text-[#b8a8a0] dark:text-[#6a6a80] pt-3">
-            Contre les violences faites aux femmes — N’oublions jamais.
+            {v?.footer_note || "Contre les violences faites aux femmes — N'oublions jamais."}
           </p>
         </div>
       </article>
