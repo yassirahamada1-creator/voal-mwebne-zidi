@@ -37,7 +37,7 @@ import { STATUS_BAR_EVENT, type StatusBarMode } from "./lib/statusBar";
     await StatusBar.setBackgroundColor({ color: "#00000000" });
 
     applyStyle = async () => {
-      let style: Style;
+      let style: typeof Style[keyof typeof Style];
       if (currentMode === "light") {
         // Fond sombre → icônes blanches (Capacitor: Style.Dark)
         style = Style.Dark;
