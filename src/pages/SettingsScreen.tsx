@@ -394,7 +394,7 @@ const SettingsScreen = () => {
         </Accordion>
 
         {/* Partenaires */}
-        <section className="card-cultural mt-3 border-l-2 border-l-accent/60 p-5 pattern-salouva">
+        <section className="card-cultural mt-3 border-l-2 border-l-accent/60 p-5 pattern-salouva bg-card text-card-foreground transition-colors">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4 text-center">
             {bi(credits.supportLabel.fr, credits.supportLabel.shi, "caption")}
           </div>
@@ -402,8 +402,10 @@ const SettingsScreen = () => {
             const others = credits.logos.filter((c) => !c.hidden);
             const wide = others.find((c) => c.wide);
             const small = others.filter((c) => !c.wide);
+            // Tuiles toujours blanches : les logos partenaires sont fournis sur fond blanc,
+            // un fond sombre les rendrait illisibles en mode sombre.
             const frame =
-              "flex items-center justify-center overflow-hidden rounded-lg bg-card p-2 border border-border shadow-sm";
+              "flex items-center justify-center overflow-hidden rounded-lg bg-white p-2 border border-border shadow-sm ring-1 ring-black/5";
             return (
               <div className="flex flex-col items-center gap-4">
                 {wide && (
