@@ -42,6 +42,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--mobile-offset": TOAST_MOBILE_OFFSET,
         } as React.CSSProperties
       }
+      closeButton
       richColors={false}
       toastOptions={{
         duration: TOAST_DURATION,

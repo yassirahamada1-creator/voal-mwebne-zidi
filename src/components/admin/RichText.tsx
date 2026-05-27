@@ -61,46 +61,21 @@ export default function RichText({ value, onChange, placeholder }: Props) {
         suppressContentEditableWarning
         onInput={(e) => onChange((e.target as HTMLDivElement).innerHTML)}
         onPaste={(e) => {
-          // Coller en texte brut propre, en neutralisant les artefacts
-          // venus de Word / PDF (caractères <, >, &, espaces insécables,
-          // guillemets typographiques, retours ligne mal interprétés, etc.).
+          // Force plain text paste and decode percent-encoded chars (e.g. %20 → espace)
+          // qui apparaissent quand on copie depuis une URL ou un PDF.
           e.preventDefault();
-          let text = e.clipboardData.getData("text/plain") || "";
-
-          // Décode les URL collées depuis un PDF (%20, %C3%A9, etc.)
-          if (/%[0-9A-Fa-f]{2}/.test(text)) {
+          const raw = e.clipboardData.getData("text/plain");
+          let text = raw;
+          if (/%[0-9A-Fa-f]{2}/.test(raw)) {
             try {
-              text = decodeURIComponent(text);
+              text = decodeURIComponent(raw);
             } catch {
-              /* on garde le texte original */
+              text = raw.replace(/%20/g, " ");
             }
           }
-
-          // Normalise les caractères spéciaux Word
-          text = text
-            .replace(/\r\n?/g, "\n")
-            .replace(/\u00A0/g, " ") // espace insécable
-            .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
-            .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
-            .replace(/[\u2013\u2014]/g, "-")
-            .replace(/\u2026/g, "...");
-
-          // Échappe < > & pour qu'ils s'affichent comme du texte et pas
-          // comme du HTML (sinon "<div" pasté apparaît tel quel).
-          const escape = (s: string) =>
-            s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-          // Transforme les paragraphes / sauts de ligne en HTML propre
-          const html = text
-            .split(/\n{2,}/)
-            .map((para) => escape(para).replace(/\n/g, "<br>"))
-            .map((para) => `<p>${para || "<br>"}</p>`)
-            .join("");
-
-          document.execCommand("insertHTML", false, html);
+          document.execCommand("insertText", false, text);
           if (ref.current) onChange(ref.current.innerHTML);
         }}
-
         data-placeholder={placeholder}
         className="prose prose-sm max-w-none min-h-[160px] px-3 py-2 text-sm focus-visible:outline-none [&[contenteditable]:empty]:before:content-[attr(data-placeholder)] [&[contenteditable]:empty]:before:text-muted-foreground"
       />

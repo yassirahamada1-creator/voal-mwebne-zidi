@@ -165,8 +165,6 @@ export function clearJob(id: string) {
   }
 }
 
-const CONCURRENCY = 4;
-
 let ticking = false;
 async function tick() {
   if (ticking) return;
@@ -182,24 +180,19 @@ async function tick() {
       next.status = "downloading";
       emit();
 
-      // Téléchargement parallèle (jusqu'à CONCURRENCY URLs simultanées).
+      // Traite séquentiellement les URLs restantes pour pouvoir s'arrêter à tout moment.
       while (next.remaining.length > 0) {
         if (controller.signal.aborted) break;
-        const batch = next.remaining.slice(0, CONCURRENCY);
-        const results = await Promise.all(
-          batch.map((url) =>
-            cacheMediaUrls([url], { signal: controller.signal }).then(
-              (r) => ({ url, ok: r.ok > 0 }),
-              () => ({ url, ok: false }),
-            ),
-          ),
-        );
+        const url = next.remaining[0];
+        const r = await cacheMediaUrls([url], { signal: controller.signal });
         if (controller.signal.aborted) break;
-        for (const r of results) {
-          if (r.ok) next.done += 1; else next.failed += 1;
-          const idx = next.remaining.indexOf(r.url);
-          if (idx >= 0) next.remaining.splice(idx, 1);
+        // Si abort survient pendant fetch, on ne décale pas remaining.
+        if (r.ok > 0) {
+          next.done += 1;
+        } else {
+          next.failed += 1;
         }
+        next.remaining.shift();
         emit();
       }
 
@@ -216,7 +209,6 @@ async function tick() {
     ticking = false;
   }
 }
-
 
 /** True si une URL fait partie d'un job en cours ou en pause. */
 export function isUrlInActiveJob(url: string): boolean {

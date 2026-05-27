@@ -2,7 +2,7 @@ import { lazy, Suspense, memo } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/contexts/I18nContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AppSettingsProvider } from "@/hooks/useAppSettings";
@@ -10,13 +10,12 @@ import { FontProvider } from "@/contexts/FontContext";
 import { OfflineSyncProvider } from "@/hooks/useOfflineSync";
 import { OfflineAvailabilityProvider } from "@/hooks/useOfflineAvailability";
 import { AccessibilityApplier } from "@/components/AccessibilityApplier";
-import AppLifecycle from "@/components/AppLifecycle";
 import BottomNav from "@/components/BottomNav";
 import ConnectionStatus from "@/components/ConnectionStatus";
 import OfflineBanner from "@/components/OfflineBanner";
 import OfflineDevTool from "@/components/dev/OfflineDevTool";
-// Navigation arrière : uniquement via le bouton retour natif Android
-// (NativeBackHandler) + geste swipe natif iOS (WKWebView).
+import SwipeBackGesture from "@/components/SwipeBackGesture";
+import GlobalBackButton from "@/components/GlobalBackButton";
 import NativeBackHandler from "@/components/NativeBackHandler";
 
 import SplashScreen from "@/pages/SplashScreen";
@@ -36,7 +35,7 @@ const FavoritesScreen = lazy(importFavorites);
 const importDownloads = () => import("@/pages/DownloadsScreen");
 const DownloadsScreen = lazy(importDownloads);
 
-
+const AccessibilityScreen = lazy(() => import("@/pages/AccessibilityScreen"));
 const LicensesScreen = lazy(() => import("@/pages/LicensesScreen"));
 const TermsScreen = lazy(() => import("@/pages/TermsScreen"));
 const PrivacyScreen = lazy(() => import("@/pages/PrivacyScreen"));
@@ -103,8 +102,7 @@ const AppShell = () => {
     <div
       className="mx-auto max-w-md min-h-screen bg-background shadow-2xl relative"
       style={{
-  // Pas de paddingTop : les headers gèrent eux-mêmes la safe-area
-  // pour que le dégradé se prolonge sous la status bar.
+  paddingTop: "env(safe-area-inset-top, 0px)",  // ← ajouter cette ligne
   paddingLeft: "env(safe-area-inset-left, 0px)",
   paddingRight: "env(safe-area-inset-right, 0px)",
   paddingBottom: hideBottomNav
@@ -128,7 +126,7 @@ const AppShell = () => {
           
           <Route path="/downloads" element={<DownloadsScreen />} />
           
-          
+          <Route path="/accessibility" element={<AccessibilityScreen />} />
           <Route path="/licenses" element={<LicensesScreen />} />
           <Route path="/terms" element={<TermsScreen />} />
           <Route path="/privacy" element={<PrivacyScreen />} />
@@ -137,6 +135,8 @@ const AppShell = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      <SwipeBackGesture />
+      <GlobalBackButton />
       <NativeBackHandler />
       <MemoBottomNav />
     </div>
@@ -145,27 +145,28 @@ const AppShell = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <I18nProvider>
-        <AppSettingsProvider>
-          <FontProvider>
-            <OfflineSyncProvider>
-              <OfflineAvailabilityProvider>
-                <AccessibilityApplier />
-                <AppLifecycle />
-                <MemoConnectionStatus />
-                <OfflineBanner />
-                {import.meta.env.DEV && <OfflineDevTool />}
-                <Sonner />
-                <BrowserRouter>
-                  <AppShell />
-                </BrowserRouter>
-              </OfflineAvailabilityProvider>
-            </OfflineSyncProvider>
-          </FontProvider>
-        </AppSettingsProvider>
-      </I18nProvider>
-    </AuthProvider>
+    <TooltipProvider>
+      <AuthProvider>
+        <I18nProvider>
+          <AppSettingsProvider>
+            <FontProvider>
+              <OfflineSyncProvider>
+                <OfflineAvailabilityProvider>
+                  <AccessibilityApplier />
+                  <MemoConnectionStatus />
+                  <OfflineBanner />
+                  {import.meta.env.DEV && <OfflineDevTool />}
+                  <Sonner />
+                  <BrowserRouter>
+                    <AppShell />
+                  </BrowserRouter>
+                </OfflineAvailabilityProvider>
+              </OfflineSyncProvider>
+            </FontProvider>
+          </AppSettingsProvider>
+        </I18nProvider>
+      </AuthProvider>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 
