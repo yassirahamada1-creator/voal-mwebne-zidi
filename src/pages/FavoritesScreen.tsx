@@ -30,7 +30,7 @@ const typeIcons = {
 };
 
 const FavoritesScreen = () => {
-  const { lang } = useI18n();
+  const { lang, tFr, tShi } = useI18n();
   const { favorites, removeFavorite } = useFavorites();
   const [favQuery, setFavQuery] = useState("");
   const [showFavSuggest, setShowFavSuggest] = useState(false);
@@ -54,7 +54,7 @@ const FavoritesScreen = () => {
         <div className="flex items-center gap-2">
           <div className="flex min-w-0 flex-1 items-baseline gap-2">
             <h1 className="font-display text-xl font-bold leading-tight text-foreground sm:text-2xl">
-              {biStr("Mes favoris", "Pendwa zangu")}
+              {biStr(tFr.pages.favorites.title, tShi.pages.favorites.title)}
             </h1>
             <span className="rounded-full bg-secondary/15 px-2 py-0.5 text-xs font-semibold text-secondary">
               {favorites.length}
@@ -72,7 +72,7 @@ const FavoritesScreen = () => {
             onChange={(e) => setFavQuery(e.target.value)}
             onFocus={() => setShowFavSuggest(true)}
             onBlur={() => setTimeout(() => setShowFavSuggest(false), 150)}
-            placeholder={biStr("Rechercher un favori…", "Tafuta pendwa…")}
+            placeholder={biStr(tFr.pages.favorites.searchPlaceholder, tShi.pages.favorites.searchPlaceholder)}
             className="h-11 w-full rounded-xl border border-border bg-card pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary"
           />
           {favQuery && (
@@ -113,15 +113,12 @@ const FavoritesScreen = () => {
         {favorites.length === 0 ? (
           <EmptyState
             icon={<Heart className="h-10 w-10" />}
-            title={biStr("Aucun favori", "Hakuna pendwa")}
-            hint={biStr(
-              "Touchez le cœur sur un contenu pour l'ajouter ici.",
-              "Bonyeza moyo kwenye yaliyomo kuongeza."
-            )}
+            title={biStr(tFr.pages.favorites.empty, tShi.pages.favorites.empty)}
+            hint={biStr(tFr.pages.favorites.emptyHint, tShi.pages.favorites.emptyHint)}
           />
         ) : filteredFavorites.length === 0 ? (
           <p className="py-12 text-center text-sm text-muted-foreground">
-            {biStr("Aucun résultat.", "Hakuna matokeo.")}
+            {biStr(tFr.pages.favorites.noResults, tShi.pages.favorites.noResults)}
           </p>
         ) : (
           <ul className="space-y-2.5 list-none p-0">
@@ -189,7 +186,7 @@ const FavoritesScreen = () => {
                     type="button"
                     onClick={() => {
                       removeFavorite(f.id);
-                      toast.success(biStr("Retiré des favoris", "Imeondolewa"));
+                      toast.success(biStr(tFr.pages.favorites.removed, tShi.pages.favorites.removed));
                     }}
                     aria-label={biStr("Retirer des favoris", "Ondoa kwenye pendwa")}
                     className="inline-flex h-11 w-11 items-center justify-center rounded-full text-destructive transition hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 focus-visible:ring-offset-card"
@@ -224,7 +221,7 @@ const EmptyState = ({
       to="/home"
       className="mt-4 rounded-full bg-secondary px-5 py-2 text-xs font-semibold text-secondary-foreground"
     >
-      {bi("Accueil", "Nyumbani")}
+      Accueil / Nyumbani
     </Link>
   </div>
 );

@@ -22,7 +22,7 @@ const CategoryScreen = () => {
   const [query, setQuery] = useState("");
   const [showSuggest, setShowSuggest] = useState(false);
   
-  const { lang } = useI18n();
+  const { lang, t, tFr, tShi } = useI18n();
 
   const { data: modules } = useModules();
   const module = modules.find((m) => m.slug === categoryKey);
@@ -102,8 +102,8 @@ const CategoryScreen = () => {
       <div className="sticky top-0 z-30 bg-background" style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}>
       <ScreenHeader
         icon={Video}
-        labelFr="Galerie"
-        labelShi="Picha"
+        labelFr={tFr.pages.category.galleryLabel}
+        labelShi={tShi.pages.category.galleryLabel}
         titleFr={module?.name_fr}
         titleShi={module?.name_shk}
       />
@@ -117,7 +117,7 @@ const CategoryScreen = () => {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setShowSuggest(true)}
             onBlur={() => setTimeout(() => setShowSuggest(false), 150)}
-            placeholder={biStr("Rechercher dans les contenus...", "Tafuta...")}
+            placeholder={t.pages.category.searchPlaceholder}
             className="w-full rounded-xl bg-card py-2.5 pl-10 pr-9 text-sm shadow-md border border-border focus:outline-none focus:ring-2 focus:ring-gold"
           />
           {query && (
@@ -132,7 +132,7 @@ const CategoryScreen = () => {
           <SearchSuggestions
             query={query}
             open={showSuggest}
-            emptyLabel={lang === "fr" ? "Aucune suggestion" : "Hakuna mapendekezo"}
+            emptyLabel={t.pages.category.suggestionsEmpty}
             items={contents.map((c) => ({
               id: c.id,
               label: lang === "fr" ? c.title_fr : c.title_shk,
@@ -152,7 +152,7 @@ const CategoryScreen = () => {
       <div className="mt-4 flex flex-wrap gap-2 px-4">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground shadow-sm">
           <Video className="h-3.5 w-3.5" />
-          {biStr("Vidéo", "Video")}
+          {t.pages.category.videoBadge}
         </span>
       </div>
 
@@ -163,7 +163,7 @@ const CategoryScreen = () => {
           ))
         ) : videos.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground py-10">
-            {biStr("Aucune vidéo pour cette catégorie.", "Hakuna video.")}
+            {t.pages.category.emptyVideos}
           </p>
         ) : (
           videos.map((item, i) => (

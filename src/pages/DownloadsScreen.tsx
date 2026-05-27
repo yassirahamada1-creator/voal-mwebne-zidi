@@ -5,7 +5,7 @@ import DownloadQueue from "@/components/DownloadQueue";
 import { useDownloadQueue } from "@/hooks/useDownloadQueue";
 
 const DownloadsScreen = () => {
-  const { lang } = useI18n();
+  const { lang, tFr, tShi } = useI18n();
   const jobs = useDownloadQueue();
   void lang;
 
@@ -23,15 +23,15 @@ const DownloadsScreen = () => {
           <div className="min-w-0 flex-1">
             <BilingualText
               as="h1"
-              fr="Téléchargements"
-              shi="Upakuaji"
+              fr={tFr.pages.downloads.title}
+              shi={tShi.pages.downloads.title}
               variant="caption"
               className="font-display text-base font-bold leading-tight text-primary-foreground"
             />
             <BilingualText
               as="p"
-              fr="File des téléchargements en cours"
-              shi="Foleni ya upakuaji unaoendelea"
+              fr={tFr.pages.downloads.subtitle}
+              shi={tShi.pages.downloads.subtitle}
               variant="caption"
               className="text-[11px] leading-tight text-primary-foreground/80"
             />
@@ -45,12 +45,10 @@ const DownloadsScreen = () => {
           <section className="card-cultural border-dashed bg-card/50 p-8 text-center">
             <Download className="mx-auto h-8 w-8 text-muted-foreground/60" aria-hidden="true" />
             <p className="mt-3 text-sm font-semibold text-foreground">
-              {lang === "fr" ? "Aucun téléchargement en cours" : "Hakuna upakuaji unaoendelea"}
+              {lang === "fr" ? tFr.pages.downloads.empty : tShi.pages.downloads.empty}
             </p>
             <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
-              {lang === "fr"
-                ? "Lancez un téléchargement depuis la fiche d'un contenu pour le suivre ici."
-                : "Anza upakuaji kutoka kwa ukurasa wa maudhui ili kuufuata hapa."}
+              {lang === "fr" ? tFr.pages.downloads.emptyHint : tShi.pages.downloads.emptyHint}
             </p>
           </section>
         ) : (

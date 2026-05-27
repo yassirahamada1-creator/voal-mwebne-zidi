@@ -46,9 +46,9 @@
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/lexie-readable">
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/opendyslexic">
 
-  <!-- Video.js (CDN officiel) — lecteur multimédia principal -->
-  <link rel="preconnect" href="https://vjs.zencdn.net" crossorigin>
-  <link rel="stylesheet" href="https://vjs.zencdn.net/8.10.0/video-js.min.css">
+  <!-- (video.js retiré : le lecteur utilise <video> natif, voir NativeVideo) -->
+
+
 
   <!-- Évite le flash blanc avant le montage de l'écran d'accueil (couleur de marque) -->
   <style>
@@ -152,14 +152,21 @@
       (function () {
         var host = location.hostname;
         var isPreview = host.endsWith('lovableproject.com') || host.endsWith('lovable.app') || host === 'localhost' || host === '127.0.0.1';
+        // Capacitor (WebView Android/iOS) : pas de SW, le cache hors-ligne
+        // est géré directement par offlineStore via l'API Cache Storage.
+        var isCapacitor = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
         if ('serviceWorker' in navigator) {
-          if (isPreview) {
-            // En preview/dev : désactiver le SW pour éviter de servir des chunks Vite obsolètes
+          if (isPreview || isCapacitor) {
+            // En preview/dev ou dans Capacitor : désactiver le SW
             navigator.serviceWorker.getRegistrations().then(function (regs) {
               regs.forEach(function (r) { r.unregister(); });
             });
             if (window.caches && caches.keys) {
-              caches.keys().then(function (keys) { keys.forEach(function (k) { caches.delete(k); }); });
+              caches.keys().then(function (keys) {
+                // Conserver le cache hors-ligne applicatif
+                keys.filter(function (k) { return k !== 'vdl-offline-v1'; })
+                    .forEach(function (k) { caches.delete(k); });
+              });
             }
           } else {
             navigator.serviceWorker.register('/sw.js');
