@@ -10,14 +10,11 @@ const config: CapacitorConfig = {
   //   - localStorage (favoris) peut être effacé/sandboxé,
   //   - le plein écran vidéo peut être bloqué.
   // Pour du hot-reload pendant le dev sur device, dé-commenter TEMPORAIREMENT
-  // `server.url` (et `cleartext`) puis re-commenter avant l'APK final.
-  server: {
-    // Whitelist des navigations externes dans la WebView.
-    // (n'affecte pas fetch/XHR vers Supabase, qui passent déjà.)
-    allowNavigation: ["*.supabase.co"],
-    // url: "https://5d8e9533-f82f-4fb4-8b52-e88da6a94899.lovableproject.com?forceHideBadge=true",
-    // cleartext: true,
-  },
+  // puis re-commenter avant de générer l'APK final.
+  // server: {
+  //   url: "https://5d8e9533-f82f-4fb4-8b52-e88da6a94899.lovableproject.com?forceHideBadge=true",
+  //   cleartext: true,
+  // },
   ios: {
     allowsBackForwardNavigationGestures: true,
     // L'app ne recouvre PAS la status bar (heure/batterie restent visibles).
