@@ -58,167 +58,160 @@ const HommageScreen = () => {
   }, []);
 
   return (
-    <div
-      className="min-h-screen pb-24 transition-colors duration-200"
-      style={{
-        background: "linear-gradient(180deg, #faf6f0 0%, #f5f0e8 50%, #efe8dc 100%)",
-      }}
-    >
-      <div className="dark:!bg-[#161e2a] dark:!bg-none !transition-colors !duration-200">
-        {/* ── En-tête ── */}
-        <header
-          className="relative overflow-hidden px-6 pt-8 pb-6 text-center"
-          style={{
-            background: "linear-gradient(160deg, #8a7bb3 0%, #9a8ac8 40%, #b8a0d0 100%)",
-            paddingTop:
-              "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 1.5rem)",
-          }}
-        >
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div
-              className="w-full h-full"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 25% 25%, rgba(255,255,255,0.15) 1.5px, transparent 1.6px), radial-gradient(circle at 75% 75%, rgba(255,255,255,0.12) 1.5px, transparent 1.6px)",
-                backgroundSize: "24px 24px",
-              }}
-            />
+    <div className="min-h-screen pb-24 transition-colors duration-200 bg-[#faf6f0] dark:bg-[#121820]">
+      {/* ── En-tête ── */}
+      <header
+        className="relative overflow-hidden px-6 pt-8 pb-6 text-center"
+        style={{
+          background: "linear-gradient(160deg, #8a7bb3 0%, #9a8ac8 40%, #b8a0d0 100%)",
+          paddingTop:
+            "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 1.5rem)",
+        }}
+      >
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 25% 25%, rgba(255,255,255,0.15) 1.5px, transparent 1.6px), radial-gradient(circle at 75% 75%, rgba(255,255,255,0.12) 1.5px, transparent 1.6px)",
+              backgroundSize: "24px 24px",
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center">
+          {/* Icône fleur */}
+          <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm mb-4 ring-1 ring-white/30">
+            <Flower2 className="h-8 w-8 text-white" />
           </div>
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-white leading-tight">
+            {tFr.pages.hommage?.title ?? "Hommage à Naicha"}
+          </h1>
+          <p className="text-sm text-white/80 mt-1.5 font-medium">
+            {tFr.pages.hommage?.subtitle ?? "En mémoire d'une vie trop tôt éteinte"}
+          </p>
+        </div>
 
-          <div className="relative z-10 flex flex-col items-center">
-            {/* Icône fleur */}
-            <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm mb-4 ring-1 ring-white/30">
-              <Flower2 className="h-8 w-8 text-white" />
+        {/* Filet doré en bas */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#e8d5a0] to-transparent opacity-70" />
+      </header>
+
+      {/* ── Photo placeholder ── */}
+      <div className="px-6 -mt-4 relative z-10">
+        <div className="mx-auto max-w-[220px]">
+          <div className="rounded-2xl border-2 border-[#d4c5a0] dark:border-[#4a5060] bg-[#f0ebe0] dark:bg-[#1a2230] shadow-lg overflow-hidden aspect-[3/4]">
+            <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-[#b8a888] dark:text-[#6a7080]">
+              <Flower2 className="h-10 w-10 opacity-50" />
+              <span className="text-sm font-medium">Photo</span>
             </div>
-            <h1 className="font-display text-xl sm:text-2xl font-bold text-white leading-tight">
-              {tFr.pages.hommage?.title ?? "Hommage à Naicha"}
-            </h1>
-            <p className="text-sm text-white/80 mt-1.5 font-medium">
-              {tFr.pages.hommage?.subtitle ?? "En mémoire d'une vie trop tôt éteinte"}
-            </p>
           </div>
+          <p className="text-center text-xs text-[#9a8a7a] dark:text-[#8a8a98] mt-2 italic">
+            Naicha Mmadi Abdou
+          </p>
+        </div>
+      </div>
 
-          {/* Filet doré en bas */}
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#e8d5a0] to-transparent opacity-70" />
-        </header>
-
-        {/* ── Photo placeholder ── */}
-        <div className="px-6 -mt-4 relative z-10">
-          <div className="mx-auto max-w-[220px]">
-            <div className="rounded-2xl border-2 border-[#d4c5a0] bg-[#f0ebe0] shadow-lg overflow-hidden aspect-[3/4]">
-              <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-[#b8a888]">
-                <Flower2 className="h-10 w-10 opacity-50" />
-                <span className="text-sm font-medium">Photo</span>
-              </div>
-            </div>
-            <p className="text-center text-xs text-[#9a8a7a] mt-2 italic">
-              Naicha Mmadi Abdou
-            </p>
+      {/* ── Corps ── */}
+      <article className="px-5 sm:px-6 pt-6 pb-8 space-y-5">
+        {/* Nom & date */}
+        <div className="text-center space-y-1.5">
+          <h2 className="font-display text-lg font-bold text-[#4a3550] dark:text-[#d8c8e8]">
+            Naicha Mmadi Abdou
+          </h2>
+          <div className="inline-flex items-center gap-2 text-sm text-[#7a6a5a] dark:text-[#a8a0b0] bg-white/60 dark:bg-[#1e2535]/60 rounded-full px-4 py-1.5 border border-[#e0d8c8] dark:border-[#3a4050]">
+            <CalendarDays className="h-3.5 w-3.5 text-[#c9a84c]" />
+            <span>3 juillet 2002</span>
           </div>
         </div>
 
-        {/* ── Corps ── */}
-        <article className="px-5 sm:px-6 pt-6 pb-8 space-y-5">
-          {/* Nom & date */}
-          <div className="text-center space-y-1.5">
-            <h2 className="font-display text-lg font-bold text-[#4a3550] dark:text-[#d8c8e8]">
-              Naicha Mmadi Abdou
-            </h2>
-            <div className="inline-flex items-center gap-2 text-sm text-[#7a6a5a] dark:text-[#a8a0b0] bg-white/60 dark:bg-[#1e2535]/60 rounded-full px-4 py-1.5 border border-[#e0d8c8] dark:border-[#3a4050]">
-              <CalendarDays className="h-3.5 w-3.5 text-[#c9a84c]" />
-              <span>3 juillet 2002</span>
-            </div>
-          </div>
+        <Divider />
 
-          <Divider />
+        {/* Narratif — pas de Q&A */}
+        <div className="space-y-4">
+          <InfoBlock icon={GraduationCap} label="Parcours">
+            <p>
+              Après avoir obtenu son baccalauréat, Naicha a poursuivi ses études supérieures à
+              l’ISPC — l’Institut Supérieur Polytechnique des Comores — où elle a suivi une
+              formation de deux ans dans le domaine du tourisme, de 2020 à 2022. Elle
+              s’y est distinguée par sa curiosité et sa soif d’apprendre.
+            </p>
+          </InfoBlock>
 
-          {/* Narratif — pas de Q&A */}
-          <div className="space-y-4">
-            <InfoBlock icon={GraduationCap} label="Parcours">
-              <p>
-                Après avoir obtenu son baccalauréat, Naicha a poursuivi ses études supérieures à
-                l’ISPC — l’Institut Supérieur Polytechnique des Comores — où elle a suivi une
-                formation de deux ans dans le domaine du tourisme, de 2020 à 2022. Elle
-                s’y est distinguée par sa curiosité et sa soif d’apprendre.
-              </p>
-            </InfoBlock>
+          <InfoBlock icon={Briefcase} label="Son engagement professionnel">
+            <p>
+              Depuis 2024, Naicha exerçait en tant qu’assistante en ophtalmologie, un métier
+              qu’elle assumait avec dévouement et humanité. Auparavant, elle avait
+              effectué un stage à la Mairie de Foumbouni au service des archives, en
+              janvier et février 2023, y laissant le souvenir d’une jeune femme
+              sérieuse et appliquée.
+            </p>
+          </InfoBlock>
 
-            <InfoBlock icon={Briefcase} label="Son engagement professionnel">
-              <p>
-                Depuis 2024, Naicha exerçait en tant qu’assistante en ophtalmologie, un métier
-                qu’elle assumait avec dévouement et humanité. Auparavant, elle avait
-                effectué un stage à la Mairie de Foumbouni au service des archives, en
-                janvier et février 2023, y laissant le souvenir d’une jeune femme
-                sérieuse et appliquée.
-              </p>
-            </InfoBlock>
+          <InfoBlock icon={Sparkles} label="Talents & savoir-faire">
+            <p>
+              Au-delà de ses études et de son travail, Naicha possédait un talent précieux :
+              la confection de <em>kandou</em>, ces pièces de textile traditionnel qui
+              témoignent de la richesse du savoir-faire comorien transmis de génération en
+              génération.
+            </p>
+          </InfoBlock>
 
-            <InfoBlock icon={Sparkles} label="Talents & savoir-faire">
-              <p>
-                Au-delà de ses études et de son travail, Naicha possédait un talent précieux :
-                la confection de <em>kandou</em>, ces pièces de textile traditionnel qui
-                témoignent de la richesse du savoir-faire comorien transmis de génération en
-                génération.
-              </p>
-            </InfoBlock>
+          <InfoBlock icon={Users} label="Ses liens">
+            <p>
+              Naicha entretenait des liens forts avec ses camarades de l’ISPC et faisait
+              partie d’un chama à Toirab sous le nom d’ISPC, un groupe de solidarité
+              où l’entraide et la fraternité étaient au cœur de chaque rencontre.
+            </p>
+          </InfoBlock>
 
-            <InfoBlock icon={Users} label="Ses liens">
-              <p>
-                Naicha entretenait des liens forts avec ses camarades de l’ISPC et faisait
-                partie d’un chama à Toirab sous le nom d’ISPC, un groupe de solidarité
-                où l’entraide et la fraternité étaient au cœur de chaque rencontre.
-              </p>
-            </InfoBlock>
+          {/* Derniers mots — encadré spécial */}
+          <InfoBlock icon={MessageCircle} label="Ses derniers mots" highlight>
+            <p className="italic">
+              « Elle a dit qu’elle allait récupérer son ordinateur à Dzahadjou Hambou. »
+            </p>
+            <p className="text-sm mt-2 text-[#6b5290] dark:text-[#b8a8d0]">
+              Ces mots simples, prononcés avant son départ, restent gravés dans la mémoire
+              de ses proches.
+            </p>
+          </InfoBlock>
 
-            {/* Derniers mots — encadré spécial */}
-            <InfoBlock icon={MessageCircle} label="Ses derniers mots" highlight>
-              <p className="italic">
-                « Elle a dit qu’elle allait récupérer son ordinateur à Dzahadjou Hambou. »
-              </p>
-              <p className="text-sm mt-2 text-[#6b5290] dark:text-[#b8a8d0]">
-                Ces mots simples, prononcés avant son départ, restent gravés dans la mémoire
-                de ses proches.
-              </p>
-            </InfoBlock>
+          {/* Ce que la famille retient */}
+          <InfoBlock icon={Heart} label="Ce que la famille retient d'elle" highlight>
+            <p>
+              Sa <strong>gentillesse</strong>, son <strong>honnêteté</strong> et son{" "}
+              <strong>grand cœur</strong>. Naicha laisse derrière elle l’image d’une
+              jeune femme généreuse, droite et profondément humaine, dont la disparition
+              brutale endeuille tous ceux qui l’ont connue.
+            </p>
+          </InfoBlock>
+        </div>
 
-            {/* Ce que la famille retient */}
-            <InfoBlock icon={Heart} label="Ce que la famille retient d'elle" highlight>
-              <p>
-                Sa <strong>gentillesse</strong>, son <strong>honnêteté</strong> et son
-                <strong>grand cœur</strong>. Naicha laisse derrière elle l’image d’une
-                jeune femme généreuse, droite et profondément humaine, dont la disparition
-                brutale endeuille tous ceux qui l’ont connue.
-              </p>
-            </InfoBlock>
-          </div>
+        <Divider />
 
-          <Divider />
-
-          {/* Invocation finale */}
-          <div className="text-center space-y-3 pt-2">
-            <div className="inline-block rounded-2xl bg-[#f8f4ee] dark:bg-[#1e2535] border border-[#e0d8c8] dark:border-[#3a4050] px-6 py-5 shadow-sm">
-              <p
-                className="text-xl sm:text-2xl font-bold text-[#4a3550] dark:text-[#d8c8e8] leading-relaxed"
-                dir="rtl"
-                style={{ fontFamily: "'Amiri', 'Scheherazade New', serif" }}
-              >
-                اللهم ارحمها
-              </p>
-              <div className="h-px w-16 mx-auto my-3 bg-[#d4c5a0]" />
-              <p className="text-sm font-medium text-[#7a6a5a] dark:text-[#a8a0b0]">
-                Allah ya rahma
-              </p>
-              <p className="text-sm text-[#9a8a7a] dark:text-[#a8a0b0] italic mt-1">
-                Que Allah lui accorde Sa miséricorde
-              </p>
-            </div>
-
-            <p className="text-[11px] text-[#b8a8a0] dark:text-[#6a6a80] pt-3">
-              Contre les violences faites aux femmes — N’oublions jamais.
+        {/* Invocation finale */}
+        <div className="text-center space-y-3 pt-2">
+          <div className="inline-block rounded-2xl bg-[#f8f4ee] dark:bg-[#1e2535] border border-[#e0d8c8] dark:border-[#3a4050] px-6 py-5 shadow-sm">
+            <p
+              className="text-xl sm:text-2xl font-bold text-[#4a3550] dark:text-[#d8c8e8] leading-relaxed"
+              dir="rtl"
+              style={{ fontFamily: "'Amiri', 'Scheherazade New', serif" }}
+            >
+              اللهم ارحمها
+            </p>
+            <div className="h-px w-16 mx-auto my-3 bg-[#d4c5a0]" />
+            <p className="text-sm font-medium text-[#7a6a5a] dark:text-[#a8a0b0]">
+              Allah ya rahma
+            </p>
+            <p className="text-sm text-[#9a8a7a] dark:text-[#a8a0b0] italic mt-1">
+              Que Allah lui accorde Sa miséricorde
             </p>
           </div>
-        </article>
-      </div>
+
+          <p className="text-[11px] text-[#b8a8a0] dark:text-[#6a6a80] pt-3">
+            Contre les violences faites aux femmes — N’oublions jamais.
+          </p>
+        </div>
+      </article>
     </div>
   );
 };
