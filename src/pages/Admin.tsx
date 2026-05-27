@@ -1902,15 +1902,32 @@ export function QuizTab({
                   >
                     Gérer les quiz →
                   </button>
-                  <label className="flex items-center gap-2 text-[11px] text-muted-foreground cursor-pointer">
-                    <span>{inactive ? "Masqué" : "Visible"}</span>
-                    <Switch
-                      checked={m.is_active}
-                      disabled={togglingId === m.id}
-                      onCheckedChange={(v) => toggleModuleActive(m, v)}
-                      aria-label={`Rendre ${m.name_fr} ${m.is_active ? "invisible" : "visible"} dans l'application`}
-                    />
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 text-[11px] text-muted-foreground cursor-pointer">
+                      <span>{inactive ? "Masqué" : "Visible"}</span>
+                      <Switch
+                        checked={m.is_active}
+                        disabled={togglingId === m.id}
+                        onCheckedChange={(v) => toggleModuleActive(m, v)}
+                        aria-label={`Rendre ${m.name_fr} ${m.is_active ? "invisible" : "visible"} dans l'application`}
+                      />
+                    </label>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => clearModuleQuizzes(m)}
+                      disabled={count === 0}
+                      title={
+                        count === 0
+                          ? "Aucun quiz à supprimer"
+                          : `Supprimer les ${count} quiz du module`
+                      }
+                      aria-label={`Supprimer les quiz du module ${m.name_fr}`}
+                      className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 h-8 w-8"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             );
