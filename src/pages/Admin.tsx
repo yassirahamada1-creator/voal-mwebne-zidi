@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -120,12 +121,17 @@ const slugify = (s: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+const REMEMBER_KEY = "vdl-admin-remember";
+
 export function AdminLogin({ onSuccess }: { onSuccess?: () => void }) {
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(() => {
+    try { return localStorage.getItem(REMEMBER_KEY) !== "0"; } catch { return true; }
+  });
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,6 +143,7 @@ export function AdminLogin({ onSuccess }: { onSuccess?: () => void }) {
       toast.error("Identifiants incorrects");
       return;
     }
+    try { localStorage.setItem(REMEMBER_KEY, remember ? "1" : "0"); } catch {}
     onSuccess?.();
   };
 
@@ -185,6 +192,17 @@ export function AdminLogin({ onSuccess }: { onSuccess?: () => void }) {
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="remember"
+            checked={remember}
+            onCheckedChange={(v) => setRemember(v === true)}
+            className="min-w-4"
+          />
+          <Label htmlFor="remember" className="text-sm font-normal cursor-pointer select-none">
+            Rester connecté
+          </Label>
         </div>
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Vérification…" : "Se connecter"}
