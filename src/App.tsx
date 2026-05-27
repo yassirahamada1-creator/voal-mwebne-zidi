@@ -40,6 +40,7 @@ const LicensesScreen = lazy(() => import("@/pages/LicensesScreen"));
 const TermsScreen = lazy(() => import("@/pages/TermsScreen"));
 const PrivacyScreen = lazy(() => import("@/pages/PrivacyScreen"));
 const ForewordScreen = lazy(() => import("@/pages/ForewordScreen"));
+const HommageScreen = lazy(() => import("@/pages/HommageScreen"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const CorsTestScreen = lazy(() => import("@/pages/CorsTestScreen"));
@@ -138,6 +139,7 @@ const AppShell = () => {
             <Route path="/terms" element={<TermsScreen />} />
             <Route path="/privacy" element={<PrivacyScreen />} />
             <Route path="/foreword" element={<ForewordScreen />} />
+            <Route path="/hommage" element={<HommageScreen />} />
             <Route path="/dev/cors-test" element={<CorsTestScreen />} />
 
             <Route path="*" element={<NotFound />} />
