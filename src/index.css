@@ -45,6 +45,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Masquer les barres de défilement (verticale + horizontale) tout en
+   conservant le défilement à la molette / au geste / au clavier. */
+html, body {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE / Edge legacy */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none;                  /* Chrome / Safari / Webkit */
+}
+* {
+  scrollbar-width: none;
+}
+
+
 @layer base {
   :root {
     --background: 38 35% 98%;
