@@ -238,6 +238,7 @@ export default function Dashboard() {
               {view === "translations" && (
                 <TranslationsTab items={translations} reload={loadAll} />
               )}
+              {view === "hommage" && <HommageTab />}
             </div>
           </main>
         </div>
