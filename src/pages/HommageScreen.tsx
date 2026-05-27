@@ -101,16 +101,33 @@ const HommageScreen = () => {
 
   useEffect(() => {
     let active = true;
-    supabase
-      .from("hommage_content")
-      .select("*")
-      .eq("id", "main")
-      .maybeSingle()
-      .then(({ data }) => {
-        if (active && data) setData(data as HommageData);
-      });
+    const fetchData = () =>
+      supabase
+        .from("hommage_content")
+        .select("*")
+        .eq("id", "main")
+        .maybeSingle()
+        .then(({ data }) => {
+          if (active && data) setData(data as HommageData);
+        });
+
+    fetchData();
+
+    // Synchronisation auto en arrière-plan : refetch quand le contenu change côté admin
+    const channel = supabase
+      .channel("hommage_content_sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "hommage_content" },
+        () => {
+          fetchData();
+        },
+      )
+      .subscribe();
+
     return () => {
       active = false;
+      supabase.removeChannel(channel);
     };
   }, []);
 
