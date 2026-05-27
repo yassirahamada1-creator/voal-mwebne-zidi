@@ -113,30 +113,36 @@ const AppShell = () => {
 }}
     >
       <Suspense fallback={<RouteFallback />}>
-        <Routes>
-          <Route path="/" element={<SplashScreen />} />
-          <Route path="/splash" element={<SplashScreen />} />
-          <Route path="/home" element={<HomeScreen />} />
-          <Route path="/category/:categoryKey" element={<CategoryScreen />} />
-          <Route path="/gallery" element={<GalleryScreen />} />
-          <Route path="/gallery/:subjectId" element={<GallerySubjectScreen />} />
-          <Route path="/media/:mediaId" element={<MediaPlayerScreen />} />
-          <Route path="/pedagogical" element={<PedagogicalScreen />} />
-          <Route path="/quiz" element={<QuizScreen />} />
-          <Route path="/settings" element={<SettingsScreen />} />
-          <Route path="/favorites" element={<FavoritesScreen />} />
-          
-          <Route path="/downloads" element={<DownloadsScreen />} />
-          
-          
-          <Route path="/licenses" element={<LicensesScreen />} />
-          <Route path="/terms" element={<TermsScreen />} />
-          <Route path="/privacy" element={<PrivacyScreen />} />
-          <Route path="/foreword" element={<ForewordScreen />} />
-          <Route path="/dev/cors-test" element={<CorsTestScreen />} />
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {/* Transition douce entre pages : fade + léger glissement.
+            La clé sur le pathname force le remount + animation à chaque
+            changement de route. La durée reste courte (220ms) pour rester
+            réactif sans donner d'effet de saccade. */}
+        <div key={pathname} className="animate-page-in">
+          <Routes>
+            <Route path="/" element={<SplashScreen />} />
+            <Route path="/splash" element={<SplashScreen />} />
+            <Route path="/home" element={<HomeScreen />} />
+            <Route path="/category/:categoryKey" element={<CategoryScreen />} />
+            <Route path="/gallery" element={<GalleryScreen />} />
+            <Route path="/gallery/:subjectId" element={<GallerySubjectScreen />} />
+            <Route path="/media/:mediaId" element={<MediaPlayerScreen />} />
+            <Route path="/pedagogical" element={<PedagogicalScreen />} />
+            <Route path="/quiz" element={<QuizScreen />} />
+            <Route path="/settings" element={<SettingsScreen />} />
+            <Route path="/favorites" element={<FavoritesScreen />} />
+
+            <Route path="/downloads" element={<DownloadsScreen />} />
+
+
+            <Route path="/licenses" element={<LicensesScreen />} />
+            <Route path="/terms" element={<TermsScreen />} />
+            <Route path="/privacy" element={<PrivacyScreen />} />
+            <Route path="/foreword" element={<ForewordScreen />} />
+            <Route path="/dev/cors-test" element={<CorsTestScreen />} />
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </Suspense>
       <NativeBackHandler />
       <MemoBottomNav />
