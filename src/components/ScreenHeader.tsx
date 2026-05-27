@@ -32,6 +32,11 @@ const ScreenHeader = ({
   right,
   className = "",
 }: ScreenHeaderProps) => {
+  // Le fond du header est sombre/coloré → icônes blanches de la status bar.
+  useEffect(() => {
+    setStatusBarStyle("light");
+    return () => setStatusBarStyle("auto");
+  }, []);
   return (
     <header
       className={`relative w-full overflow-hidden ${className}`}
