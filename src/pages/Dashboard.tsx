@@ -24,6 +24,7 @@ import {
   LogOut,
   Moon,
   ExternalLink,
+  Flower2,
 } from "lucide-react";
 import {
   AdminLogin,
@@ -33,10 +34,11 @@ import {
   QuizTab,
   TranslationsTab,
 } from "./Admin";
+import HommageTab from "@/components/admin/HommageTab";
 import { useAuth } from "@/hooks/useAuth";
 import { Lock } from "lucide-react";
 
-type View = "overview" | "modules" | "contents" | "quiz" | "translations";
+type View = "overview" | "modules" | "contents" | "quiz" | "translations" | "hommage";
 
 const NAV: { key: View; label: string; icon: any }[] = [
   { key: "overview", label: "Vue d'ensemble", icon: LayoutDashboard },
@@ -44,6 +46,7 @@ const NAV: { key: View; label: string; icon: any }[] = [
   { key: "contents", label: "Contenus", icon: FileText },
   { key: "quiz", label: "Quiz", icon: HelpCircle },
   { key: "translations", label: "Traductions", icon: Languages },
+  { key: "hommage", label: "Hommage", icon: Flower2 },
 ];
 
 function DashboardSidebar({
