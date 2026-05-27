@@ -46,8 +46,11 @@ const FavoritesScreen = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border/60">
-      <header className="px-4 pb-3 pt-5">
+      <div
+        className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border/60"
+        style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
+      >
+      <header className="px-4 pb-3 pt-3">
         <div className="flex items-center gap-2">
           <div className="flex min-w-0 flex-1 items-baseline gap-2">
             <h1 className="font-display text-xl font-bold leading-tight text-foreground sm:text-2xl">

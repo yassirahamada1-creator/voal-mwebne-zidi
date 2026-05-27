@@ -4,26 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-// Fallbacks publics (publishable keys) pour que le build APK fonctionne
-// même si le fichier .env est absent (ex: après git pull, car .env est gitignore).
-// Ces valeurs sont publiques côté client — aucun risque de sécurité.
-const SUPABASE_URL_FALLBACK = "https://vgakulafrptoirrpqppu.supabase.co";
-const SUPABASE_KEY_FALLBACK =
-  "sb_publishable_slyLUuO7gCdL2eS8MFReng_O2waSRri";
-const SUPABASE_PROJECT_ID_FALLBACK = "vgakulafrptoirrpqppu";
-
 export default defineConfig(({ mode }) => ({
-  define: {
-    "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(
-      process.env.VITE_SUPABASE_URL || SUPABASE_URL_FALLBACK,
-    ),
-    "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(
-      process.env.VITE_SUPABASE_PUBLISHABLE_KEY || SUPABASE_KEY_FALLBACK,
-    ),
-    "import.meta.env.VITE_SUPABASE_PROJECT_ID": JSON.stringify(
-      process.env.VITE_SUPABASE_PROJECT_ID || SUPABASE_PROJECT_ID_FALLBACK,
-    ),
-  },
   server: {
     host: "::",
     port: 8080,

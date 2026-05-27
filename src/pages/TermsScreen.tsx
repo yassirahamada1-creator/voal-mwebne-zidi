@@ -1,6 +1,4 @@
-import { Link } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
-import { bi, biStr } from "@/lib/bilingual";
+import { bi } from "@/lib/bilingual";
 import { termsOfUse } from "@/config/legal";
 
 const TermsScreen = () => {
@@ -8,14 +6,7 @@ const TermsScreen = () => {
   const shi = termsOfUse.shi;
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="px-4 pt-6 pb-2 flex items-center gap-3">
-        <Link
-          to="/settings"
-          aria-label={biStr("Retour", "Rudi")}
-          className="p-1 -ml-1 rounded-md hover:bg-accent/40"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </Link>
+      <header className="px-4 pt-6 pb-2">
         {bi(fr.title, shi.title, "title")}
       </header>
 

@@ -17,18 +17,23 @@ interface Props {
 
 export default function MediaInput({ label, folder, accept, value, onChange }: Props) {
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
     setUploading(true);
+    setProgress(0);
     try {
-      const url = await uploadFile(file, folder);
+      const url = await uploadFile(file, folder, (loaded, total) => {
+        setProgress(total > 0 ? Math.round((loaded / total) * 100) : 0);
+      });
       onChange(url);
       toast.success("Fichier téléversé");
     } catch (e: any) {
       toast.error(e.message || "Erreur upload");
     } finally {
       setUploading(false);
+      setProgress(0);
     }
   };
 
@@ -68,8 +73,16 @@ export default function MediaInput({ label, folder, accept, value, onChange }: P
             ) : (
               <Upload className="w-4 h-4 mr-1" />
             )}
-            Choisir un fichier
+            {uploading ? `Téléversement… ${progress}%` : "Choisir un fichier"}
           </Button>
+          {uploading && (
+            <div className="h-1.5 w-full overflow-hidden rounded bg-muted">
+              <div
+                className="h-full bg-primary transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          )}
         </TabsContent>
         <TabsContent value="url">
           <Input

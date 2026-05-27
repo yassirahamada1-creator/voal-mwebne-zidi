@@ -99,7 +99,7 @@ const CategoryScreen = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="sticky top-0 z-30 bg-background">
+      <div className="sticky top-0 z-30 bg-background" style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}>
       <ScreenHeader
         icon={Video}
         labelFr="Galerie"
@@ -170,7 +170,6 @@ const CategoryScreen = () => {
             <OfflineLock
               key={item.id}
               urls={[item.media_url, item.thumbnail_url]}
-              requireCached
             >
             <div
               className="card-cultural card-cultural-interactive animate-fade-up"

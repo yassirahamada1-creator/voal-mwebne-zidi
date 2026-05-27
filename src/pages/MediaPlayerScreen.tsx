@@ -78,7 +78,7 @@ const MediaPlayerScreen = () => {
       list.push({
         src: buildSimpleVtt(content.description_fr),
         srclang: "fr",
-        label: "Français",
+        label: content?.title_fr || "Français",
         default: lang === "fr",
       });
     }
@@ -86,7 +86,7 @@ const MediaPlayerScreen = () => {
       list.push({
         src: buildSimpleVtt(content.description_shk),
         srclang: "zdj",
-        label: "Shikomori",
+        label: content?.title_shk || "Shikomori",
         default: lang !== "fr",
       });
     }
@@ -134,17 +134,10 @@ const MediaPlayerScreen = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {content.type === "image" && (
-        <div className="px-4 pt-4 pb-3">
-          <h1
-            className="font-display text-xl font-bold text-foreground"
-            style={{ lineHeight: "1.15" }}
-          >
-            {bi(content.title_fr, content.title_shk)}
-          </h1>
-        </div>
-      )}
+    <div
+      className="min-h-screen bg-background pb-20"
+      style={{ paddingTop: "var(--status-bar-height, env(safe-area-inset-top, 24px))" }}
+    >
 
       <div className="relative w-full bg-foreground/90">
         {blockedOffline ? (
@@ -239,11 +232,6 @@ const MediaPlayerScreen = () => {
       )}
 
       <div className="px-4 pt-4">
-        {content.type !== "image" && (
-          <h1 className="font-display text-xl font-bold text-foreground" style={{ lineHeight: "1.15" }}>
-            {bi(content.title_fr, content.title_shk)}
-          </h1>
-        )}
         {content.type === "text" || content.type === "image" ? (
           (() => {
             const hasFr = !!content.description_fr;
@@ -272,10 +260,19 @@ const MediaPlayerScreen = () => {
                       FR
                     </span>
                     <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      Français
+                      {content.title_fr || (
+                        <span className="italic text-muted-foreground/80">
+                          Titre indisponible
+                        </span>
+                      )}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-gold/60 via-terracotta/40 to-transparent" />
                   </header>
+                  {!content.title_fr && (
+                    <p className="mb-2 text-xs text-muted-foreground/60 italic">
+                      Ce contenu n’a pas encore de titre en français.
+                    </p>
+                  )}
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
                     {content.description_fr}
                   </p>
@@ -302,10 +299,19 @@ const MediaPlayerScreen = () => {
                       SHI
                     </span>
                     <h2 className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                      Shikomori
+                      {content.title_shk || (
+                        <span className="italic text-muted-foreground/80">
+                          Titre indisponible
+                        </span>
+                      )}
                     </h2>
                     <span className="ml-2 h-px flex-1 bg-gradient-to-r from-terracotta/60 via-gold/40 to-transparent" />
                   </header>
+                  {!content.title_shk && (
+                    <p className="mb-2 text-xs text-muted-foreground/60 italic">
+                      Ce contenu n’a pas encore de titre en shikomori.
+                    </p>
+                  )}
                   <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
                     {content.description_shk}
                   </p>
