@@ -151,10 +151,22 @@
     <script>
       (function () {
         var host = location.hostname;
-        var isPreview = host.endsWith('lovableproject.com') || host.endsWith('lovable.app') || host === 'localhost' || host === '127.0.0.1';
+        // On désactive le SW UNIQUEMENT dans les contextes d'édition Lovable :
+        //  - l'iframe de preview (id-preview--*.lovable.app, *.lovableproject.com)
+        //  - localhost / 127.0.0.1
+        // Le site publié (ex. voal-mwebne-zidi.lovable.app) DOIT enregistrer le SW
+        // pour permettre le démarrage hors-ligne (splash + app shell).
+        var isInIframe = false;
+        try { isInIframe = window.self !== window.top; } catch (e) { isInIframe = true; }
+        var isPreviewHost =
+          host.startsWith('id-preview--') ||
+          host.endsWith('lovableproject.com') ||
+          host === 'localhost' ||
+          host === '127.0.0.1';
+        var disableSW = isInIframe || isPreviewHost;
+
         if ('serviceWorker' in navigator) {
-          if (isPreview) {
-            // En preview/dev : désactiver le SW pour éviter de servir des chunks Vite obsolètes
+          if (disableSW) {
             navigator.serviceWorker.getRegistrations().then(function (regs) {
               regs.forEach(function (r) { r.unregister(); });
             });
@@ -162,7 +174,9 @@
               caches.keys().then(function (keys) { keys.forEach(function (k) { caches.delete(k); }); });
             }
           } else {
-            navigator.serviceWorker.register('/sw.js');
+            window.addEventListener('load', function () {
+              navigator.serviceWorker.register('/sw.js').catch(function () {});
+            });
           }
         }
       })();
