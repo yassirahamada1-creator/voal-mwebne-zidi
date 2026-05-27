@@ -131,8 +131,28 @@ const HommageScreen = () => {
     };
   }, []);
 
+  const FALLBACK = {
+    parcours:
+      "Après avoir obtenu son baccalauréat, Naicha a poursuivi ses études supérieures à l'ISPC — l'Institut Supérieur Polytechnique des Comores — où elle a suivi une formation de deux ans dans le domaine du tourisme, de 2020 à 2022. Elle s'y est distinguée par sa curiosité et sa soif d'apprendre.",
+    engagement:
+      "Depuis 2024, Naicha exerçait en tant qu'assistante en ophtalmologie, un métier qu'elle assumait avec dévouement et humanité. Auparavant, elle avait effectué un stage à la Mairie de Foumbouni au service des archives, en janvier et février 2023, y laissant le souvenir d'une jeune femme sérieuse et appliquée.",
+    talents:
+      "Au-delà de ses études et de son travail, Naicha possédait un talent précieux : la confection de kandou, ces pièces de textile traditionnel qui témoignent de la richesse du savoir-faire comorien transmis de génération en génération.",
+    liens:
+      "Naicha entretenait des liens forts avec ses camarades de l'ISPC et faisait partie d'un chama à Toirab sous le nom d'ISPC, un groupe de solidarité où l'entraide et la fraternité étaient au cœur de chaque rencontre.",
+    derniers_mots:
+      "« Elle a dit qu'elle allait récupérer son ordinateur à Dzahadjou Hambou. »",
+    derniers_mots_note:
+      "Ces mots simples, prononcés avant son départ, restent gravés dans la mémoire de ses proches.",
+    famille_retient:
+      "Sa gentillesse, son honnêteté et son grand cœur. Naicha laisse derrière elle l'image d'une jeune femme généreuse, droite et profondément humaine, dont la disparition brutale endeuille tous ceux qui l'ont connue.",
+    hommage_global:
+      "À Naicha, et à toutes les femmes victimes de féminicide à travers le monde. Elles avaient des rêves, des sourires, des familles qui les aimaient. Elles méritaient de vivre. Leur mémoire ne sera jamais oubliée. Non à la violence faite aux femmes. Ensemble, brisons le silence.",
+  };
   const v = data;
   const photo = v?.photo_url || naichaPhoto;
+  const text = (k: keyof typeof FALLBACK) =>
+    (v?.[k] && String(v[k]).trim()) || FALLBACK[k];
 
   return (
     <div className="min-h-screen pb-24 transition-colors duration-200 bg-[#faf6f0] dark:bg-[#121820]">
@@ -204,34 +224,32 @@ const HommageScreen = () => {
 
         <div className="space-y-4">
           <InfoBlock icon={GraduationCap} label="Parcours">
-            <Paragraphs text={v?.parcours || ""} />
+            <Paragraphs text={text("parcours")} />
           </InfoBlock>
 
           <InfoBlock icon={Briefcase} label="Son engagement professionnel">
-            <Paragraphs text={v?.engagement || ""} />
+            <Paragraphs text={text("engagement")} />
           </InfoBlock>
 
           <InfoBlock icon={Sparkles} label="Talents & savoir-faire">
-            <Paragraphs text={v?.talents || ""} />
+            <Paragraphs text={text("talents")} />
           </InfoBlock>
 
           <InfoBlock icon={Users} label="Ses liens">
-            <Paragraphs text={v?.liens || ""} />
+            <Paragraphs text={text("liens")} />
           </InfoBlock>
 
           <InfoBlock icon={MessageCircle} label="Ses derniers mots" highlight>
             <div className="italic">
-              <Paragraphs text={v?.derniers_mots || ""} />
+              <Paragraphs text={text("derniers_mots")} />
             </div>
-            {v?.derniers_mots_note && (
-              <div className="text-sm mt-2 text-[#6b5290] dark:text-[#b8a8d0]">
-                <Paragraphs text={v.derniers_mots_note} />
-              </div>
-            )}
+            <div className="text-sm mt-2 text-[#6b5290] dark:text-[#b8a8d0]">
+              <Paragraphs text={text("derniers_mots_note")} />
+            </div>
           </InfoBlock>
 
           <InfoBlock icon={Heart} label="Ce que la famille retient d'elle" highlight>
-            <Paragraphs text={v?.famille_retient || ""} />
+            <Paragraphs text={text("famille_retient")} />
           </InfoBlock>
         </div>
 
@@ -247,7 +265,7 @@ const HommageScreen = () => {
               <Heart className="h-7 w-7 text-white" fill="white" />
             </div>
             <div className="text-[15px] sm:text-base leading-[1.8] text-white/95 font-medium">
-              <Paragraphs text={v?.hommage_global || ""} />
+              <Paragraphs text={text("hommage_global")} />
             </div>
           </div>
         </section>
