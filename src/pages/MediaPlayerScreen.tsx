@@ -285,10 +285,9 @@ const MediaPlayerScreen = () => {
               );
             })()
           : description && (
-              description && (
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              {biStr(content.description_fr, content.description_shk)}
-            </p>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                {biStr(content.description_fr, content.description_shk)}
+              </p>
             )}
 
         <div className="mt-4">
