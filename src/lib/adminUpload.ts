@@ -19,11 +19,7 @@ function publicUrl(path: string) {
   return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 }
 
-async function uploadResumable(
-  file: File,
-  path: string,
-  onProgress?: UploadProgress
-): Promise<string> {
+async function uploadResumable(file: File, path: string, onProgress?: UploadProgress): Promise<string> {
   const { data: sessionData } = await supabase.auth.getSession();
   const token = sessionData.session?.access_token;
   if (!token) throw new Error("Session expirée, reconnectez-vous.");
@@ -34,6 +30,7 @@ async function uploadResumable(
       retryDelays: [0, 2000, 5000, 10000, 20000, 30000],
       headers: {
         authorization: `Bearer ${token}`,
+        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY as string,
         "x-upsert": "false",
       },
       uploadDataDuringCreation: true,
@@ -58,11 +55,7 @@ async function uploadResumable(
   });
 }
 
-export async function uploadFile(
-  file: File,
-  folder: string,
-  onProgress?: UploadProgress
-): Promise<string> {
+export async function uploadFile(file: File, folder: string, onProgress?: UploadProgress): Promise<string> {
   const path = buildPath(file, folder);
   // Upload résumable TUS pour toutes les tailles : reprend automatiquement
   // en cas de coupure réseau et évite les timeouts de proxy.
