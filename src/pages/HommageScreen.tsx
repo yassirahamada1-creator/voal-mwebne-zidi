@@ -24,6 +24,7 @@ type HommageData = {
   invocation_translit: string;
   invocation_fr: string;
   footer_note: string;
+  is_visible?: boolean;
 };
 
 const Paragraphs = ({ text }: { text: string }) => (
