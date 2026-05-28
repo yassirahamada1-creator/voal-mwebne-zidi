@@ -179,7 +179,11 @@ const NativeVideo = ({
     const onDurationChange = () => setDuration(v.duration);
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
-    const onError = () => setHasError(true);
+    const onError = () => { setHasError(true); setBuffering(false); };
+    const onWaiting = () => setBuffering(true);
+    const onCanPlay = () => setBuffering(false);
+    const onPlaying = () => setBuffering(false);
+    const onLoadedData = () => setBuffering(false);
     // À la fin de la vidéo : sortir du plein écran et revenir en portrait.
     const onEnded = () => { exitFullscreenAndPortrait(); };
 
@@ -188,6 +192,10 @@ const NativeVideo = ({
     v.addEventListener("play", onPlay);
     v.addEventListener("pause", onPause);
     v.addEventListener("error", onError);
+    v.addEventListener("waiting", onWaiting);
+    v.addEventListener("canplay", onCanPlay);
+    v.addEventListener("playing", onPlaying);
+    v.addEventListener("loadeddata", onLoadedData);
     v.addEventListener("ended", onEnded);
 
     return () => {
@@ -196,6 +204,10 @@ const NativeVideo = ({
       v.removeEventListener("play", onPlay);
       v.removeEventListener("pause", onPause);
       v.removeEventListener("error", onError);
+      v.removeEventListener("waiting", onWaiting);
+      v.removeEventListener("canplay", onCanPlay);
+      v.removeEventListener("playing", onPlaying);
+      v.removeEventListener("loadeddata", onLoadedData);
       v.removeEventListener("ended", onEnded);
     };
   }, [exitFullscreenAndPortrait]);
@@ -238,8 +250,18 @@ const NativeVideo = ({
         aria-label={ariaLabel}
         autoPlay={autoPlay}
         playsInline
+        preload="auto"
         className="h-full w-full object-contain"
       />
+
+      {/* Indicateur de chargement */}
+      {buffering && !hasError && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="rounded-full bg-black/40 p-3 backdrop-blur-sm ring-1 ring-white/15">
+            <Loader2 className="h-7 w-7 animate-spin text-[hsl(var(--gold))]" />
+          </div>
+        </div>
+      )}
 
       {/* Erreur */}
       {hasError && (
@@ -255,7 +277,7 @@ const NativeVideo = ({
         }`}
         style={{
           background:
-            "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%)",
+            "linear-gradient(to top, hsl(var(--primary) / 0.85) 0%, hsl(var(--primary) / 0.35) 35%, transparent 65%)",
         }}
       >
         {/* Barre de progression */}
@@ -267,10 +289,10 @@ const NativeVideo = ({
             step={0.1}
             value={currentTime}
             onChange={(e) => handleSeek(Number(e.target.value))}
-            className="w-full accent-yellow-400"
+            className="w-full accent-[hsl(var(--gold))]"
             aria-label="Progression"
           />
-          <div className="flex justify-between text-xs text-white/70">
+          <div className="flex justify-between text-xs text-white/80 font-medium">
             <span>{fmtTime(currentTime)}</span>
             <span>{fmtTime(duration)}</span>
           </div>
