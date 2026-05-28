@@ -1,0 +1,1 @@
+ALTER TABLE public.hommage_content ADD COLUMN IF NOT EXISTS is_visible boolean NOT NULL DEFAULT true;
