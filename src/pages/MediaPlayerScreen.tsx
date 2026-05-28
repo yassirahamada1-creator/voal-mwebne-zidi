@@ -212,7 +212,7 @@ const MediaPlayerScreen = () => {
       )}
 
       <div className="px-4 pt-4">
-        {content.type === "text" || content.type === "image"
+        {content.type === "text"
           ? (() => {
               const hasFr = !!content.description_fr;
               const hasShk = !!content.description_shk;
@@ -245,9 +245,6 @@ const MediaPlayerScreen = () => {
                       </h2>
                       <span className="ml-2 h-px flex-1 bg-gradient-to-r from-gold/60 via-terracotta/40 to-transparent" />
                     </header>
-                    {!content.title_fr && (
-                      <p className="mb-2 text-xs text-muted-foreground/60 italic">{tFr.pages.media.noTitleFr}</p>
-                    )}
                     <div
                       className="text-[15px] leading-relaxed text-foreground/90 prose prose-sm max-w-none"
                       dangerouslySetInnerHTML={{ __html: content.description_fr! }}
@@ -278,9 +275,6 @@ const MediaPlayerScreen = () => {
                       </h2>
                       <span className="ml-2 h-px flex-1 bg-gradient-to-r from-terracotta/60 via-gold/40 to-transparent" />
                     </header>
-                    {!content.title_shk && (
-                      <p className="mb-2 text-xs text-muted-foreground/60 italic">{tFr.pages.media.noTitleShk}</p>
-                    )}
                     <div
                       className="text-[15px] leading-relaxed text-foreground/90 prose prose-sm max-w-none"
                       lang="zdj"
@@ -291,10 +285,7 @@ const MediaPlayerScreen = () => {
               );
             })()
           : description && (
-              <div
-                className="mt-2 text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: String(description ?? "") }}
-              />
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{String(description ?? "")}</p>
             )}
 
         <div className="mt-4">
