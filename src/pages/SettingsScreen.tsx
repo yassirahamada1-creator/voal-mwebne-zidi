@@ -350,6 +350,30 @@ const AppearanceContent = ({ fr }: { fr: boolean }) => {
 const SettingsScreen = () => {
   const { lang, tFr, tShi } = useI18n();
   const fr = lang === "fr";
+  const [hommageVisible, setHommageVisible] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const fetchVisibility = () =>
+      supabase
+        .from("hommage_content")
+        .select("is_visible")
+        .eq("id", "main")
+        .maybeSingle()
+        .then(({ data }) => {
+          if (active && data) setHommageVisible((data as { is_visible?: boolean }).is_visible !== false);
+        });
+    fetchVisibility();
+    const channel = supabase
+      .channel("hommage_visibility_sync")
+      .on("postgres_changes", { event: "*", schema: "public", table: "hommage_content" }, fetchVisibility)
+      .subscribe();
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-background pb-24 transition-colors duration-200">
