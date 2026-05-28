@@ -127,6 +127,7 @@ export type Database = {
           invocation_ar: string
           invocation_fr: string
           invocation_translit: string
+          is_visible: boolean
           liens: string
           parcours: string
           photo_caption: string
@@ -149,6 +150,7 @@ export type Database = {
           invocation_ar?: string
           invocation_fr?: string
           invocation_translit?: string
+          is_visible?: boolean
           liens?: string
           parcours?: string
           photo_caption?: string
@@ -171,6 +173,7 @@ export type Database = {
           invocation_ar?: string
           invocation_fr?: string
           invocation_translit?: string
+          is_visible?: boolean
           liens?: string
           parcours?: string
           photo_caption?: string

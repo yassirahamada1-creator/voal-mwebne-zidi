@@ -11,6 +11,7 @@ import {
   Maximize,
   Minimize,
   Gauge,
+  Loader2,
 } from "lucide-react";
 
 export type NativeVideoProps = {
@@ -50,6 +51,7 @@ const NativeVideo = ({
   const [showRateMenu, setShowRateMenu] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [buffering, setBuffering] = useState(true);
 
   const hideTimerRef = useRef<number | null>(null);
 
@@ -177,7 +179,11 @@ const NativeVideo = ({
     const onDurationChange = () => setDuration(v.duration);
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
-    const onError = () => setHasError(true);
+    const onError = () => { setHasError(true); setBuffering(false); };
+    const onWaiting = () => setBuffering(true);
+    const onCanPlay = () => setBuffering(false);
+    const onPlaying = () => setBuffering(false);
+    const onLoadedData = () => setBuffering(false);
     // À la fin de la vidéo : sortir du plein écran et revenir en portrait.
     const onEnded = () => { exitFullscreenAndPortrait(); };
 
@@ -186,6 +192,10 @@ const NativeVideo = ({
     v.addEventListener("play", onPlay);
     v.addEventListener("pause", onPause);
     v.addEventListener("error", onError);
+    v.addEventListener("waiting", onWaiting);
+    v.addEventListener("canplay", onCanPlay);
+    v.addEventListener("playing", onPlaying);
+    v.addEventListener("loadeddata", onLoadedData);
     v.addEventListener("ended", onEnded);
 
     return () => {
@@ -194,6 +204,10 @@ const NativeVideo = ({
       v.removeEventListener("play", onPlay);
       v.removeEventListener("pause", onPause);
       v.removeEventListener("error", onError);
+      v.removeEventListener("waiting", onWaiting);
+      v.removeEventListener("canplay", onCanPlay);
+      v.removeEventListener("playing", onPlaying);
+      v.removeEventListener("loadeddata", onLoadedData);
       v.removeEventListener("ended", onEnded);
     };
   }, [exitFullscreenAndPortrait]);
@@ -236,8 +250,18 @@ const NativeVideo = ({
         aria-label={ariaLabel}
         autoPlay={autoPlay}
         playsInline
+        preload="auto"
         className="h-full w-full object-contain"
       />
+
+      {/* Indicateur de chargement */}
+      {buffering && !hasError && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="rounded-full bg-black/40 p-3 backdrop-blur-sm ring-1 ring-white/15">
+            <Loader2 className="h-7 w-7 animate-spin text-[hsl(var(--gold))]" />
+          </div>
+        </div>
+      )}
 
       {/* Erreur */}
       {hasError && (
@@ -253,7 +277,7 @@ const NativeVideo = ({
         }`}
         style={{
           background:
-            "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%)",
+            "linear-gradient(to top, hsl(var(--primary) / 0.85) 0%, hsl(var(--primary) / 0.35) 35%, transparent 65%)",
         }}
       >
         {/* Barre de progression */}
@@ -265,10 +289,10 @@ const NativeVideo = ({
             step={0.1}
             value={currentTime}
             onChange={(e) => handleSeek(Number(e.target.value))}
-            className="w-full accent-yellow-400"
+            className="w-full accent-[hsl(var(--gold))]"
             aria-label="Progression"
           />
-          <div className="flex justify-between text-xs text-white/70">
+          <div className="flex justify-between text-xs text-white/80 font-medium">
             <span>{fmtTime(currentTime)}</span>
             <span>{fmtTime(duration)}</span>
           </div>
@@ -282,13 +306,9 @@ const NativeVideo = ({
               type="button"
               onClick={togglePlay}
               aria-label={playing ? "Pause" : "Lecture"}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white transition active:scale-95 hover:bg-white/15"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[hsl(var(--gold))] text-[hsl(var(--primary))] shadow-md transition active:scale-95 hover:brightness-110"
             >
-              {playing ? (
-                <Pause className="h-6 w-6" />
-              ) : (
-                <Play className="h-6 w-6" />
-              )}
+              {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
             </button>
 
             {/* Mute */}
@@ -298,11 +318,7 @@ const NativeVideo = ({
               aria-label={muted ? "Activer le son" : "Couper le son"}
               className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white transition active:scale-95 hover:bg-white/15"
             >
-              {muted ? (
-                <VolumeX className="h-5 w-5" />
-              ) : (
-                <Volume2 className="h-5 w-5" />
-              )}
+              {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
             </button>
 
             {/* Volume slider */}
@@ -313,7 +329,7 @@ const NativeVideo = ({
               step={0.05}
               value={muted ? 0 : volume}
               onChange={(e) => handleVolumeChange(Number(e.target.value))}
-              className="w-16 accent-yellow-400"
+              className="w-16 accent-[hsl(var(--gold))]"
               aria-label="Volume"
             />
           </div>
@@ -331,14 +347,14 @@ const NativeVideo = ({
                 <span>{playbackRate}x</span>
               </button>
               {showRateMenu && (
-                <div className="absolute bottom-12 right-0 min-w-[6rem] rounded-xl border border-yellow-400/30 bg-zinc-900 p-1 text-white shadow-xl">
+                <div className="absolute bottom-12 right-0 min-w-[6rem] rounded-xl border border-[hsl(var(--gold)/0.4)] bg-[hsl(var(--primary))] p-1 text-white shadow-xl">
                   {PLAYBACK_RATES.map((r) => (
                     <button
                       key={r}
                       type="button"
                       onClick={() => setRate(r)}
-                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-zinc-700 ${
-                        playbackRate === r ? "font-semibold text-yellow-400" : ""
+                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-white/10 ${
+                        playbackRate === r ? "font-semibold text-[hsl(var(--gold))]" : ""
                       }`}
                     >
                       {r}x

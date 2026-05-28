@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "@/contexts/I18nContext";
+import { supabase } from "@/integrations/supabase/client";
 import {
   ChevronRight,
   FileText,
@@ -350,6 +351,30 @@ const AppearanceContent = ({ fr }: { fr: boolean }) => {
 const SettingsScreen = () => {
   const { lang, tFr, tShi } = useI18n();
   const fr = lang === "fr";
+  const [hommageVisible, setHommageVisible] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const fetchVisibility = () =>
+      supabase
+        .from("hommage_content")
+        .select("is_visible")
+        .eq("id", "main")
+        .maybeSingle()
+        .then(({ data }) => {
+          if (active && data) setHommageVisible((data as { is_visible?: boolean }).is_visible !== false);
+        });
+    fetchVisibility();
+    const channel = supabase
+      .channel("hommage_visibility_sync")
+      .on("postgres_changes", { event: "*", schema: "public", table: "hommage_content" }, fetchVisibility)
+      .subscribe();
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-background pb-24 transition-colors duration-200">
@@ -393,9 +418,11 @@ const SettingsScreen = () => {
             </div>
           </Section>
 
-          <div className="card-cultural border-l-2 border-l-secondary/60 overflow-hidden">
-            <LinkRow to="/hommage" icon={Flower2} fr="Hommage à Naicha" shi="Tukio la Naicha" />
-          </div>
+          {hommageVisible && (
+            <div className="card-cultural border-l-2 border-l-secondary/60 overflow-hidden">
+              <LinkRow to="/hommage" icon={Flower2} fr="Hommage à Naicha" shi="Tukio la Naicha" />
+            </div>
+          )}
         </Accordion>
 
 

@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Loader2, Save, Flower2 } from "lucide-react";
+import { Loader2, Save, Flower2, Eye, EyeOff } from "lucide-react";
 import MediaInput from "./MediaInput";
 
 type Hommage = {
   id: string;
+  is_visible: boolean;
   title: string;
   subtitle: string;
   photo_url: string | null;
@@ -107,6 +109,31 @@ export default function HommageTab() {
           </p>
         </div>
       </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          {data.is_visible ? (
+            <Eye className="w-5 h-5 text-emerald-600" />
+          ) : (
+            <EyeOff className="w-5 h-5 text-slate-400" />
+          )}
+          <div>
+            <div className="text-sm font-medium text-slate-900">
+              Visibilité de la page
+            </div>
+            <div className="text-xs text-slate-500">
+              {data.is_visible
+                ? "Page visible dans l'application"
+                : "Page masquée dans l'application"}
+            </div>
+          </div>
+        </div>
+        <Switch
+          checked={data.is_visible}
+          onCheckedChange={(c) => update("is_visible", c)}
+        />
+      </div>
+
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
         <MediaInput

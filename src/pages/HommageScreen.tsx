@@ -24,6 +24,7 @@ type HommageData = {
   invocation_translit: string;
   invocation_fr: string;
   footer_note: string;
+  is_visible?: boolean;
 };
 
 const Paragraphs = ({ text }: { text: string }) => (
@@ -153,6 +154,17 @@ const HommageScreen = () => {
   const photo = v?.photo_url || naichaPhoto;
   const text = (k: keyof typeof FALLBACK) =>
     (v?.[k] && String(v[k]).trim()) || FALLBACK[k];
+
+  if (v && v.is_visible === false) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6 text-center bg-[#faf6f0] dark:bg-[#121820]">
+        <p className="text-sm text-[#7a6a5a] dark:text-[#a8a0b0]">
+          Cette page n'est pas disponible pour le moment.
+        </p>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen pb-24 transition-colors duration-200 bg-[#faf6f0] dark:bg-[#121820]">
