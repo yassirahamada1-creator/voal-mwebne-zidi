@@ -21,8 +21,11 @@ CREATE TABLE IF NOT EXISTS public.hommage_content (
   invocation_translit text NOT NULL DEFAULT 'Allah ya rahamhunna',
   invocation_fr text NOT NULL DEFAULT 'Que Allah leur accorde Sa miséricorde',
   footer_note text NOT NULL DEFAULT 'Contre les violences faites aux femmes — N''oublions jamais.',
+  is_visible boolean NOT NULL DEFAULT true,
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE public.hommage_content ADD COLUMN IF NOT EXISTS is_visible boolean NOT NULL DEFAULT true;
 
 GRANT SELECT ON public.hommage_content TO anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.hommage_content TO authenticated;
