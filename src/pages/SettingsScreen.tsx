@@ -393,9 +393,11 @@ const SettingsScreen = () => {
             </div>
           </Section>
 
-          <div className="card-cultural border-l-2 border-l-secondary/60 overflow-hidden">
-            <LinkRow to="/hommage" icon={Flower2} fr="Hommage à Naicha" shi="Tukio la Naicha" />
-          </div>
+          {hommageVisible && (
+            <div className="card-cultural border-l-2 border-l-secondary/60 overflow-hidden">
+              <LinkRow to="/hommage" icon={Flower2} fr="Hommage à Naicha" shi="Tukio la Naicha" />
+            </div>
+          )}
         </Accordion>
 
 

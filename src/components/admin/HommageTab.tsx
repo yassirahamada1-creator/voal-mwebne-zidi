@@ -110,6 +110,31 @@ export default function HommageTab() {
         </div>
       </div>
 
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          {data.is_visible ? (
+            <Eye className="w-5 h-5 text-emerald-600" />
+          ) : (
+            <EyeOff className="w-5 h-5 text-slate-400" />
+          )}
+          <div>
+            <div className="text-sm font-medium text-slate-900">
+              Visibilité de la page
+            </div>
+            <div className="text-xs text-slate-500">
+              {data.is_visible
+                ? "Page visible dans l'application"
+                : "Page masquée dans l'application"}
+            </div>
+          </div>
+        </div>
+        <Switch
+          checked={data.is_visible}
+          onCheckedChange={(c) => update("is_visible", c)}
+        />
+      </div>
+
+
       <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
         <MediaInput
           label="Photo"
