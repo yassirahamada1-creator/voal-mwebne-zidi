@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Loader2, Save, Flower2 } from "lucide-react";
+import { Loader2, Save, Flower2, Eye, EyeOff } from "lucide-react";
 import MediaInput from "./MediaInput";
 
 type Hommage = {
   id: string;
+  is_visible: boolean;
   title: string;
   subtitle: string;
   photo_url: string | null;
