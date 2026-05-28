@@ -57,7 +57,13 @@ async function uploadResumable(file: File, path: string, onProgress?: UploadProg
 
 export async function uploadFile(file: File, folder: string, onProgress?: UploadProgress): Promise<string> {
   const path = buildPath(file, folder);
-  // Upload résumable TUS pour toutes les tailles : reprend automatiquement
-  // en cas de coupure réseau et évite les timeouts de proxy.
-  return uploadResumable(file, path, onProgress);
+
+  // TEST : upload standard (pas TUS)
+  const { data, error } = await supabase.storage.from(BUCKET).upload(path, file, {
+    cacheControl: "3600",
+    upsert: false,
+  });
+
+  if (error) throw error;
+  return publicUrl(path);
 }
