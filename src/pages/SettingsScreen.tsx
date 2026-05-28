@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "@/contexts/I18nContext";
+import { supabase } from "@/integrations/supabase/client";
 import {
   ChevronRight,
   FileText,
