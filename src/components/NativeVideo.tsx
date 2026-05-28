@@ -11,6 +11,7 @@ import {
   Maximize,
   Minimize,
   Gauge,
+  Loader2,
 } from "lucide-react";
 
 export type NativeVideoProps = {
@@ -50,6 +51,7 @@ const NativeVideo = ({
   const [showRateMenu, setShowRateMenu] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [buffering, setBuffering] = useState(true);
 
   const hideTimerRef = useRef<number | null>(null);
 
