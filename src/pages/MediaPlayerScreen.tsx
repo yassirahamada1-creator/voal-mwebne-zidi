@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ContentActions from "@/components/ContentActions";
 import { Headphones, FileText, Image as ImageIcon, BookOpen, Mic, CloudDownload, WifiOff } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useContent, useContents } from "@/hooks/useBackendData";
+import { useContent, useContentsByParent } from "@/hooks/useBackendData";
 import { bi, biStr, BilingualText } from "@/lib/bilingual";
 import NativeVideo from "@/components/NativeVideo";
 import { buildSimpleVtt, type VideoSubtitle } from "@/lib/vtt";
@@ -25,18 +25,16 @@ const MediaPlayerScreen = () => {
   const navigate = useNavigate();
   const { mediaId } = useParams();
   const { data: content, loading } = useContent(mediaId);
-  const moduleSlug = content?.module_slug ?? undefined;
-  const { data: siblings } = useContents(moduleSlug);
+  const { data: siblings } = useContentsByParent(mediaId);
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const relatedByType = useMemo(() => {
     const map: Record<string, typeof siblings> = { text: [], audio: [], image: [] };
     for (const c of siblings) {
-      if (c.id === mediaId) continue;
       if (map[c.type]) map[c.type].push(c);
     }
     return map;
-  }, [siblings, mediaId]);
+  }, [siblings]);
 
   const availableTabs = RELATED_TYPES;
   const firstWithItems =

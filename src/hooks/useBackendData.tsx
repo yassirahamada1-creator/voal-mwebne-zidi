@@ -60,13 +60,12 @@ export interface QuizRow {
   is_published: boolean;
 }
 
-const isOnline = () =>
-  typeof navigator === "undefined" ? true : navigator.onLine;
+const isOnline = () => (typeof navigator === "undefined" ? true : navigator.onLine);
 
 // ─── Module-level cache ───────────────────────────────────────────────────────
 type CacheEntry<T> = { data: T[]; ts: number };
 const listCache = new Map<string, CacheEntry<any>>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 5 * 60 * 1000;
 // ─────────────────────────────────────────────────────────────────────────────
 
 function useReconciledList<T>(opts: {
@@ -89,72 +88,57 @@ function useReconciledList<T>(opts: {
 
   useEffect(() => {
     let cancelled = false;
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    let fallbackTimer: number | null = null;
-    let hasFreshData = false;
 
-    const hydrateOffline = async () => {
+    const applyAndCache = (rows: T[]) => {
+      const sorted = [...rows].sort(sort);
+      listCache.set(channelKey, { data: sorted, ts: Date.now() });
+      if (!cancelled) setData(sorted);
+    };
+
+    const loadOffline = async () => {
       const all = await idbGetAll<T>(storeName);
-      if (cancelled || hasFreshData) return;
       const filtered = filterOffline ? filterOffline(all) : all;
-      setData([...filtered].sort(sort));
-      setLoading(false);
+      applyAndCache(filtered);
     };
 
     const loadOnline = async () => {
       try {
         const rows = await fetchOnline();
-        if (cancelled) return;
-        hasFreshData = true;
-        listCache.set(channelKey, { data: rows, ts: Date.now() });
-        if (fallbackTimer) { window.clearTimeout(fallbackTimer); fallbackTimer = null; }
-        setData(rows);
-        setLoading(false);
+        applyAndCache(rows);
+        if (!cancelled) setLoading(false);
       } catch {
-        // réseau KO → laisser le repli IDB
+        await loadOffline();
+        if (!cancelled) setLoading(false);
       }
     };
 
-    const subscribeRealtime = () => {
-      if (channel) return;
-      const params: any = { event: "*", schema: "public", table };
-      if (filter) params.filter = filter;
-      channel = supabase.channel(channelKey).on("postgres_changes", params, loadOnline).subscribe();
-    };
-
-    const teardownRealtime = () => {
-      if (channel) { supabase.removeChannel(channel); channel = null; }
-    };
-
-    const onOnline = () => { loadOnline(); subscribeRealtime(); };
-    const onOffline = () => {
-      teardownRealtime();
-      if (data.length === 0 && !hasFreshData) hydrateOffline();
-    };
-
-    if (isOnline()) {
-      // Si cache frais, on refetch silencieusement sans passer loading=true
-      if (!isFresh) setLoading(true);
-      loadOnline();
-      fallbackTimer = window.setTimeout(() => {
-        if (!cancelled && !hasFreshData) hydrateOffline();
-      }, 1200);
-      subscribeRealtime();
-    } else {
-      hydrateOffline();
+    if (!isFresh) {
+      setLoading(true);
+      if (isOnline()) {
+        loadOnline();
+      } else {
+        loadOffline().then(() => {
+          if (!cancelled) setLoading(false);
+        });
+      }
     }
 
+    const onOnline = () => loadOnline();
     window.addEventListener("online", onOnline);
-    window.addEventListener("offline", onOffline);
+
+    const ch = isOnline()
+      ? supabase
+          .channel(`${channelKey}-realtime`)
+          .on("postgres_changes", { event: "*", schema: "public", table }, loadOnline)
+          .subscribe()
+      : null;
+
     return () => {
       cancelled = true;
-      if (fallbackTimer) window.clearTimeout(fallbackTimer);
       window.removeEventListener("online", onOnline);
-      window.removeEventListener("offline", onOffline);
-      teardownRealtime();
+      if (ch) supabase.removeChannel(ch);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, opts.deps ?? []);
+  }, [...(opts.deps ?? [])]);
 
   return { data, loading };
 }
@@ -166,17 +150,13 @@ export const useModules = () =>
     channelKey: "modules-live",
     table: "modules",
     fetchOnline: async () => {
-      const { data } = await supabase
-        .from("modules")
-        .select("*")
-        .eq("is_active", true)
-        .order("order_index");
+      const { data } = await supabase.from("modules").select("*").eq("is_active", true).order("order_index");
       return (data ?? []) as ModuleRow[];
     },
     sort: (a, b) => a.order_index - b.order_index,
   });
 
-// ---------- Contents ----------
+// ---------- Contents (by module) ----------
 export const useContents = (moduleSlug?: string) =>
   useReconciledList<ContentRow>({
     storeName: "contents",
@@ -188,10 +168,30 @@ export const useContents = (moduleSlug?: string) =>
       const { data } = await q.order("created_at", { ascending: false });
       return (data ?? []) as ContentRow[];
     },
-    filterOffline: (rows) =>
-      moduleSlug ? rows.filter((c) => c.module_slug === moduleSlug) : rows,
+    filterOffline: (rows) => (moduleSlug ? rows.filter((c) => c.module_slug === moduleSlug) : rows),
     sort: (a, b) => (b.created_at || "").localeCompare(a.created_at || ""),
     deps: [moduleSlug],
+  });
+
+// ---------- Contents (by parent_id) ----------
+export const useContentsByParent = (parentId?: string) =>
+  useReconciledList<ContentRow>({
+    storeName: "contents",
+    channelKey: `contents-parent-${parentId ?? "none"}`,
+    table: "contents",
+    fetchOnline: async () => {
+      if (!parentId) return [];
+      const { data } = await supabase
+        .from("contents")
+        .select("*")
+        .eq("is_published", true)
+        .eq("parent_id", parentId)
+        .order("created_at", { ascending: false });
+      return (data ?? []) as ContentRow[];
+    },
+    filterOffline: (rows) => (parentId ? rows.filter((c) => c.parent_id === parentId) : []),
+    sort: (a, b) => (b.created_at || "").localeCompare(a.created_at || ""),
+    deps: [parentId],
   });
 
 // ---------- Single content ----------
@@ -200,41 +200,65 @@ export const useContent = (id?: string) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) { setLoading(false); return; }
     let cancelled = false;
+    if (!id) {
+      setLoading(false);
+      return;
+    }
 
-    let networkResolved = false;
-    const hydrateOffline = async () => {
+    const loadOnline = async () => {
+      try {
+        const { data: row } = await supabase.from("contents").select("*").eq("id", id).single();
+        if (!cancelled) {
+          setData((row as ContentRow) ?? null);
+          setLoading(false);
+        }
+      } catch {
+        const all = await idbGetAll<ContentRow>("contents");
+        const found = all.find((c) => c.id === id) ?? null;
+        if (!cancelled) {
+          setData(found);
+          setLoading(false);
+        }
+      }
+    };
+
+    const loadOffline = async () => {
       const all = await idbGetAll<ContentRow>("contents");
       const found = all.find((c) => c.id === id) ?? null;
-      if (cancelled || networkResolved) return;
-      if (found) setData(found);
-      if (found || !isOnline()) setLoading(false);
-    };
-    const loadOnline = () => {
-      supabase.from("contents").select("*").eq("id", id).maybeSingle().then(({ data }) => {
-        if (cancelled) return;
-        networkResolved = true;
-        setData(data as ContentRow | null);
+      if (!cancelled) {
+        setData(found);
         setLoading(false);
-      });
+      }
     };
-    hydrateOffline();
-    if (isOnline()) loadOnline();
+
+    if (isOnline()) {
+      loadOnline();
+    } else {
+      loadOffline();
+    }
+
     const onOnline = () => loadOnline();
     window.addEventListener("online", onOnline);
+
     const ch = isOnline()
       ? supabase
           .channel(`content-live-${id}`)
-          .on("postgres_changes", { event: "*", schema: "public", table: "contents", filter: `id=eq.${id}` }, loadOnline)
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "contents", filter: `id=eq.${id}` },
+            loadOnline,
+          )
           .subscribe()
       : null;
+
     return () => {
       cancelled = true;
       window.removeEventListener("online", onOnline);
       if (ch) supabase.removeChannel(ch);
     };
   }, [id]);
+
   return { data, loading };
 };
 
@@ -245,11 +269,7 @@ export const useGallery = () =>
     channelKey: "gallery-live",
     table: "gallery_items",
     fetchOnline: async () => {
-      const { data } = await supabase
-        .from("gallery_items")
-        .select("*")
-        .eq("is_published", true)
-        .order("order_index");
+      const { data } = await supabase.from("gallery_items").select("*").eq("is_published", true).order("order_index");
       return (data ?? []) as GalleryRow[];
     },
     sort: (a, b) => a.order_index - b.order_index,
@@ -267,8 +287,7 @@ export const useQuizQuestions = (moduleSlug?: string) =>
       const { data } = await q.order("order_index");
       return (data ?? []) as QuizRow[];
     },
-    filterOffline: (rows) =>
-      moduleSlug ? rows.filter((r) => r.module_slug === moduleSlug) : rows,
+    filterOffline: (rows) => (moduleSlug ? rows.filter((r) => r.module_slug === moduleSlug) : rows),
     sort: (a, b) => a.order_index - b.order_index,
     deps: [moduleSlug],
   });
@@ -278,9 +297,10 @@ export function useOfflineMediaUrl(remoteUrl?: string | null): {
   url: string | null;
   isOffline: boolean;
 } {
-  const [resolved, setResolved] = useState<{ url: string | null; isOffline: boolean }>(
-    { url: remoteUrl ?? null, isOffline: false },
-  );
+  const [resolved, setResolved] = useState<{ url: string | null; isOffline: boolean }>({
+    url: remoteUrl ?? null,
+    isOffline: false,
+  });
 
   useEffect(() => {
     let cancelled = false;
