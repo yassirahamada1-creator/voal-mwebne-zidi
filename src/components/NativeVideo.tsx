@@ -306,13 +306,9 @@ const NativeVideo = ({
               type="button"
               onClick={togglePlay}
               aria-label={playing ? "Pause" : "Lecture"}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white transition active:scale-95 hover:bg-white/15"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[hsl(var(--gold))] text-[hsl(var(--primary))] shadow-md transition active:scale-95 hover:brightness-110"
             >
-              {playing ? (
-                <Pause className="h-6 w-6" />
-              ) : (
-                <Play className="h-6 w-6" />
-              )}
+              {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
             </button>
 
             {/* Mute */}
@@ -322,11 +318,7 @@ const NativeVideo = ({
               aria-label={muted ? "Activer le son" : "Couper le son"}
               className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white transition active:scale-95 hover:bg-white/15"
             >
-              {muted ? (
-                <VolumeX className="h-5 w-5" />
-              ) : (
-                <Volume2 className="h-5 w-5" />
-              )}
+              {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
             </button>
 
             {/* Volume slider */}
@@ -337,7 +329,7 @@ const NativeVideo = ({
               step={0.05}
               value={muted ? 0 : volume}
               onChange={(e) => handleVolumeChange(Number(e.target.value))}
-              className="w-16 accent-yellow-400"
+              className="w-16 accent-[hsl(var(--gold))]"
               aria-label="Volume"
             />
           </div>
@@ -355,14 +347,14 @@ const NativeVideo = ({
                 <span>{playbackRate}x</span>
               </button>
               {showRateMenu && (
-                <div className="absolute bottom-12 right-0 min-w-[6rem] rounded-xl border border-yellow-400/30 bg-zinc-900 p-1 text-white shadow-xl">
+                <div className="absolute bottom-12 right-0 min-w-[6rem] rounded-xl border border-[hsl(var(--gold)/0.4)] bg-[hsl(var(--primary))] p-1 text-white shadow-xl">
                   {PLAYBACK_RATES.map((r) => (
                     <button
                       key={r}
                       type="button"
                       onClick={() => setRate(r)}
-                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-zinc-700 ${
-                        playbackRate === r ? "font-semibold text-yellow-400" : ""
+                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-white/10 ${
+                        playbackRate === r ? "font-semibold text-[hsl(var(--gold))]" : ""
                       }`}
                     >
                       {r}x
