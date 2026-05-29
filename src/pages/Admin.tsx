@@ -42,6 +42,7 @@ import RichText from "@/components/admin/RichText";
 import { setPreviewTranslation, clearPreviewTranslations } from "@/contexts/I18nContext";
 import { uploadFile } from "@/lib/adminUpload";
 import FullEditTab from "@/components/admin/FullEditTab";
+import GalleryTab from "@/components/admin/GalleryTab";
 import { ConfirmDeleteProvider, confirmDelete } from "@/components/admin/ConfirmDeleteDialog";
 
 type Module = {
