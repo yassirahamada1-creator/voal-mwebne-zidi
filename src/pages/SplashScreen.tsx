@@ -197,46 +197,28 @@ const SplashScreen = () => {
       </div>
 
       {/* ZONE BASSE — Logos partenaires */}
-      <div
-        className={`relative z-10 mb-2 sm:mb-6 flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-col items-center gap-2 transition-all duration-500 ${
-          phase === "leaving" ? "opacity-0 translate-y-4" : "animate-fade-up"
-        }`}
-        style={{ animationDelay: "1.6s", animationFillMode: "both" }}
-      >
-        <span aria-hidden="true" className="mb-1 inline-block h-px w-20 bg-primary-foreground/20" />
+<div
+  className={`relative z-10 mb-2 sm:mb-6 flex w-full max-w-md sm:max-w-lg md:max-w-xl flex-col items-center gap-2 transition-all duration-500 ${
+    phase === "leaving" ? "opacity-0 translate-y-4" : "animate-fade-up"
+  }`}
+  style={{ animationDelay: "1.6s", animationFillMode: "both" }}
+>
+  <span aria-hidden="true" className="mb-1 inline-block h-px w-20 bg-primary-foreground/20" />
 
-        {/* La 1ère synchro se fait silencieusement en arrière-plan */}
+  {/* Logo large — COI·ICC·France·AFD */}
+  <div className="overflow-hidden rounded-xl bg-white shadow-md ring-1 ring-white/30 h-20 sm:h-28 w-full flex items-center justify-center">
+    <img src={partnerLogos[1].src} alt={partnerLogos[1].alt} className="h-full w-full object-contain" />
+  </div>
 
-        {(() => {
-          const wide = partnerLogos[1];
-          const bottom = partnerLogos.slice(2);
-          const frame = "overflow-hidden rounded-xl bg-white p-0.5 shadow-md ring-1 ring-white/30 h-20 sm:h-28 md:h-32";
-          const wideFrame = `${frame} flex items-center justify-center w-full max-w-[340px] sm:max-w-[440px] md:max-w-[520px]`;
-          const cellFrame = `${frame} w-36 sm:w-44 md:w-52 flex items-center justify-start`;
-          return (
-            <div className="w-full flex-col gap-3 sm:gap-4 flex items-center justify-start px-0 mx-0">
-              {wide && (
-                <div className={wideFrame}>
-                  <img src={wide.src} alt={wide.alt} className="h-full w-full object-contain m-0 p-2 py-0 px-0 mx-0" />
-                </div>
-              )}
-              <div className="flex w-full max-w-[340px] sm:max-w-[440px] md:max-w-[520px] items-stretch justify-center gap-3 sm:gap-4 mx-0">
-                {bottom.map((cell) => (
-                  <div key={cell.alt} className={cellFrame}>
-                    <img
-                      src={cell.src}
-                      alt={cell.alt}
-                      className="h-full w-full object-contain m-0 p-2 py-0 mx-0 px-px"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })()}
+  {/* Deux logos côte à côte */}
+  <div className="flex w-full gap-3 sm:gap-4">
+    {partnerLogos.slice(2).map((logo) => (
+      <div key={logo.alt} className="flex-1 overflow-hidden rounded-xl bg-white shadow-md ring-1 ring-white/30 h-20 sm:h-28 flex items-center justify-center">
+        <img src={logo.src} alt={logo.alt} className="h-full w-full object-contain p-1" />
       </div>
-    </div>
-  );
-};
+    ))}
+  </div>
+</div>
+
 
 export default SplashScreen;
