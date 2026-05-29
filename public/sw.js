@@ -1,41 +1,45 @@
-// Service worker cache-first pour permettre l'ouverture hors-ligne.
-// Précache l'app shell au install ; en runtime : cache d'abord, réseau ensuite.
-// v4 : cache aussi les polices Google + cdnfonts (responses CORS/opaques)
-//      pour un rendu visuel fidèle hors-ligne.
-const CACHE = "vdl-shell-v4";
+// Service Worker — vdl-shell-v5 + vdl-offline-v1
+// v5 : app shell + polices CDN + médias Supabase (Cache First)
+
+const SHELL_CACHE = "vdl-shell-v5";
+const MEDIA_CACHE = "vdl-offline-v1";
+
 const SHELL = ["/", "/index.html", "/manifest.json"];
 
-// Hôtes de polices à mettre en cache (réponses CORS, parfois opaques).
-const FONT_HOSTS = [
-  "fonts.googleapis.com",
-  "fonts.gstatic.com",
-  "fonts.cdnfonts.com",
-];
+const FONT_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "fonts.cdnfonts.com"];
 
+const MEDIA_HOSTS = ["gatpaniieoesfboixtco.supabase.co"];
+
+const MEDIA_EXT = /\.(mp4|mp3|webm|ogg|wav|jpg|jpeg|png|webp|gif|svg|avif)(\?|$)/i;
+
+// ─── Install ────────────────────────────────────────────────────────────────
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => undefined)
+    caches
+      .open(SHELL_CACHE)
+      .then((c) => c.addAll(SHELL))
+      .catch(() => undefined),
   );
   self.skipWaiting();
 });
 
+// ─── Activate ───────────────────────────────────────────────────────────────
 self.addEventListener("activate", (event) => {
+  const KEEP = [SHELL_CACHE, MEDIA_CACHE];
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    )
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => !KEEP.includes(k)).map((k) => caches.delete(k)))),
   );
   self.clients.claim();
 });
 
+// ─── Fetch ──────────────────────────────────────────────────────────────────
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
 
-  // Bypass complet pour les modules Vite dev, HMR, sourcemaps et toute URL versionnée (?v=…).
-  // Sinon le SW sert des chunks obsolètes pointant vers d'anciennes instances de React.
+  // ── 1. Bypass assets dev Vite ────────────────────────────────────────────
   const isDevAsset =
     url.pathname.startsWith("/@vite/") ||
     url.pathname.startsWith("/@react-refresh") ||
@@ -49,30 +53,78 @@ self.addEventListener("fetch", (event) => {
     url.searchParams.has("import");
   if (isDevAsset) return;
 
+  // ── 2. Médias distants — Cache First ─────────────────────────────────────
+  const isMedia = MEDIA_HOSTS.includes(url.hostname) || MEDIA_EXT.test(url.pathname);
+
+  if (isMedia) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(MEDIA_CACHE);
+        const cached = await cache.match(req);
+        if (cached) return cached;
+        try {
+          const res = await fetch(req);
+          if (res.ok) {
+            cache.put(req, res.clone()).catch(() => undefined);
+          }
+          return res;
+        } catch {
+          return new Response("Media unavailable offline", {
+            status: 503,
+            headers: { "Content-Type": "text/plain" },
+          });
+        }
+      })(),
+    );
+    return;
+  }
+
+  // ── 3. Polices CDN — Cache First, accepte opaque ─────────────────────────
   const isFontAsset = FONT_HOSTS.includes(url.hostname);
 
+  if (isFontAsset) {
+    event.respondWith(
+      caches.match(req).then((cached) => {
+        if (cached) return cached;
+        return fetch(req)
+          .then((res) => {
+            const fontOk = res.type === "opaque" || res.ok;
+            if (fontOk) {
+              const copy = res.clone();
+              caches
+                .open(SHELL_CACHE)
+                .then((c) => c.put(req, copy))
+                .catch(() => undefined);
+            }
+            return res;
+          })
+          .catch(() => undefined);
+      }),
+    );
+    return;
+  }
+
+  // ── 4. App shell — Cache First avec fallback réseau ──────────────────────
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
       return fetch(req)
         .then((res) => {
           if (!res) return res;
-          // Same-origin : on garde la règle stricte (status 200, type basic).
-          // Polices CDN : on accepte les réponses CORS ET opaques (type "opaque",
-          // status 0) car les .woff2 de gstatic sont souvent servis sans CORS.
-          const sameOriginOk = res.status === 200 && res.type === "basic";
-          const fontOk = isFontAsset && (res.type === "opaque" || res.ok);
-          if (sameOriginOk || fontOk) {
+          const ok = res.status === 200 && res.type === "basic";
+          if (ok) {
             const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => undefined);
+            caches
+              .open(SHELL_CACHE)
+              .then((c) => c.put(req, copy))
+              .catch(() => undefined);
           }
           return res;
         })
         .catch(() => {
-          // Pour une navigation HTML hors-ligne, on retombe sur l'app shell.
           if (req.mode === "navigate") return caches.match("/index.html");
           return undefined;
         });
-    })
+    }),
   );
 });
