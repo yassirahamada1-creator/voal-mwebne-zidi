@@ -329,7 +329,6 @@ export default function Admin() {
           <TabsContent value="translations">
             <TranslationsTab items={translations} reload={loadAll} />
           </TabsContent>
-          </TabsContent>
         </Tabs>
       </main>
     </div>
