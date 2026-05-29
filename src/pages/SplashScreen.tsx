@@ -18,11 +18,10 @@ const partnerLogos: LogoCell[] = [
   { src: logoCndrs, alt: "CNDRS" },
 ];
 
-const MIN_SPLASH_MS = 3000;
+const MIN_SPLASH_MS = 60000;
 // Plafond de sécurité si les polices tardent à charger (ex. réseau lent).
 // Hors-ligne / mode avion : `document.fonts.ready` se résout immédiatement.
 const MAX_SPLASH_MS = 60000;
-
 
 const waitForFonts = (): Promise<void> => {
   if (typeof document === "undefined" || !("fonts" in document)) {
@@ -72,7 +71,6 @@ const SplashScreen = () => {
     };
   }, []);
 
-
   // Navigation : on attend (polices prêtes + durée mini), puis si c'est le 1er
   // lancement et qu'on est en ligne, on bloque jusqu'à la fin de la 1ère
   // synchro hors-ligne (modules + contenus + miniatures + audio + images).
@@ -92,11 +90,12 @@ const SplashScreen = () => {
 
     const minDelay = new Promise<void>((r) => setTimeout(r, MIN_SPLASH_MS));
     const maxDelay = new Promise<void>((r) => setTimeout(r, MAX_SPLASH_MS));
-    Promise.race([
-      Promise.all([waitForFonts(), minDelay]).then(() => undefined),
-      maxDelay,
-    ]).then(() => { if (!cancelled) setReady(true); });
-    return () => { cancelled = true; };
+    Promise.race([Promise.all([waitForFonts(), minDelay]).then(() => undefined), maxDelay]).then(() => {
+      if (!cancelled) setReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const skipSplash = () => {
@@ -185,10 +184,7 @@ const SplashScreen = () => {
           </p>
 
           {/* Séparateur orné ────── ◆ ────── */}
-          <div
-            aria-hidden="true"
-            className="my-2 sm:my-4 flex items-center justify-center gap-3"
-          >
+          <div aria-hidden="true" className="my-2 sm:my-4 flex items-center justify-center gap-3">
             <span className="h-px w-12 sm:w-16 bg-gradient-to-r from-transparent to-gold/70" />
             <span className="text-gold/80 text-[10px] leading-none">◆</span>
             <span className="h-px w-12 sm:w-16 bg-gradient-to-l from-transparent to-gold/70" />
@@ -211,12 +207,10 @@ const SplashScreen = () => {
 
         {/* La 1ère synchro se fait silencieusement en arrière-plan */}
 
-
         {(() => {
           const wide = partnerLogos[1];
           const bottom = partnerLogos.slice(2);
-          const frame =
-            "overflow-hidden rounded-xl bg-white p-0.5 shadow-md ring-1 ring-white/30 h-20 sm:h-28 md:h-32";
+          const frame = "overflow-hidden rounded-xl bg-white p-0.5 shadow-md ring-1 ring-white/30 h-20 sm:h-28 md:h-32";
           const wideFrame = `${frame} flex items-center justify-center w-full max-w-[340px] sm:max-w-[440px] md:max-w-[520px]`;
           const cellFrame = `${frame} w-36 sm:w-44 md:w-52 flex items-center justify-start`;
           return (
@@ -229,12 +223,15 @@ const SplashScreen = () => {
               <div className="flex w-full max-w-[340px] sm:max-w-[440px] md:max-w-[520px] items-stretch justify-center gap-3 sm:gap-4 mx-0 px-[85px]">
                 {bottom.map((cell) => (
                   <div key={cell.alt} className={cellFrame}>
-                    <img src={cell.src} alt={cell.alt} className="h-full w-full object-contain m-0 p-2 py-0 mx-0 px-px" />
+                    <img
+                      src={cell.src}
+                      alt={cell.alt}
+                      className="h-full w-full object-contain m-0 p-2 py-0 mx-0 px-px"
+                    />
                   </div>
                 ))}
               </div>
             </div>
-
           );
         })()}
       </div>
