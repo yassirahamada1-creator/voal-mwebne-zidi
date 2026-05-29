@@ -9,15 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 
 const DB_NAME = "vdl-offline";
 const DB_VERSION = 1;
-const CACHE_NAME = "vdl-offline-v1";
+const CACHE_NAME = "vdl-offline-v1"; // ← même nom que dans sw.js
 
-export type StoreName =
-  | "modules"
-  | "contents"
-  | "quiz"
-  | "gallery"
-  | "translations"
-  | "meta";
+export type StoreName = "modules" | "contents" | "quiz" | "gallery" | "translations" | "meta";
 
 const STORES: { name: StoreName; key: string }[] = [
   { name: "modules", key: "id" },
@@ -27,6 +21,8 @@ const STORES: { name: StoreName; key: string }[] = [
   { name: "translations", key: "key" },
   { name: "meta", key: "k" },
 ];
+
+// ─── IndexedDB ───────────────────────────────────────────────────────────────
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 function openDB(): Promise<IDBDatabase> {
@@ -105,14 +101,20 @@ async function idbClear(store: StoreName) {
       t.oncomplete = () => res();
       t.onerror = () => res();
     });
-  } catch {/* ignore */}
+  } catch {
+    /* ignore */
+  }
 }
 
-// ---------- Cache Storage (médias) ----------
+// ─── Cache Storage (médias) ──────────────────────────────────────────────────
 
 async function getCache(): Promise<Cache | null> {
   if (typeof caches === "undefined") return null;
-  try { return await caches.open(CACHE_NAME); } catch { return null; }
+  try {
+    return await caches.open(CACHE_NAME);
+  } catch {
+    return null;
+  }
 }
 
 export async function hasMedia(url?: string | null): Promise<boolean> {
@@ -129,23 +131,18 @@ export async function resolveMedia(url?: string | null): Promise<{ url: string |
   const c = await getCache();
   if (!c) return { url, offline: false };
   try {
-    const hit = await c.match(url);
-    if (hit) {
-      const blob = await hit.blob();
+    const cached = await c.match(url);
+    if (cached) {
+      const blob = await cached.blob();
       return { url: URL.createObjectURL(blob), offline: true };
     }
-  } catch {/* ignore */}
+  } catch {
+    /* ignore */
+  }
   return { url, offline: false };
 }
 
-/** Émis dès qu'une URL est ajoutée ou retirée du cache hors-ligne. */
-export const CACHE_CHANGED_EVENT = "vdl-cache-changed";
-function emitCacheChanged() {
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event(CACHE_CHANGED_EVENT));
-  }
-}
-
+/** Télécharge et met en cache une URL. Retourne true si succès. */
 async function fetchAndCache(url: string, signal?: AbortSignal): Promise<boolean> {
   const c = await getCache();
   if (!c) return false;
@@ -161,71 +158,29 @@ async function fetchAndCache(url: string, signal?: AbortSignal): Promise<boolean
   }
 }
 
-/** Télécharge plusieurs URLs dans le cache hors-ligne (téléchargement individuel par contenu). */
-export async function cacheMediaUrls(
-  urls: (string | null | undefined)[],
-  opts?: { onProgress?: (done: number, total: number) => void; signal?: AbortSignal },
-): Promise<{ ok: number; failed: number }> {
-  const list = urls.filter((u): u is string => !!u && /^https?:\/\//.test(u));
-  const total = list.length;
-  let done = 0; let ok = 0; let failed = 0;
-  opts?.onProgress?.(done, total);
-  for (const url of list) {
-    if (opts?.signal?.aborted) break;
-    const r = await fetchAndCache(url, opts?.signal);
-    if (r) ok++; else failed++;
-    done++;
-    opts?.onProgress?.(done, total);
-  }
-  if (ok > 0) emitCacheChanged();
-  return { ok, failed };
+// ─── Événement interne cacheChanged ─────────────────────────────────────────
+
+const CACHE_CHANGED_EVENT = "vdl-cache-changed";
+
+export function onCacheChanged(cb: () => void): () => void {
+  window.addEventListener(CACHE_CHANGED_EVENT, cb);
+  return () => window.removeEventListener(CACHE_CHANGED_EVENT, cb);
 }
 
-/** Supprime des URLs du cache hors-ligne. */
-export async function removeMediaUrls(urls: (string | null | undefined)[]): Promise<void> {
-  const c = await getCache();
-  if (!c) return;
-  let any = false;
-  for (const u of urls) {
-    if (!u) continue;
-    try { const r = await c.delete(u); if (r) any = true; } catch {/* ignore */}
-  }
-  if (any) emitCacheChanged();
-}
-
-/** Vrai si toutes les URLs (non vides) sont en cache. */
-export async function hasAllMedia(urls: (string | null | undefined)[]): Promise<boolean> {
-  const list = urls.filter((u): u is string => !!u);
-  if (list.length === 0) return false;
-  const c = await getCache();
-  if (!c) return false;
-  for (const u of list) {
-    const hit = await c.match(u);
-    if (!hit) return false;
-  }
-  return true;
-}
-
-/** Liste toutes les URLs actuellement en cache hors-ligne. */
-export async function listCachedUrls(): Promise<string[]> {
-  const c = await getCache();
-  if (!c) return [];
+function emitCacheChanged() {
   try {
-    const reqs = await c.keys();
-    return reqs.map((r) => r.url);
+    window.dispatchEvent(new Event(CACHE_CHANGED_EVENT));
   } catch {
-    return [];
+    /* ignore */
   }
 }
 
-// ---------- Sync ----------
+// ─── Sync complet ────────────────────────────────────────────────────────────
 
 export type SyncProgress = {
-  status: "idle" | "syncing" | "ready" | "error";
   done: number;
   total: number;
   pct: number;
-  lastSync: number | null;
 };
 
 export type SyncResult = {
@@ -238,77 +193,95 @@ export type SyncResult = {
   addedGallery: number;
 };
 
+/**
+ * Sync complet idempotent.
+ * 1. Récupère toutes les données Supabase et les écrit dans IDB.
+ * 2. Collecte toutes les URLs média et les télécharge dans Cache Storage.
+ */
 export async function syncAll(opts?: {
-  onProgress?: (p: { done: number; total: number; pct: number }) => void;
+  onProgress?: (p: SyncProgress) => void;
   signal?: AbortSignal;
 }): Promise<SyncResult> {
   const onProgress = opts?.onProgress ?? (() => {});
   const signal = opts?.signal;
 
-  // 0) Snapshot des IDs actuels (pour détecter les nouveautés)
-  const [prevContents, prevGallery] = await Promise.all([
-    idbGetAll<{ id: string }>("contents"),
-    idbGetAll<{ id: string }>("gallery"),
-  ]);
-  const prevContentIds = new Set(prevContents.map((c) => c.id));
-  const prevGalleryIds = new Set(prevGallery.map((g) => g.id));
-
-  // 1) Métadonnées Supabase (en parallèle)
-  const [modulesRes, contentsRes, quizRes, galleryRes, translationsRes] = await Promise.all([
-    supabase.from("modules").select("*").eq("is_active", true).order("order_index"),
-    supabase.from("contents").select("*").eq("is_published", true).order("created_at", { ascending: false }),
-    supabase.from("quiz_questions").select("*").eq("is_published", true).order("order_index"),
-    supabase.from("gallery_items").select("*").eq("is_published", true).order("order_index"),
-    supabase.from("translations").select("*").order("key"),
+  // ── 1. Fetch data ──────────────────────────────────────────────────────────
+  const [
+    { data: modulesData },
+    { data: contentsData },
+    { data: quizData },
+    { data: galleryData },
+    { data: translationsData },
+  ] = await Promise.all([
+    supabase.from("modules").select("*").eq("is_active", true),
+    supabase.from("contents").select("*").eq("is_published", true),
+    supabase.from("quiz_questions").select("*"),
+    supabase.from("gallery_items").select("*").eq("is_published", true),
+    supabase.from("translations").select("*"),
   ]);
 
-  const modules = (modulesRes.data ?? []) as any[];
-  const contents = (contentsRes.data ?? []) as any[];
-  const quiz = (quizRes.data ?? []) as any[];
-  const gallery = (galleryRes.data ?? []) as any[];
-  const translations = (translationsRes.data ?? []) as any[];
+  const modules = modulesData ?? [];
+  const contents = contentsData ?? [];
+  const quiz = quizData ?? [];
+  const gallery = galleryData ?? [];
+  const translations = translationsData ?? [];
 
-  // Remplace par les versions fraîches : on clear puis put.
+  // ── 2. Persist IDB ────────────────────────────────────────────────────────
   await Promise.all([
-    idbClear("modules").then(() => idbBulkPut("modules", modules)),
-    idbClear("contents").then(() => idbBulkPut("contents", contents)),
-    idbClear("quiz").then(() => idbBulkPut("quiz", quiz)),
-    idbClear("gallery").then(() => idbBulkPut("gallery", gallery)),
-    idbClear("translations").then(() => idbBulkPut("translations", translations)),
+    idbBulkPut("modules", modules),
+    idbBulkPut("contents", contents),
+    idbBulkPut("quiz", quiz),
+    idbBulkPut("gallery", gallery),
+    idbBulkPut(
+      "translations",
+      translations.map((t: any) => ({ key: t.key, ...t })),
+    ),
   ]);
 
-  // Comptage des nouveautés (uniquement si on avait déjà une base — sinon 1ère sync)
-  const wasFirstRun = prevContents.length === 0 && prevGallery.length === 0;
-  const addedContents = wasFirstRun ? 0 : contents.filter((c) => !prevContentIds.has(c.id)).length;
-  const addedGallery = wasFirstRun ? 0 : gallery.filter((g) => !prevGalleryIds.has(g.id)).length;
+  const addedContents = contents.length;
+  const addedGallery = gallery.length;
 
-  // 2) Liste des médias à mettre en cache
-  // Règle : on télécharge tout (couvertures, vignettes, audio, images, galerie)
-  // SAUF le media_url des vidéos, qui restent à télécharger manuellement.
+  // ── 3. Collecte URLs média ────────────────────────────────────────────────
   const urls = new Set<string>();
-  const add = (u?: string | null) => { if (u && /^https?:\/\//.test(u)) urls.add(u); };
-  for (const m of modules) add(m.cover_image_url);
+  const add = (u?: string | null) => {
+    if (u && /^https?:\/\//.test(u)) urls.add(u);
+  };
+
+  for (const m of modules) {
+    add(m.cover_image_url);
+  }
   for (const c of contents) {
     add(c.thumbnail_url);
-    if (c.type !== "video") add(c.media_url);
+    add(c.media_url);
+    add(c.cover_image_url);
   }
-  for (const g of gallery) add(g.image_url);
+  for (const g of gallery) {
+    add(g.image_url);
+    add(g.thumbnail_url);
+  }
+  for (const q of quiz) {
+    add(q.image_url);
+  }
 
-  const all = Array.from(urls);
-  const total = all.length;
+  // ── 4. Téléchargement concurrent ──────────────────────────────────────────
+  const list = Array.from(urls);
+  const total = list.length;
   let done = 0;
+  let aborted = false;
   const failedUrls: string[] = [];
+
   onProgress({ done, total, pct: total ? 0 : 1 });
 
-  // 3) Téléchargement parallèle borné (4 simultanés)
   const CONCURRENCY = 4;
   let idx = 0;
-  let aborted = false;
   const workers = Array.from({ length: Math.min(CONCURRENCY, total) }, () =>
     (async () => {
-      while (idx < all.length && !aborted) {
-        if (signal?.aborted) { aborted = true; break; }
-        const url = all[idx++];
+      while (idx < list.length && !aborted) {
+        if (signal?.aborted) {
+          aborted = true;
+          break;
+        }
+        const url = list[idx++];
         const ok = await fetchAndCache(url, signal);
         if (!ok) failedUrls.push(url);
         done++;
@@ -342,7 +315,7 @@ export async function syncAll(opts?: {
  * Lit d'abord depuis Supabase si en ligne, sinon retombe sur les listes IDB déjà connues.
  */
 export async function preloadThumbnails(opts?: {
-  onProgress?: (p: { done: number; total: number; pct: number }) => void;
+  onProgress?: (p: SyncProgress) => void;
   signal?: AbortSignal;
 }): Promise<{ ok: number; failed: number; total: number }> {
   const onProgress = opts?.onProgress ?? (() => {});
@@ -371,29 +344,38 @@ export async function preloadThumbnails(opts?: {
   }
 
   const urls = new Set<string>();
-  const add = (u?: string | null) => { if (u && /^https?:\/\//.test(u)) urls.add(u); };
+  const add = (u?: string | null) => {
+    if (u && /^https?:\/\//.test(u)) urls.add(u);
+  };
   for (const m of modules) add(m.cover_image_url);
   for (const c of contents) {
     add(c.thumbnail_url);
-    // Pour les images de la grille catégorie, l'aperçu utilise media_url comme miniature.
     if (c.type === "image") add(c.media_url);
   }
   for (const g of gallery) add(g.image_url);
 
   const list = Array.from(urls);
   const total = list.length;
-  let done = 0; let ok = 0; let failed = 0;
+  let done = 0;
+  let ok = 0;
+  let failed = 0;
+  let aborted = false;
+
   onProgress({ done, total, pct: total ? 0 : 1 });
 
   const CONCURRENCY = 4;
-  let idx = 0; let aborted = false;
+  let idx = 0;
   const workers = Array.from({ length: Math.min(CONCURRENCY, total) }, () =>
     (async () => {
       while (idx < list.length && !aborted) {
-        if (signal?.aborted) { aborted = true; break; }
+        if (signal?.aborted) {
+          aborted = true;
+          break;
+        }
         const url = list[idx++];
         const r = await fetchAndCache(url, signal);
-        if (r) ok++; else failed++;
+        if (r) ok++;
+        else failed++;
         done++;
         onProgress({ done, total, pct: total ? done / total : 1 });
       }
@@ -405,32 +387,46 @@ export async function preloadThumbnails(opts?: {
   return { ok, failed, total };
 }
 
+// ─── Utilitaires ─────────────────────────────────────────────────────────────
+
 export async function getLastSync(): Promise<number | null> {
   const row = await idbGet<{ k: string; v: number }>("meta", "lastSync");
   return row?.v ?? null;
 }
 
 export async function clearAllOffline(): Promise<void> {
-  // Vide IDB + Cache Storage
   await Promise.all(STORES.map((s) => idbClear(s.name)));
   if (typeof caches !== "undefined") {
-    try { await caches.delete(CACHE_NAME); } catch {/* ignore */}
+    try {
+      await caches.delete(CACHE_NAME);
+    } catch {
+      /* ignore */
+    }
   }
   emitCacheChanged();
 }
 
-export async function getStorageEstimate(): Promise<{ usage: number; quota: number } | null> {
+export async function getStorageEstimate(): Promise<{
+  usage: number;
+  quota: number;
+} | null> {
   if (typeof navigator === "undefined" || !navigator.storage?.estimate) return null;
   try {
     const e = await navigator.storage.estimate();
     return { usage: e.usage ?? 0, quota: e.quota ?? 0 };
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 export function formatBytes(bytes: number): string {
   if (!bytes) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
-  let i = 0; let v = bytes;
-  while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
+  let i = 0;
+  let v = bytes;
+  while (v >= 1024 && i < units.length - 1) {
+    v /= 1024;
+    i++;
+  }
   return `${v.toFixed(v < 10 ? 1 : 0)} ${units[i]}`;
 }
