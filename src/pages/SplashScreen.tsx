@@ -21,7 +21,7 @@ const partnerLogos: LogoCell[] = [
 const MIN_SPLASH_MS = 3000;
 // Plafond de sécurité si les polices tardent à charger (ex. réseau lent).
 // Hors-ligne / mode avion : `document.fonts.ready` se résout immédiatement.
-const MAX_SPLASH_MS = 4500;
+const MAX_SPLASH_MS = 60000;
 
 
 const waitForFonts = (): Promise<void> => {

@@ -15,6 +15,7 @@ const defaultTranslations = {
       appSubtitle: "Femmes, Savoirs et Héritages des Comores",
       appTagline:
         "Ce projet est soutenu par la Commission de l'océan Indien dans le cadre de son projet de développement des Industries Culturelles et Créatives en Indianocéanie, financé par l'Agence française de développement",
+      skip: "Passer au contenu",
     },
     nav: {
       home: "Accueil",
@@ -119,6 +120,7 @@ const defaultTranslations = {
       appSubtitle: "Wanawake, Maarifa na Urithi wa Komori",
       appTagline:
         "Mradi huu unaungwa mkono na Tume ya Bahari Hindi katika kipindi cha mradi wake wa maendeleo ya Viwanda vya Utamaduni na Ubunifu katika Indianocéanie, ukiwa na ufadhili wa Shirika la Maendeleo la Ufaransa",
+      skip: "Ruka kwenye maudhui",
     },
     nav: {
       home: "Nyumbani",
