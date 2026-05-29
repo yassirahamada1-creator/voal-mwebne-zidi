@@ -73,13 +73,9 @@ const InfoBlock = ({
       >
         <Icon className="h-4 w-4" />
       </div>
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-[#7a6a8a] dark:text-[#b8a8d0]">
-        {label}
-      </h3>
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-[#7a6a8a] dark:text-[#b8a8d0]">{label}</h3>
     </div>
-    <div className="text-[15px] leading-relaxed text-[#4a4050] dark:text-[#c8c0d8]">
-      {children}
-    </div>
+    <div className="text-[15px] leading-relaxed text-[#4a4050] dark:text-[#c8c0d8]">{children}</div>
   </div>
 );
 
@@ -117,13 +113,9 @@ const HommageScreen = () => {
     // Synchronisation auto en arrière-plan : refetch quand le contenu change côté admin
     const channel = supabase
       .channel("hommage_content_sync")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "hommage_content" },
-        () => {
-          fetchData();
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "hommage_content" }, () => {
+        fetchData();
+      })
       .subscribe();
 
     return () => {
@@ -141,10 +133,8 @@ const HommageScreen = () => {
       "Au-delà de ses études et de son travail, Naicha possédait un talent précieux : la confection de kandou, ces pièces de textile traditionnel qui témoignent de la richesse du savoir-faire comorien transmis de génération en génération.",
     liens:
       "Naicha entretenait des liens forts avec ses camarades de l'ISPC et faisait partie d'un chama à Toirab sous le nom d'ISPC, un groupe de solidarité où l'entraide et la fraternité étaient au cœur de chaque rencontre.",
-    derniers_mots:
-      "« Elle a dit qu'elle allait récupérer son ordinateur à Dzahadjou Hambou. »",
-    derniers_mots_note:
-      "Ces mots simples, prononcés avant son départ, restent gravés dans la mémoire de ses proches.",
+    derniers_mots: "« Elle a dit qu'elle allait récupérer son ordinateur à Dzahadjou Mbadjini. »",
+    derniers_mots_note: "Ces mots simples, prononcés avant son départ, restent gravés dans la mémoire de ses proches.",
     famille_retient:
       "Sa gentillesse, son honnêteté et son grand cœur. Naicha laisse derrière elle l'image d'une jeune femme généreuse, droite et profondément humaine, dont la disparition brutale endeuille tous ceux qui l'ont connue.",
     hommage_global:
@@ -152,19 +142,15 @@ const HommageScreen = () => {
   };
   const v = data;
   const photo = v?.photo_url || naichaPhoto;
-  const text = (k: keyof typeof FALLBACK) =>
-    (v?.[k] && String(v[k]).trim()) || FALLBACK[k];
+  const text = (k: keyof typeof FALLBACK) => (v?.[k] && String(v[k]).trim()) || FALLBACK[k];
 
   if (v && v.is_visible === false) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6 text-center bg-[#faf6f0] dark:bg-[#121820]">
-        <p className="text-sm text-[#7a6a5a] dark:text-[#a8a0b0]">
-          Cette page n'est pas disponible pour le moment.
-        </p>
+        <p className="text-sm text-[#7a6a5a] dark:text-[#a8a0b0]">Cette page n'est pas disponible pour le moment.</p>
       </div>
     );
   }
-
 
   return (
     <div className="min-h-screen pb-24 transition-colors duration-200 bg-[#faf6f0] dark:bg-[#121820]">
@@ -173,8 +159,7 @@ const HommageScreen = () => {
         className="relative overflow-hidden px-6 pt-8 pb-6 text-center"
         style={{
           background: "linear-gradient(160deg, #8a7bb3 0%, #9a8ac8 40%, #b8a0d0 100%)",
-          paddingTop:
-            "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 1.5rem)",
+          paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24px)) + 1.5rem)",
         }}
       >
         <div className="absolute inset-0 opacity-10 pointer-events-none">
