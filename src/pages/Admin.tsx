@@ -292,6 +292,7 @@ export default function Admin() {
       </header>
 
       <main className="container mx-auto px-4 py-6">
+        <Tabs defaultValue="dashboard">
           <TabsList className="grid grid-cols-7 w-full mb-6">
             <TabsTrigger value="dashboard">Tableau de bord</TabsTrigger>
             <TabsTrigger value="modules">Modules</TabsTrigger>
