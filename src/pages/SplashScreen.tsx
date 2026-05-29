@@ -133,6 +133,16 @@ const SplashScreen = () => {
       {/* Decorative pattern overlay */}
       <div className="absolute inset-0 pattern-geometric opacity-20 bg-[#54e8a8]" />
 
+      {/* Bouton passer en haut à droite */}
+      <button
+        type="button"
+        onClick={skipSplash}
+        className="absolute top-[max(env(safe-area-inset-top),0.75rem)] right-4 z-20 px-3 py-1.5 text-xs font-medium rounded-full bg-primary-foreground/15 text-primary-foreground border border-primary-foreground/25 backdrop-blur-sm hover:bg-primary-foreground/25 transition-colors"
+        aria-label={t.splash.skip}
+      >
+        {t.splash.skip}
+      </button>
+
       {/* ZONE HAUTE — Logo + Nom + Sous-titre */}
       <div
         className={`relative z-10 flex flex-col items-center transition-all duration-700 px-0 ${
