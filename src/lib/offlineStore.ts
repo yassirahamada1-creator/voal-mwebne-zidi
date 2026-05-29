@@ -1,15 +1,8 @@
-// Refonte mode hors ligne — version simple
-// Un seul module qui gère :
-//  • IndexedDB (couche maison, pas de dépendance) avec stores : modules, contents, quiz, gallery, translations, meta
-//  • Cache Storage `vdl-offline-v1` pour tous les médias (images, audio, vidéo, miniatures, covers)
-// L'app fait un sync complet idempotent au lancement quand il y a du réseau.
-// Hors ligne, les listes lisent depuis IDB et masquent ce qui n'a pas son média en cache.
-
 import { supabase } from "@/integrations/supabase/client";
 
 const DB_NAME = "vdl-offline";
 const DB_VERSION = 1;
-const CACHE_NAME = "vdl-offline-v1"; // ← même nom que dans sw.js
+const CACHE_NAME = "vdl-offline-v1";
 
 export type StoreName = "modules" | "contents" | "quiz" | "gallery" | "translations" | "meta";
 
@@ -25,6 +18,7 @@ const STORES: { name: StoreName; key: string }[] = [
 // ─── IndexedDB ───────────────────────────────────────────────────────────────
 
 let dbPromise: Promise<IDBDatabase> | null = null;
+
 function openDB(): Promise<IDBDatabase> {
   if (dbPromise) return dbPromise;
   if (typeof indexedDB === "undefined") return Promise.reject(new Error("no idb"));
@@ -125,6 +119,18 @@ export async function hasMedia(url?: string | null): Promise<boolean> {
   return !!hit;
 }
 
+export async function hasAllMedia(urls: (string | null | undefined)[]): Promise<boolean> {
+  const list = urls.filter((u): u is string => !!u);
+  if (list.length === 0) return false;
+  const c = await getCache();
+  if (!c) return false;
+  for (const u of list) {
+    const hit = await c.match(u);
+    if (!hit) return false;
+  }
+  return true;
+}
+
 /** Renvoie un blob: URL si présent en cache, sinon l'URL distante. */
 export async function resolveMedia(url?: string | null): Promise<{ url: string | null; offline: boolean }> {
   if (!url) return { url: null, offline: false };
@@ -140,6 +146,35 @@ export async function resolveMedia(url?: string | null): Promise<{ url: string |
     /* ignore */
   }
   return { url, offline: false };
+}
+
+/** Supprime des URLs du cache hors-ligne. */
+export async function removeMediaUrls(urls: (string | null | undefined)[]): Promise<void> {
+  const c = await getCache();
+  if (!c) return;
+  let any = false;
+  for (const u of urls) {
+    if (!u) continue;
+    try {
+      const r = await c.delete(u);
+      if (r) any = true;
+    } catch {
+      /* ignore */
+    }
+  }
+  if (any) emitCacheChanged();
+}
+
+/** Liste toutes les URLs actuellement en cache hors-ligne. */
+export async function listCachedUrls(): Promise<string[]> {
+  const c = await getCache();
+  if (!c) return [];
+  try {
+    const reqs = await c.keys();
+    return reqs.map((r) => r.url);
+  } catch {
+    return [];
+  }
 }
 
 /** Télécharge et met en cache une URL. Retourne true si succès. */
@@ -158,9 +193,35 @@ async function fetchAndCache(url: string, signal?: AbortSignal): Promise<boolean
   }
 }
 
-// ─── Événement interne cacheChanged ─────────────────────────────────────────
+/** Télécharge plusieurs URLs dans le cache hors-ligne. */
+export async function cacheMediaUrls(
+  urls: (string | null | undefined)[],
+  opts?: {
+    onProgress?: (done: number, total: number) => void;
+    signal?: AbortSignal;
+  },
+): Promise<{ ok: number; failed: number }> {
+  const list = urls.filter((u): u is string => !!u && /^https?:\/\//.test(u));
+  const total = list.length;
+  let done = 0;
+  let ok = 0;
+  let failed = 0;
+  opts?.onProgress?.(done, total);
+  for (const url of list) {
+    if (opts?.signal?.aborted) break;
+    const r = await fetchAndCache(url, opts?.signal);
+    if (r) ok++;
+    else failed++;
+    done++;
+    opts?.onProgress?.(done, total);
+  }
+  if (ok > 0) emitCacheChanged();
+  return { ok, failed };
+}
 
-const CACHE_CHANGED_EVENT = "vdl-cache-changed";
+// ─── Événement cacheChanged ──────────────────────────────────────────────────
+
+export const CACHE_CHANGED_EVENT = "vdl-cache-changed";
 
 export function onCacheChanged(cb: () => void): () => void {
   window.addEventListener(CACHE_CHANGED_EVENT, cb);
@@ -175,7 +236,7 @@ function emitCacheChanged() {
   }
 }
 
-// ─── Sync complet ────────────────────────────────────────────────────────────
+// ─── Types Sync ──────────────────────────────────────────────────────────────
 
 export type SyncProgress = {
   done: number;
@@ -193,11 +254,8 @@ export type SyncResult = {
   addedGallery: number;
 };
 
-/**
- * Sync complet idempotent.
- * 1. Récupère toutes les données Supabase et les écrit dans IDB.
- * 2. Collecte toutes les URLs média et les télécharge dans Cache Storage.
- */
+// ─── Sync complet ────────────────────────────────────────────────────────────
+
 export async function syncAll(opts?: {
   onProgress?: (p: SyncProgress) => void;
   signal?: AbortSignal;
@@ -205,7 +263,15 @@ export async function syncAll(opts?: {
   const onProgress = opts?.onProgress ?? (() => {});
   const signal = opts?.signal;
 
-  // ── 1. Fetch data ──────────────────────────────────────────────────────────
+  // ── 1. Snapshot IDB pour détecter les nouveautés ──────────────────────────
+  const [prevContents, prevGallery] = await Promise.all([
+    idbGetAll<{ id: string }>("contents"),
+    idbGetAll<{ id: string }>("gallery"),
+  ]);
+  const prevContentIds = new Set(prevContents.map((c) => c.id));
+  const prevGalleryIds = new Set(prevGallery.map((g) => g.id));
+
+  // ── 2. Fetch Supabase ─────────────────────────────────────────────────────
   const [
     { data: modulesData },
     { data: contentsData },
@@ -213,57 +279,57 @@ export async function syncAll(opts?: {
     { data: galleryData },
     { data: translationsData },
   ] = await Promise.all([
-    supabase.from("modules").select("*").eq("is_active", true),
-    supabase.from("contents").select("*").eq("is_published", true),
-    supabase.from("quiz_questions").select("*"),
-    supabase.from("gallery_items").select("*").eq("is_published", true),
-    supabase.from("translations").select("*"),
+    supabase.from("modules").select("*").eq("is_active", true).order("order_index"),
+    supabase.from("contents").select("*").eq("is_published", true).order("created_at", { ascending: false }),
+    supabase.from("quiz_questions").select("*").eq("is_published", true).order("order_index"),
+    supabase.from("gallery_items").select("*").eq("is_published", true).order("order_index"),
+    supabase.from("translations").select("*").order("key"),
   ]);
 
-  const modules = modulesData ?? [];
-  const contents = contentsData ?? [];
-  const quiz = quizData ?? [];
-  const gallery = galleryData ?? [];
-  const translations = translationsData ?? [];
+  const modules = (modulesData ?? []) as any[];
+  const contents = (contentsData ?? []) as any[];
+  const quiz = (quizData ?? []) as any[];
+  const gallery = (galleryData ?? []) as any[];
+  const translations = (translationsData ?? []) as any[];
 
-  // ── 2. Persist IDB ────────────────────────────────────────────────────────
+  // ── 3. Persist IDB (clear + put pour supprimer les entrées supprimées) ────
   await Promise.all([
-    idbBulkPut("modules", modules),
-    idbBulkPut("contents", contents),
-    idbBulkPut("quiz", quiz),
-    idbBulkPut("gallery", gallery),
-    idbBulkPut(
-      "translations",
-      translations.map((t: any) => ({ key: t.key, ...t })),
+    idbClear("modules").then(() => idbBulkPut("modules", modules)),
+    idbClear("contents").then(() => idbBulkPut("contents", contents)),
+    idbClear("quiz").then(() => idbBulkPut("quiz", quiz)),
+    idbClear("gallery").then(() => idbBulkPut("gallery", gallery)),
+    idbClear("translations").then(() =>
+      idbBulkPut(
+        "translations",
+        translations.map((t: any) => ({ key: t.key, ...t })),
+      ),
     ),
   ]);
 
-  const addedContents = contents.length;
-  const addedGallery = gallery.length;
+  const wasFirstRun = prevContents.length === 0 && prevGallery.length === 0;
+  const addedContents = wasFirstRun ? 0 : contents.filter((c) => !prevContentIds.has(c.id)).length;
+  const addedGallery = wasFirstRun ? 0 : gallery.filter((g) => !prevGalleryIds.has(g.id)).length;
 
-  // ── 3. Collecte URLs média ────────────────────────────────────────────────
+  // ── 4. Collecte URLs média ────────────────────────────────────────────────
   const urls = new Set<string>();
   const add = (u?: string | null) => {
     if (u && /^https?:\/\//.test(u)) urls.add(u);
   };
 
-  for (const m of modules) {
-    add(m.cover_image_url);
-  }
+  for (const m of modules) add(m.cover_image_url);
   for (const c of contents) {
     add(c.thumbnail_url);
-    add(c.media_url);
     add(c.cover_image_url);
+    // Vidéos : on ne précharge pas le fichier lourd, seulement la vignette
+    if (c.type !== "video") add(c.media_url);
   }
   for (const g of gallery) {
     add(g.image_url);
     add(g.thumbnail_url);
   }
-  for (const q of quiz) {
-    add(q.image_url);
-  }
+  for (const q of quiz) add(q.image_url);
 
-  // ── 4. Téléchargement concurrent ──────────────────────────────────────────
+  // ── 5. Téléchargement concurrent ──────────────────────────────────────────
   const list = Array.from(urls);
   const total = list.length;
   let done = 0;
@@ -291,11 +357,11 @@ export async function syncAll(opts?: {
   );
   await Promise.all(workers);
 
-  const lastSync = Date.now();
   await idbBulkPut("meta", [
-    { k: "lastSync", v: lastSync },
+    { k: "lastSync", v: Date.now() },
     { k: "lastFailed", v: failedUrls.length },
   ]);
+
   emitCacheChanged();
 
   return {
@@ -309,11 +375,8 @@ export async function syncAll(opts?: {
   };
 }
 
-/**
- * Précharge uniquement les miniatures (couvertures de modules, vignettes de contenus,
- * images de la galerie) pour garantir l'affichage hors-ligne sans télécharger les médias lourds.
- * Lit d'abord depuis Supabase si en ligne, sinon retombe sur les listes IDB déjà connues.
- */
+// ─── Préchargement miniatures uniquement ─────────────────────────────────────
+
 export async function preloadThumbnails(opts?: {
   onProgress?: (p: SyncProgress) => void;
   signal?: AbortSignal;
@@ -347,6 +410,7 @@ export async function preloadThumbnails(opts?: {
   const add = (u?: string | null) => {
     if (u && /^https?:\/\//.test(u)) urls.add(u);
   };
+
   for (const m of modules) add(m.cover_image_url);
   for (const c of contents) {
     add(c.thumbnail_url);
