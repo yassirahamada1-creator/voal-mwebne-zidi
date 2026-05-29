@@ -7,7 +7,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useModules, useContents, useGallery, useQuizQuestions } from "@/hooks/useBackendData";
 import { BilingualText, biStr } from "@/lib/bilingual";
 import { matchesAllTokens, normalizeText } from "@/lib/utils";
-import headerArt from "@/assets/logos/moon-voix.png";
+import headerArt from "@/assets/logos/moon-voix.jpg";
 import danceImage from "@/assets/module-dance.png";
 import medicineImage from "@/assets/module-medicine.png";
 import cookingImage from "@/assets/module-cooking.png";
@@ -221,7 +221,7 @@ style={{ paddingTop: "calc(var(--status-bar-height, env(safe-area-inset-top, 24p
         <img
           src={headerArt}
           alt={lang === "fr" ? "Voix de la Lune" : "Sauti ya Mwezi"}
-          className="relative h-14 w-14 object-contain sm:h-16 sm:w-16 rounded-xl shadow-md border-0 opacity-100 border-amber-500 bg-[#2a4b2e]"
+          className="relative h-14 w-14 object-contain sm:h-16 sm:w-16 shadow-md border-0 opacity-100 border-amber-500 rounded-md bg-transparent"
         />
       </div>
       <NetworkBadge />
