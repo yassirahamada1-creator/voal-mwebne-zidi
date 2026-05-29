@@ -42,6 +42,7 @@ import RichText from "@/components/admin/RichText";
 import { setPreviewTranslation, clearPreviewTranslations } from "@/contexts/I18nContext";
 import { uploadFile } from "@/lib/adminUpload";
 import FullEditTab from "@/components/admin/FullEditTab";
+import GalleryAdminTab from "@/components/admin/GalleryTab";
 import { ConfirmDeleteProvider, confirmDelete } from "@/components/admin/ConfirmDeleteDialog";
 
 type Module = {
@@ -292,10 +293,11 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="dashboard">
-          <TabsList className="grid grid-cols-6 w-full mb-6">
+          <TabsList className="grid grid-cols-7 w-full mb-6">
             <TabsTrigger value="dashboard">Tableau de bord</TabsTrigger>
             <TabsTrigger value="modules">Modules</TabsTrigger>
             <TabsTrigger value="contents">Contenus</TabsTrigger>
+            <TabsTrigger value="gallery">Galerie</TabsTrigger>
             <TabsTrigger value="full-edit">Édition complète</TabsTrigger>
             <TabsTrigger value="quiz">Quiz</TabsTrigger>
             <TabsTrigger value="translations">Traductions</TabsTrigger>
@@ -315,6 +317,9 @@ export default function Admin() {
           </TabsContent>
           <TabsContent value="contents">
             <ContentsTab contents={contents} modules={modules} reload={loadAll} />
+          </TabsContent>
+          <TabsContent value="gallery">
+            <GalleryAdminTab contents={contents as any} reload={loadAll} />
           </TabsContent>
           <TabsContent value="full-edit">
             <FullEditTab modules={modules} contents={contents} quiz={quiz} reload={loadAll} />
