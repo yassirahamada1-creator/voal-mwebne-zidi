@@ -479,6 +479,10 @@ const SettingsScreen = () => {
           })()}
         </section>
 
+        <p className="text-center text-[11px] text-muted-foreground px-4">
+          {bi("Touchez un logo pour ouvrir le site du partenaire.", "Bonyeza nembo kufungua tovuti ya mshirika.", "caption")}
+        </p>
+
         <p className="text-center text-[11px] text-muted-foreground pt-5">
           {biStr("Version", "Toleo")} 1.0.0
         </p>
