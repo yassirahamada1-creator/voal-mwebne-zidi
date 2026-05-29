@@ -21,7 +21,7 @@ const partnerLogos: LogoCell[] = [
 const MIN_SPLASH_MS = 3000;
 // Plafond de sécurité si les polices tardent à charger (ex. réseau lent).
 // Hors-ligne / mode avion : `document.fonts.ready` se résout immédiatement.
-const MAX_SPLASH_MS = 4500;
+const MAX_SPLASH_MS = 60000;
 
 
 const waitForFonts = (): Promise<void> => {
@@ -99,6 +99,11 @@ const SplashScreen = () => {
     return () => { cancelled = true; };
   }, []);
 
+  const skipSplash = () => {
+    setPhase("leaving");
+    setTimeout(() => navigate("/home", { replace: true }), 600);
+  };
+
   useEffect(() => {
     if (!ready) return;
     let leaveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -127,6 +132,16 @@ const SplashScreen = () => {
     <div className="fixed inset-0 flex h-[100dvh] max-h-[100dvh] w-screen flex-col items-center justify-between gradient-hero overflow-hidden overscroll-none touch-none px-4 pt-[max(env(safe-area-inset-top),0.75rem)] pb-[max(env(safe-area-inset-bottom),0.75rem)] sm:px-8 sm:pt-10 sm:pb-8">
       {/* Decorative pattern overlay */}
       <div className="absolute inset-0 pattern-geometric opacity-20 bg-[#54e8a8]" />
+
+      {/* Bouton passer en haut à droite */}
+      <button
+        type="button"
+        onClick={skipSplash}
+        className="absolute top-[max(env(safe-area-inset-top),0.75rem)] right-4 z-20 px-3 py-1.5 text-xs font-medium rounded-full bg-primary-foreground/15 text-primary-foreground border border-primary-foreground/25 backdrop-blur-sm hover:bg-primary-foreground/25 transition-colors"
+        aria-label={t.splash.skip}
+      >
+        {t.splash.skip}
+      </button>
 
       {/* ZONE HAUTE — Logo + Nom + Sous-titre */}
       <div
