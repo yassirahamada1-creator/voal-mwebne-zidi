@@ -99,6 +99,11 @@ const SplashScreen = () => {
     return () => { cancelled = true; };
   }, []);
 
+  const skipSplash = () => {
+    setPhase("leaving");
+    setTimeout(() => navigate("/home", { replace: true }), 600);
+  };
+
   useEffect(() => {
     if (!ready) return;
     let leaveTimer: ReturnType<typeof setTimeout> | undefined;
