@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/contexts/I18nContext";
 import { useOfflineSync } from "@/hooks/useOfflineSync";
-import moonLogo from "@/assets/logos/moon-voix.png";
+import moonLogo from "@/assets/logos/moon-voix.jpg";
 import logoCndrs from "@/assets/logos/cndrs-updated.png";
 import logoUnionComores from "@/assets/logos/union-comores.jpg";
 import logoAfricanUnion from "@/assets/logos/cap-afrique.png";
