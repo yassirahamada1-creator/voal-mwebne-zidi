@@ -220,7 +220,7 @@ const SplashScreen = () => {
                   <img src={wide.src} alt={wide.alt} className="h-full w-full object-contain m-0 p-2 py-0 px-0 mx-0" />
                 </div>
               )}
-              <div className="flex w-full max-w-[340px] sm:max-w-[440px] md:max-w-[520px] items-stretch justify-center gap-3 sm:gap-4 mx-0 px-[85px]">
+              <div className="flex w-full max-w-[340px] sm:max-w-[440px] md:max-w-[520px] items-stretch justify-center gap-3 sm:gap-4 mx-0">
                 {bottom.map((cell) => (
                   <div key={cell.alt} className={cellFrame}>
                     <img
