@@ -14,8 +14,6 @@ import BottomNav from "@/components/BottomNav";
 import ConnectionStatus from "@/components/ConnectionStatus";
 import OfflineBanner from "@/components/OfflineBanner";
 import OfflineDevTool from "@/components/dev/OfflineDevTool";
-// Navigation arrière : uniquement via le bouton retour natif Android
-// (NativeBackHandler) + geste swipe natif iOS (WKWebView).
 import NativeBackHandler from "@/components/NativeBackHandler";
 
 import SplashScreen from "@/pages/SplashScreen";
@@ -31,11 +29,8 @@ const importSettings = () => import("@/pages/SettingsScreen");
 const SettingsScreen = lazy(importSettings);
 const importFavorites = () => import("@/pages/FavoritesScreen");
 const FavoritesScreen = lazy(importFavorites);
-
 const importDownloads = () => import("@/pages/DownloadsScreen");
 const DownloadsScreen = lazy(importDownloads);
-
-
 const LicensesScreen = lazy(() => import("@/pages/LicensesScreen"));
 const TermsScreen = lazy(() => import("@/pages/TermsScreen"));
 const PrivacyScreen = lazy(() => import("@/pages/PrivacyScreen"));
@@ -99,25 +94,22 @@ const AppShell = () => {
       </Suspense>
     );
   }
-  const hideBottomNav = pathname === "/" || pathname.startsWith("/splash");
+
+  const isSplash = pathname === "/" || pathname.startsWith("/splash");
+  const hideBottomNav = isSplash;
+
   return (
     <div
-      className="mx-auto max-w-md min-h-screen bg-background shadow-2xl relative"
+      className={`${isSplash ? "" : "mx-auto max-w-md"} min-h-screen bg-background shadow-2xl relative`}
       style={{
-  // Pas de paddingTop : les headers gèrent eux-mêmes la safe-area
-  // pour que le dégradé se prolonge sous la status bar.
-  paddingLeft: "env(safe-area-inset-left, 0px)",
-  paddingRight: "env(safe-area-inset-right, 0px)",
-  paddingBottom: hideBottomNav
-    ? "env(safe-area-inset-bottom, 0px)"
-    : "calc(4rem + env(safe-area-inset-bottom, 0px))",
-}}
+        paddingLeft: "env(safe-area-inset-left, 0px)",
+        paddingRight: "env(safe-area-inset-right, 0px)",
+        paddingBottom: hideBottomNav
+          ? "env(safe-area-inset-bottom, 0px)"
+          : "calc(4rem + env(safe-area-inset-bottom, 0px))",
+      }}
     >
       <Suspense fallback={<RouteFallback />}>
-        {/* Transition douce entre pages : fade + léger glissement.
-            La clé sur le pathname force le remount + animation à chaque
-            changement de route. La durée reste courte (220ms) pour rester
-            réactif sans donner d'effet de saccade. */}
         <div key={pathname} className="animate-page-in">
           <Routes>
             <Route path="/" element={<SplashScreen />} />
@@ -131,17 +123,13 @@ const AppShell = () => {
             <Route path="/quiz" element={<QuizScreen />} />
             <Route path="/settings" element={<SettingsScreen />} />
             <Route path="/favorites" element={<FavoritesScreen />} />
-
             <Route path="/downloads" element={<DownloadsScreen />} />
-
-
             <Route path="/licenses" element={<LicensesScreen />} />
             <Route path="/terms" element={<TermsScreen />} />
             <Route path="/privacy" element={<PrivacyScreen />} />
             <Route path="/foreword" element={<ForewordScreen />} />
             <Route path="/hommage" element={<HommageScreen />} />
             <Route path="/dev/cors-test" element={<CorsTestScreen />} />
-
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
