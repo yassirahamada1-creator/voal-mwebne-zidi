@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#2d6a4f" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Voix de la Lune — patrimoine des femmes comoriennes</title>
+    <meta name="description" content="Application bilingue français/shikomori dédiée au patrimoine culturel des femmes comoriennes : récits, chants, poèmes et savoirs, accessibles hors-ligne." />
+    <link rel="canonical" href="https://voal-mwebne-zidi.lovable.app/" />
+    <link rel="alternate" hreflang="fr" href="https://voal-mwebne-zidi.lovable.app/?lang=fr" />
+    <link rel="alternate" hreflang="zdj" href="https://voal-mwebne-zidi.lovable.app/?lang=zdj" />
+    <link rel="alternate" hreflang="x-default" href="https://voal-mwebne-zidi.lovable.app/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://voal-mwebne-zidi.lovable.app/" />
+    <meta property="og:title" content="Voix de la Lune — patrimoine des femmes comoriennes" />
+    <meta property="og:description" content="Récits, chants et savoirs des femmes comoriennes, en français et shikomori, accessibles hors-ligne." />
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/57EImQHI7jacmVDmO8Aza1egCeD3/social-images/social-1774129658818-téléchargement.webp" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Voix de la Lune — patrimoine des femmes comoriennes" />
+    <meta name="twitter:description" content="Récits, chants et savoirs des femmes comoriennes, en français et shikomori, accessibles hors-ligne." />
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/57EImQHI7jacmVDmO8Aza1egCeD3/social-images/social-1774129658818-téléchargement.webp" />
+
+  <!-- Preconnect aux origines des polices pour gagner ~100-300ms sur le handshake TLS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+
+  <!-- Préchargement des fichiers de polices (poids 400 latin) — évite le FOUT au démarrage -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="https://fonts.gstatic.com/s/atkinsonhyperlegible/v12/9Bt23C1KxNDXMspQ1lPyU89-1h6ONRlW45G04pIo.woff2">
+  <link rel="preload" as="font" type="font/woff" crossorigin
+    href="https://fonts.cdnfonts.com/s/19808/OpenDyslexic-Regular.woff">
+  <link rel="preload" as="font" type="font/woff" crossorigin
+    href="https://fonts.cdnfonts.com/s/21622/LexieReadable-Regular.woff">
+
+  <!-- Stylesheets de polices en <link> (découverte parallèle, contrairement à @import) -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Atkinson+Hyperlegible:wght@400;700&family=Ojuju:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&family=Sora:wght@400;500;700&family=Outfit:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/lexie-readable">
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/opendyslexic">
+
+  <!-- Video.js (CDN officiel) — lecteur multimédia principal -->
+  <link rel="preconnect" href="https://vjs.zencdn.net" crossorigin>
+  <link rel="stylesheet" href="https://vjs.zencdn.net/8.10.0/video-js.min.css">
+
+  <!-- Évite le flash blanc avant le montage de l'écran d'accueil (couleur de marque) -->
+  <style>
+    html, body, #root { background-color: #2d6a4f; }
+    html.dark, html.dark body, html.dark #root { background-color: #0f1923; }
+  </style>
+  <script>
+    (function () {
+      try {
+        var mql = window.matchMedia('(prefers-color-scheme: dark)');
+        var readPref = function () {
+          try { return localStorage.getItem('vdl_theme') || 'auto'; } catch (e) { return 'auto'; }
+        };
+        var apply = function () {
+          var pref = readPref();
+          var isDark = pref === 'dark' || (pref === 'auto' && mql.matches);
+          document.documentElement.classList.toggle('dark', isDark);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', isDark ? '#0f1923' : '#2d6a4f');
+        };
+        window.__vdlApplyTheme = apply;
+        apply();
+        if (mql.addEventListener) mql.addEventListener('change', apply);
+        else if (mql.addListener) mql.addListener(apply);
+        window.addEventListener('storage', function (e) { if (e.key === 'vdl_theme') apply(); });
+      } catch (e) {}
+    })();
+  </script>
+</head>
+
+  <body>
+    <script>
+      (function () {
+        try {
+          var FAMILIES = {
+            defaut: "'Inter', system-ui, sans-serif",
+            hyperlegible: "'Atkinson Hyperlegible', system-ui, sans-serif",
+            lisible: "'Lexie Readable', system-ui, sans-serif",
+            dyslexique: "'OpenDyslexic', 'Comic Sans MS', system-ui, sans-serif",
+            ojuju: "'Ojuju', system-ui, sans-serif",
+            "space-grotesk": "'Space Grotesk', system-ui, sans-serif",
+            sora: "'Sora', system-ui, sans-serif",
+            outfit: "'Outfit', system-ui, sans-serif"
+          };
+          var saved = localStorage.getItem('vdl_app_font') || 'defaut';
+          var family = FAMILIES[saved] || FAMILIES.defaut;
+          document.documentElement.style.setProperty('--app-font', family);
+          document.documentElement.style.fontFamily = family;
+        } catch (e) {}
+      })();
+    </script>
+    <script>
+      // Met à jour <html lang> et les balises hreflang en fonction de la route et de la langue choisie
+      (function () {
+        var ORIGIN = 'https://voal-mwebne-zidi.lovable.app';
+        var LANGS = ['fr', 'zdj'];
+
+        function readLang() {
+          try {
+            var raw = localStorage.getItem('vdl_lang');
+            if (raw) {
+              var v = raw.replace(/^"|"$/g, '');
+              if (v === 'shi' || v === 'zdj') return 'zdj';
+              if (v === 'fr') return 'fr';
+            }
+          } catch (e) {}
+          return 'fr';
+        }
+
+        function updateHead() {
+          var path = location.pathname + location.search.replace(/([?&])lang=[^&]*&?/, '$1').replace(/[?&]$/, '');
+          document.documentElement.setAttribute('lang', readLang());
+          // Nettoyer les anciens hreflang
+          document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(function (n) { n.parentNode.removeChild(n); });
+          // Réinjecter pour la route courante
+          LANGS.forEach(function (l) {
+            var link = document.createElement('link');
+            link.setAttribute('rel', 'alternate');
+            link.setAttribute('hreflang', l);
+            link.setAttribute('href', ORIGIN + path + (path.indexOf('?') >= 0 ? '&' : '?') + 'lang=' + l);
+            document.head.appendChild(link);
+          });
+          var def = document.createElement('link');
+          def.setAttribute('rel', 'alternate');
+          def.setAttribute('hreflang', 'x-default');
+          def.setAttribute('href', ORIGIN + path);
+          document.head.appendChild(def);
+        }
+
+        updateHead();
+        var _ps = history.pushState, _rs = history.replaceState;
+        history.pushState = function () { var r = _ps.apply(this, arguments); updateHead(); return r; };
+        history.replaceState = function () { var r = _rs.apply(this, arguments); updateHead(); return r; };
+        window.addEventListener('popstate', updateHead);
+        window.addEventListener('storage', function (e) { if (e.key === 'vdl_lang') updateHead(); });
+      })();
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      (function () {
+        var host = location.hostname;
+        // On désactive le SW UNIQUEMENT dans les contextes d'édition Lovable :
+        //  - l'iframe de preview (id-preview--*.lovable.app, *.lovableproject.com)
+        //  - localhost / 127.0.0.1
+        // Le site publié (ex. voal-mwebne-zidi.lovable.app) DOIT enregistrer le SW
+        // pour permettre le démarrage hors-ligne (splash + app shell).
+        var isInIframe = false;
+        try { isInIframe = window.self !== window.top; } catch (e) { isInIframe = true; }
+        var isPreviewHost =
+          host.startsWith('id-preview--') ||
+          host.endsWith('lovableproject.com') ||
+          host === 'localhost' ||
+          host === '127.0.0.1';
+        var disableSW = isInIframe || isPreviewHost;
+
+        if ('serviceWorker' in navigator) {
+          if (disableSW) {
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+              regs.forEach(function (r) { r.unregister(); });
+            });
+            if (window.caches && caches.keys) {
+              caches.keys().then(function (keys) { keys.forEach(function (k) { caches.delete(k); }); });
+            }
+          } else {
+            window.addEventListener('load', function () {
+              navigator.serviceWorker.register('/sw.js').catch(function () {});
+            });
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

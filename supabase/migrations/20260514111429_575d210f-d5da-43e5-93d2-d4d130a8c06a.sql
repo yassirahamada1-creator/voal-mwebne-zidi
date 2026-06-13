@@ -1,0 +1,2 @@
+ALTER TABLE public.contents DROP CONSTRAINT contents_type_check;
+ALTER TABLE public.contents ADD CONSTRAINT contents_type_check CHECK (type = ANY (ARRAY['video'::text, 'audio'::text, 'text'::text, 'image'::text, 'illustration'::text]));

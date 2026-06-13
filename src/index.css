@@ -1,0 +1,523 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Inter, Atkinson Hyperlegible, Lexie Readable et OpenDyslexic sont préchargés depuis index.html */
+
+/* Override font-display pour cdnfonts (qui ne le définit pas par défaut) */
+@font-face {
+  font-family: 'OpenDyslexic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('OpenDyslexic'),
+       url('https://fonts.cdnfonts.com/s/19808/OpenDyslexic-Regular.woff') format('woff');
+}
+@font-face {
+  font-family: 'OpenDyslexic';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('OpenDyslexic'),
+       url('https://fonts.cdnfonts.com/s/19808/OpenDyslexic-Bold.woff') format('woff');
+}
+@font-face {
+  font-family: 'Lexie Readable';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lexie Readable'),
+       url('https://fonts.cdnfonts.com/s/21622/LexieReadable-Regular.woff') format('woff');
+}
+@font-face {
+  font-family: 'Lexie Readable';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lexie Readable'),
+       url('https://fonts.cdnfonts.com/s/21622/LexieReadable-Bold.woff') format('woff');
+}
+@font-face {
+  /* ... dernier @font-face ... */
+}
+
+:root {
+  --status-bar-height: 24px;
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Masquer les barres de défilement (verticale + horizontale) tout en
+   conservant le défilement à la molette / au geste / au clavier. */
+html, body {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE / Edge legacy */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none;                  /* Chrome / Safari / Webkit */
+}
+* {
+  scrollbar-width: none;
+}
+
+
+@layer base {
+  :root {
+    --background: 38 35% 98%;
+    --foreground: 210 50% 18%;
+
+    --card: 38 45% 96%;
+    --card-foreground: 210 50% 18%;
+
+    --popover: 38 40% 99%;
+    --popover-foreground: 210 50% 18%;
+
+    --primary: 210 60% 18%;
+    --primary-foreground: 40 50% 97%;
+
+    --secondary: 40 75% 52%;
+    --secondary-foreground: 210 60% 12%;
+
+    --muted: 35 25% 92%;
+    --muted-foreground: 210 18% 38%;
+
+    --accent: 15 65% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Statuts sémantiques */
+    --success: 152 60% 38%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 210 90% 50%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 35 22% 86%;
+    --input: 35 22% 86%;
+    --ring: 40 75% 52%;
+
+    --radius: 1rem;
+
+    /* Custom tokens */
+    --deep-blue: 210 60% 18%;
+    --gold: 40 75% 52%;
+    --terracotta: 15 65% 58%;
+    --warm-white: 38 45% 97%;
+    --cream: 38 45% 95%;
+    --henna: 20 50% 35%;
+    --sea: 185 55% 42%;
+    --ivory: 38 50% 94%;
+
+    /* Ombres chaleureuses */
+    --shadow-warm: 0 10px 30px -12px hsl(20 50% 25% / 0.18);
+    --shadow-elevated: 0 20px 40px -16px hsl(210 60% 18% / 0.22);
+    --shadow-gold: 0 6px 20px -8px hsl(var(--gold) / 0.35);
+
+    /* Gradients signature */
+    --gradient-sunrise: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--terracotta)));
+    --gradient-ocean: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--sea)));
+    --gradient-henna: linear-gradient(135deg, hsl(var(--henna)), hsl(var(--terracotta)));
+
+    /* Letterbox vidéo / image (toujours noir, hors thème) */
+    --media-letterbox: 0 0% 0%;
+
+    /* Identité chromatique par catégorie de la page d'accueil */
+    --cat-medicine-from: 152 55% 28%;
+    --cat-medicine-to: 152 55% 36%;
+    --cat-cooking-from: 32 75% 45%;
+    --cat-cooking-to: 32 80% 55%;
+    --cat-clothing-from: 350 70% 48%;
+    --cat-clothing-to: 350 75% 58%;
+
+    --sidebar-background: 210 55% 20%;
+    --sidebar-foreground: 40 50% 97%;
+    --sidebar-primary: 40 65% 47%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 55% 30%;
+    --sidebar-accent-foreground: 40 50% 97%;
+    --sidebar-border: 210 40% 30%;
+    --sidebar-ring: 40 65% 47%;
+  }
+
+  .dark {
+    /* Palette sombre — fond #0f1923, cards #1a2535 */
+    --background: 210 40% 10%;
+    --foreground: 210 25% 96%;
+
+    --card: 215 34% 15%;
+    --card-foreground: 210 25% 96%;
+
+    --popover: 215 34% 13%;
+    --popover-foreground: 210 25% 96%;
+
+    /* On garde l'identité verte/dorée comorienne en accents */
+    --primary: 40 75% 55%;
+    --primary-foreground: 210 50% 10%;
+
+    --secondary: 40 75% 55%;
+    --secondary-foreground: 210 50% 10%;
+
+    --muted: 215 25% 20%;
+    --muted-foreground: 215 20% 70%;
+
+    --accent: 15 65% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 210 25% 96%;
+
+    --success: 152 55% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 210 50% 10%;
+    --info: 210 90% 60%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 215 25% 22%;
+    --input: 215 25% 22%;
+    --ring: 40 75% 55%;
+
+    --deep-blue: 210 50% 14%;
+    --gold: 40 75% 55%;
+    --terracotta: 15 65% 58%;
+    --warm-white: 210 25% 96%;
+    --cream: 215 30% 18%;
+    --henna: 20 50% 45%;
+    --sea: 185 55% 50%;
+    --ivory: 215 30% 18%;
+
+    --shadow-warm: 0 10px 30px -12px hsl(0 0% 0% / 0.55);
+    --shadow-elevated: 0 20px 40px -16px hsl(0 0% 0% / 0.65);
+    --shadow-gold: 0 6px 20px -8px hsl(var(--gold) / 0.35);
+
+    --sidebar-background: 215 35% 13%;
+    --sidebar-foreground: 210 25% 96%;
+    --sidebar-primary: 40 75% 55%;
+    --sidebar-primary-foreground: 210 50% 10%;
+    --sidebar-accent: 215 30% 20%;
+    --sidebar-accent-foreground: 210 25% 96%;
+    --sidebar-border: 215 25% 22%;
+    --sidebar-ring: 40 75% 55%;
+  }
+}
+
+@layer base {
+  html, body, #root {
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body, #root {
+    font-family: var(--app-font, 'Inter'), system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6, button, input, select, textarea {
+    font-family: inherit;
+    @apply tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* ── Motifs traditionnels comoriens ─────────────────────────────────── */
+
+  /* Petits motifs perlés inspirés des broderies Shiromani */
+  .pattern-comorian {
+    background-image:
+      radial-gradient(circle at 25% 25%, hsl(var(--gold) / 0.10) 1.5px, transparent 1.6px),
+      radial-gradient(circle at 75% 75%, hsl(var(--terracotta) / 0.08) 1.5px, transparent 1.6px);
+    background-size: 24px 24px;
+  }
+
+  /* Motif zellige / arabesque doux pour les fonds */
+  .pattern-geometric {
+    background-image:
+      linear-gradient(30deg, hsl(var(--gold) / 0.05) 12%, transparent 12.5%, transparent 87%, hsl(var(--gold) / 0.05) 87.5%),
+      linear-gradient(150deg, hsl(var(--gold) / 0.05) 12%, transparent 12.5%, transparent 87%, hsl(var(--gold) / 0.05) 87.5%),
+      linear-gradient(30deg, hsl(var(--gold) / 0.05) 12%, transparent 12.5%, transparent 87%, hsl(var(--gold) / 0.05) 87.5%),
+      linear-gradient(150deg, hsl(var(--gold) / 0.05) 12%, transparent 12.5%, transparent 87%, hsl(var(--gold) / 0.05) 87.5%);
+    background-size: 40px 70px;
+    background-position: 0 0, 0 0, 20px 35px, 20px 35px;
+  }
+
+  /* Tissage Salouva — chevrons croisés inspirés du textile traditionnel */
+  .pattern-salouva {
+    background-color: transparent;
+    background-image:
+      repeating-linear-gradient(45deg,
+        hsl(var(--gold) / 0.07) 0 2px,
+        transparent 2px 10px),
+      repeating-linear-gradient(-45deg,
+        hsl(var(--terracotta) / 0.06) 0 2px,
+        transparent 2px 10px);
+  }
+
+  /* Étoiles à 8 branches — motif courant de l'architecture comorienne */
+  .pattern-stars {
+    background-image:
+      radial-gradient(hsl(var(--gold) / 0.10) 2px, transparent 2.5px),
+      radial-gradient(hsl(var(--terracotta) / 0.08) 1px, transparent 1.5px);
+    background-size: 32px 32px, 16px 16px;
+    background-position: 0 0, 16px 16px;
+  }
+
+  /* Bordure dorée fine type orfèvrerie */
+  .border-comorian {
+    border: 1px solid hsl(var(--gold) / 0.4);
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--background)),
+      0 1px 2px hsl(var(--deep-blue) / 0.08);
+  }
+
+  /* Filet décoratif horizontal (séparateur) */
+  .divider-comorian {
+    height: 6px;
+    background-image:
+      linear-gradient(90deg, transparent, hsl(var(--gold) / 0.5), transparent),
+      radial-gradient(circle, hsl(var(--terracotta) / 0.6) 1.5px, transparent 2px);
+    background-size: 100% 1px, 12px 6px;
+    background-position: center, center;
+    background-repeat: no-repeat, repeat-x;
+  }
+
+  /* ── Gradients ──────────────────────────────────────────────────────── */
+  .gradient-hero {
+    background: linear-gradient(
+      160deg,
+      hsl(155 42% 32%) 0%,
+      hsl(160 38% 26%) 55%,
+      hsl(165 40% 20%) 100%
+    );
+  }
+
+  .gradient-gold {
+    background: var(--gradient-sunrise);
+  }
+
+  .gradient-terracotta {
+    background: var(--gradient-henna);
+  }
+
+  .gradient-ocean {
+    background: var(--gradient-ocean);
+  }
+
+  /* ── Ombres signature ───────────────────────────────────────────────── */
+  .shadow-warm { box-shadow: var(--shadow-warm); }
+  .shadow-elevated { box-shadow: var(--shadow-elevated); }
+  .shadow-gold { box-shadow: var(--shadow-gold); }
+
+  /* ── Carte « culturelle » : style unifié pour TOUTES les vignettes ──── */
+  /* Inclut surface, bord, rayon, ombre chaleureuse et filet doré supérieur */
+  .card-cultural {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-warm);
+    transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  }
+  .card-cultural::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      hsl(var(--gold) / 0.6) 20%,
+      hsl(var(--terracotta) / 0.7) 50%,
+      hsl(var(--gold) / 0.6) 80%,
+      transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Variante interactive : hover lift + ombre élevée + bord doré */
+  .card-cultural-interactive {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* Hover réservé aux pointeurs précis (souris/trackpad) — évite l'effet
+     « collé » après un tap sur Android/iOS où :hover persiste jusqu'au tap suivant. */
+  @media (hover: hover) and (pointer: fine) {
+    .card-cultural-interactive:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-elevated);
+      border-color: hsl(var(--gold) / 0.45);
+    }
+  }
+  /* Feedback tactile : retour visuel immédiat sur Android/iOS */
+  .card-cultural-interactive:active {
+    transform: scale(0.98);
+    box-shadow: var(--shadow-warm);
+    border-color: hsl(var(--gold) / 0.55);
+    transition-duration: 80ms;
+  }
+  /* Focus clavier (Tab) — visible aussi sur clavier Bluetooth iPad/Android */
+  .card-cultural-interactive:focus-visible {
+    outline: none;
+    border-color: hsl(var(--gold));
+    box-shadow: var(--shadow-elevated), 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--gold));
+  }
+
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-sm;
+  }
+
+  /* ── Boutons décorés ────────────────────────────────────────────────── */
+  .btn-comorian {
+    position: relative;
+    background: linear-gradient(135deg, hsl(var(--gold)), hsl(35 70% 52%));
+    color: hsl(var(--secondary-foreground));
+    border: 1px solid hsl(var(--gold) / 0.6);
+    box-shadow:
+      0 1px 0 hsl(var(--background) / 0.4) inset,
+      0 4px 12px hsl(var(--gold) / 0.25);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .btn-comorian:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 1px 0 hsl(var(--background) / 0.4) inset,
+      0 6px 16px hsl(var(--gold) / 0.35);
+  }
+  .btn-comorian:active {
+    transform: translateY(0);
+  }
+  .btn-comorian::before,
+  .btn-comorian::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background: hsl(var(--secondary-foreground) / 0.6);
+    transform: translateY(-50%) rotate(45deg);
+  }
+  .btn-comorian::before { left: 8px; }
+  .btn-comorian::after  { right: 8px; }
+}
+
+/* ===== Accessibility global overrides ===== */
+:root { --a11y-font-scale: 1; }
+html { font-size: calc(16px * var(--a11y-font-scale, 1)); }
+
+.a11y-dyslexic,
+.a11y-dyslexic body,
+.a11y-dyslexic * {
+  font-family: "OpenDyslexic", "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif !important;
+  letter-spacing: 0.02em;
+}
+
+/* Contraste élevé : assombrit fortement les bords/textes et augmente le contraste */
+.a11y-high-contrast {
+  --foreground: 0 0% 0%;
+  --muted-foreground: 0 0% 15%;
+  --border: 0 0% 10%;
+  --input: 0 0% 10%;
+  --card-foreground: 0 0% 0%;
+  --primary: 210 80% 12%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 0 0% 0%;
+}
+.dark.a11y-high-contrast {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --muted-foreground: 0 0% 90%;
+  --border: 0 0% 85%;
+  --input: 0 0% 85%;
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 100%;
+  --primary: 40 95% 65%;
+  --primary-foreground: 0 0% 0%;
+  --ring: 40 95% 65%;
+}
+.a11y-high-contrast *:focus-visible {
+  outline: 3px solid hsl(var(--ring)) !important;
+  outline-offset: 2px !important;
+}
+
+
+/* ===== Performance — animations ramenées à ≤150ms ===== */
+.animate-fade-in,
+.animate-scale-in,
+.animate-enter {
+  animation-duration: 150ms !important;
+  animation-delay: 0ms !important;
+}
+
+/* Désactive les animations sur connexions lentes ou préférence utilisateur.
+   On garde le rendu final (opacity/transform finaux) pour préserver l'esthétique
+   du splash et des écrans, sans aucun mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Sécurité : forcer l'état final visible pour les éléments qui s'appuient
+     sur une animation 'forwards' pour révéler leur contenu (splash, fade-up…). */
+  .animate-fade-up,
+  .animate-moon-rise,
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-enter {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Évite le layout-shift sur les <img> sans dimensions */
+img { content-visibility: auto; }
+
+
+
+/* Transitions de pages : slide horizontal ~200ms entre onglets
+   (déclenché par un swipe via SwipeNavigator → consumeNavDirection). */
+@keyframes vdl-slide-from-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0);    }
+}
+@keyframes vdl-slide-from-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0);     }
+}
+.animate-slide-from-right { animation: vdl-slide-from-right 200ms ease-out both; will-change: transform; }
+.animate-slide-from-left  { animation: vdl-slide-from-left  200ms ease-out both; will-change: transform; }
+
+/* Respecte prefers-reduced-motion : aucune animation de slide */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-from-right,
+  .animate-slide-from-left { animation: none !important; }
+}
+
+
+
